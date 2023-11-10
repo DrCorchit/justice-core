@@ -5,7 +5,7 @@ import com.drcorchit.utils.normalize
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 
-interface GameElement {
+interface GameElement : Syncable<JsonObject> {
     //The name of the object as seen by the client
     //The name is encouraged to be unique. It may also change from time to time.
     fun name(): String
@@ -27,8 +27,6 @@ interface GameElement {
     fun touch() {
         parent().touch()
     }
-
-    fun sync(info: JsonObject)
 
     //Serializes the object so it can be recreated
     fun serialize(): JsonElement {

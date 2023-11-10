@@ -3,7 +3,7 @@ package com.drcorchit.justice.games
 import com.drcorchit.utils.json.GSON
 import com.google.gson.JsonObject
 
-interface GameMechanic<T : GameElement> : Iterable<T> {
+interface GameMechanic<T : GameElement> : Syncable<JsonObject>, Iterable<T> {
     val name: String get() = javaClass.simpleName
 
     val parent: Game
@@ -22,8 +22,6 @@ interface GameMechanic<T : GameElement> : Iterable<T> {
 
     //Call this method whenever the mechanic is modified. This should also update lastModified
     fun touch()
-
-    fun sync(info: JsonObject)
 
     fun serialize(): JsonObject {
         return GSON.toJsonTree(this).asJsonObject

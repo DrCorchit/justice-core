@@ -1,7 +1,7 @@
 package com.drcorchit.justice.games
 
 import com.drcorchit.utils.Logger
-import com.drcorchit.utils.json.get
+import com.drcorchit.utils.json.getOrDefault
 import com.google.gson.JsonObject
 
 private val log = Logger.getLogger(AbstractMechanic::class.java)
@@ -47,6 +47,7 @@ abstract class AbstractMechanic<T : AbstractElement>(game: Game, info: JsonObjec
             val message = "Mechanic info for $name is missing \"elements\". Found keys: ${info.keySet()}"
             throw IllegalArgumentException(message)
         }
+        preSync(info)
 
         elementsByName.clear()
 
@@ -59,7 +60,7 @@ abstract class AbstractMechanic<T : AbstractElement>(game: Game, info: JsonObjec
 
             //Use "key" if present, otherwise default to name
             val name = eleInfo["name"].asString
-            val key = eleInfo["key", { nextId() }, { it.asInt }]
+            val key = eleInfo.getOrDefault("key", { nextId() }, { it.asInt })
 
             var element: T
             if (has(key)) {
@@ -85,6 +86,7 @@ abstract class AbstractMechanic<T : AbstractElement>(game: Game, info: JsonObjec
 
         //Remove all elements still marked for deletion
         deleteThese.forEach { elementsById.remove(it.key) }
+        postSync(info)
         val message = String.format("Synced AbstractMechanic $name", name)
         log.info("sync", message)
     }
