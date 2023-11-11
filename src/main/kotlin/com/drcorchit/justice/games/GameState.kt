@@ -1,5 +1,7 @@
 package com.drcorchit.justice.games
 
+import com.google.gson.JsonElement
+
 enum class GameState(val isJoiningEnabled: Boolean, val isEventsEnabled: Boolean, val isSavingEnabled: Boolean) {
     //Transitions to "open" when minPlayers is reached
     STAGING(true, false, false),

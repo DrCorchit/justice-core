@@ -1,7 +1,7 @@
 package com.drcorchit.justice.games
 
-import com.drcorchit.utils.json.GSON
-import com.drcorchit.utils.normalize
+import com.drcorchit.justice.utils.Strings.Companion.normalize
+import com.drcorchit.justice.utils.json.JsonUtils.Companion.GSON
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 
@@ -15,7 +15,7 @@ interface GameElement : Syncable<JsonObject> {
     //Contract: The key is unique and does not change under any circumstances.
     //Contract: parent().getElement(key()).equals(this) is always true
     val key: Any
-        get() = normalize(name())
+        get() = name().normalize()
 
     //A short description of the object visible to the client
     fun description(): String

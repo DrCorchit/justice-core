@@ -1,8 +1,9 @@
 package com.drcorchit.justice.games
 
-import com.drcorchit.utils.Version
-import com.drcorchit.utils.json.*
-import com.drcorchit.utils.math.Rng
+import com.drcorchit.justice.utils.Version
+import com.drcorchit.justice.utils.json.*
+import com.drcorchit.justice.utils.json.Result.Companion.failWithReason
+import com.drcorchit.justice.utils.math.Rng
 import com.google.errorprone.annotations.CanIgnoreReturnValue
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject

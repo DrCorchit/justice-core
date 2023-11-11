@@ -1,7 +1,7 @@
 package com.drcorchit.justice.games
 
-import com.drcorchit.utils.json.getString
-import com.drcorchit.utils.math.Space
+import com.drcorchit.justice.utils.json.getString
+import com.drcorchit.justice.utils.math.Space
 import com.google.gson.JsonObject
 
 abstract class GridElement(val parent: GridMechanic<*>, val coord: Space.Coordinate) : GameElement {

@@ -1,11 +1,11 @@
 package com.drcorchit.justice.games.mods
 
-import com.drcorchit.utils.exceptions.MissingDependencyException
-import com.drcorchit.utils.json.JsonDiff
-import com.drcorchit.utils.json.getString
-import com.drcorchit.utils.json.parseFromUrl
-import com.drcorchit.utils.math.AcyclicGraph
-import com.drcorchit.utils.whitelist
+import com.drcorchit.justice.utils.Strings.Companion.whitelist
+import com.drcorchit.justice.utils.exceptions.MissingDependencyException
+import com.drcorchit.justice.utils.json.JsonDiff
+import com.drcorchit.justice.utils.json.JsonUtils.Companion.parseFromUrl
+import com.drcorchit.justice.utils.json.getString
+import com.drcorchit.justice.utils.math.AcyclicGraph
 import com.google.common.collect.ImmutableBiMap
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSet
@@ -42,6 +42,7 @@ class Mod private constructor(info: JsonObject) {
             "description",
             "No description is available for this mod"
         ).whitelist()
+
         author = info.get("author").asString.whitelist()
 
         reqMechanics = if (info.has("mechanics")) {

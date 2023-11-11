@@ -1,6 +1,6 @@
 package com.drcorchit.justice.games
 
-import com.drcorchit.utils.json.getString
+import com.drcorchit.justice.utils.json.getString
 import com.google.gson.JsonObject
 
 abstract class AbstractElement(private val parent: AbstractMechanic<*>, name: String, private val id: Int) : GameElement {

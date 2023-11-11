@@ -1,11 +1,11 @@
 package com.drcorchit.justice.games
 
-import com.drcorchit.utils.Logger
-import com.drcorchit.utils.json.getBool
-import com.drcorchit.utils.json.getOrDefault
-import com.drcorchit.utils.math.Grid
-import com.drcorchit.utils.math.Layout
-import com.drcorchit.utils.math.Space
+import com.drcorchit.justice.utils.Logger
+import com.drcorchit.justice.utils.json.getBool
+import com.drcorchit.justice.utils.json.getOrDefault
+import com.drcorchit.justice.utils.math.Grid
+import com.drcorchit.justice.utils.math.Layout
+import com.drcorchit.justice.utils.math.Space
 import com.google.gson.JsonObject
 
 private val log = Logger.getLogger(GridMechanic::class.java)
@@ -34,7 +34,7 @@ abstract class GridMechanic<T : GridElement>(game: Game, info: JsonObject, date:
 
     override fun get(key: Any): T {
         if (key is Space.Coordinate) {
-            return grid.get(key)
+            return grid.get(key)!!
         } else {
             throw IllegalArgumentException("Supplied key is not a valid coordinate")
         }

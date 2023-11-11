@@ -1,10 +1,10 @@
 package com.drcorchit.justice.games.mods
 
-import com.drcorchit.utils.Version
-import com.drcorchit.utils.createCache
-import com.drcorchit.utils.json.parseFromUrl
-import com.drcorchit.utils.normalize
-import com.drcorchit.utils.whitelist
+import com.drcorchit.justice.utils.Strings.Companion.normalize
+import com.drcorchit.justice.utils.Strings.Companion.whitelist
+import com.drcorchit.justice.utils.Version
+import com.drcorchit.justice.utils.createCache
+import com.drcorchit.justice.utils.json.JsonUtils.Companion.parseFromUrl
 import com.google.common.cache.LoadingCache
 import com.google.gson.JsonObject
 import java.util.concurrent.ConcurrentHashMap
@@ -19,7 +19,7 @@ class ModID private constructor(pair: Pair<String, String>) {
 
     init {
         name = pair.first
-        normalName = normalize(name)
+        normalName = name.normalize()
         version = Version(pair.second)
         value = "${normalName}_v$version"
         val current: ModID? = LATEST_VERSIONS[normalName]

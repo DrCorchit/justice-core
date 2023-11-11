@@ -1,7 +1,7 @@
 package com.drcorchit.justice.games
 
-import com.drcorchit.utils.Logger
-import com.drcorchit.utils.json.getOrDefault
+import com.drcorchit.justice.utils.Logger
+import com.drcorchit.justice.utils.json.getOrDefault
 import com.google.gson.JsonObject
 
 private val log = Logger.getLogger(AbstractMechanic::class.java)

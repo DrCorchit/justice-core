@@ -1,6 +1,6 @@
 package com.drcorchit.justice.games
 
-import com.drcorchit.utils.json.GSON
+import com.drcorchit.justice.utils.json.JsonUtils.Companion.GSON
 import com.google.gson.JsonObject
 
 interface GameMechanic<T : GameElement> : Syncable<JsonObject>, Iterable<T> {
