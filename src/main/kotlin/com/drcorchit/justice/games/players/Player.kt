@@ -1,8 +1,8 @@
-package com.drcorchit.justice.games
+package com.drcorchit.justice.games.players
 
 interface Player {
 
-    fun name(): String
+    val name: String
 
     var moderator: Boolean
 

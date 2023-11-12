@@ -1,5 +1,6 @@
-package com.drcorchit.justice.games
+package com.drcorchit.justice.games.mechanics
 
+import com.drcorchit.justice.games.players.Player
 import com.drcorchit.justice.utils.Strings.Companion.normalize
 import com.drcorchit.justice.utils.json.JsonUtils.Companion.GSON
 import com.google.gson.JsonElement

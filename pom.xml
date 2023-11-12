@@ -6,7 +6,7 @@
 
     <artifactId>justice-core</artifactId>
     <groupId>com.drcorchit</groupId>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
 
     <name>justice-core</name>
@@ -90,7 +90,7 @@
         <dependency>
             <groupId>com.github.DrCorchit</groupId>
             <artifactId>justice-utils</artifactId>
-            <version>1.3.4</version>
+            <version>1.3.5</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

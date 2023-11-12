@@ -1,4 +1,4 @@
-package com.drcorchit.justice.games
+package com.drcorchit.justice.games.mechanics
 
 interface Syncable<T: Any> {
 

@@ -1,9 +1,10 @@
-package com.drcorchit.justice.games
+package com.drcorchit.justice.games.mechanics
 
 import com.drcorchit.justice.utils.json.getString
 import com.google.gson.JsonObject
 
-abstract class AbstractElement(private val parent: AbstractMechanic<*>, name: String, private val id: Int) : GameElement {
+abstract class AbstractElement(private val parent: AbstractMechanic<*>, name: String, private val id: Int) :
+    GameElement {
 
     protected var info: JsonObject = JsonObject()
 

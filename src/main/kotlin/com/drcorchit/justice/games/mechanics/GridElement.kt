@@ -1,4 +1,4 @@
-package com.drcorchit.justice.games
+package com.drcorchit.justice.games.mechanics
 
 import com.drcorchit.justice.utils.json.getString
 import com.drcorchit.justice.utils.math.Space

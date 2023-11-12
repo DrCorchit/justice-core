@@ -1,5 +1,6 @@
-package com.drcorchit.justice.games
+package com.drcorchit.justice.games.mechanics
 
+import com.drcorchit.justice.games.Game
 import com.drcorchit.justice.utils.Logger
 import com.drcorchit.justice.utils.json.getOrDefault
 import com.google.gson.JsonObject
