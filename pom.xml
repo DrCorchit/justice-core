@@ -6,7 +6,7 @@
 
     <artifactId>justice-core</artifactId>
     <groupId>com.drcorchit</groupId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <packaging>jar</packaging>
 
     <name>justice-core</name>

@@ -13,5 +13,4 @@ interface Players : Set<Player> {
     fun getPlayer(username: String): Player?
     fun addPlayer(username: String): Result
     fun removePlayer(username: String): Result
-    fun serializeForPlayer(player: Player, mutableOnly: Boolean): Result
 }

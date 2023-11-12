@@ -5,7 +5,7 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue
 import java.util.function.Consumer
 import java.util.function.Function
 
-interface Mechanics {
+interface Mechanics: Iterable<GameMechanic<*>> {
     val game: Game
 
     fun has(mechanic: MechID<*>): Boolean

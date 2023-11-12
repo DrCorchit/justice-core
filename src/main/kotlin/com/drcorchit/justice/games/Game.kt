@@ -2,12 +2,12 @@ package com.drcorchit.justice.games
 
 import com.drcorchit.justice.games.events.Events
 import com.drcorchit.justice.games.mechanics.Mechanics
-import com.drcorchit.justice.games.metadata.JsonMetadata
 import com.drcorchit.justice.games.metadata.Metadata
 import com.drcorchit.justice.games.players.Player
 import com.drcorchit.justice.games.players.Players
 import com.drcorchit.justice.games.saving.Saving
-import com.drcorchit.justice.utils.json.*
+import com.drcorchit.justice.utils.json.Result
+import com.drcorchit.justice.utils.json.toJsonArray
 import com.drcorchit.justice.utils.math.Rng
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
@@ -70,6 +70,10 @@ interface Game {
             .toJsonArray())
         return info
     }
+
+    fun serialize(): JsonObject
+
+    fun serializeForPlayer(player: Player, mutableOnly: Boolean): JsonObject
 
     companion object {
         @JvmStatic

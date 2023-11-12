@@ -50,4 +50,12 @@ class DummyGame: Game {
     }
 
     override val random: Rng = Rng()
+
+    override fun serialize(): JsonObject {
+        return JsonObject()
+    }
+
+    override fun serializeForPlayer(player: Player, mutableOnly: Boolean): JsonObject {
+        return JsonObject()
+    }
 }

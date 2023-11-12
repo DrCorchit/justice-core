@@ -2,7 +2,6 @@ package com.drcorchit.justice.games.players
 
 import com.drcorchit.justice.games.DummyGame
 import com.drcorchit.justice.utils.json.Result
-import com.google.gson.JsonObject
 
 class DummyPlayers(override val game: DummyGame) : Players {
     private val roster = LinkedHashMap<String, DummyPlayer>()
@@ -25,10 +24,6 @@ class DummyPlayers(override val game: DummyGame) : Players {
         } else {
             Result.succeed()
         }
-    }
-
-    override fun serializeForPlayer(player: Player, mutableOnly: Boolean): Result {
-        return Result.succeedWithInfo(JsonObject())
     }
 
     override val size: Int
