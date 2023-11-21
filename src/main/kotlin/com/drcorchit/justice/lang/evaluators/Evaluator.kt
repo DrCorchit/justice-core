@@ -21,8 +21,8 @@ interface Evaluator<T : Any> {
 
     val clazz: KClass<T>
 
-    fun accept(instance: Any): Boolean {
-        return clazz.isInstance(instance)
+    fun accept(other: Evaluator<*>): Boolean {
+        return other.clazz.isSubclassOf(clazz)
     }
 
     fun cast(instance: Any): T {

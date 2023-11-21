@@ -1,16 +1,16 @@
 grammar Justice;
 
 fragment DIGIT : [0-9];
-fragment ID_INITIAL : [a-zA-Z];
+fragment ID_INITIAL : [a-z];
+fragment TYPE_INITIAL : [A-Z];
 fragment ID_CHAR : [a-zA-Z0-9_];
 
 //Primitive types
 NULL : 'null';
-BOOL : 'true'|'false';
+BOOL : 'true' | 'false';
 INT : DIGIT+;
-REAL : DIGIT*'.'DIGIT+|'pi'|'e';
+REAL : DIGIT*'.'DIGIT+ | 'pi' | 'e';
 STR : '"'('\\"'|~'"')*'"';
-PRIMITIVE_TYPE : 'void' | 'bool' | 'num' | 'int' | 'real' | 'string';
 
 //Keywords
 AND : 'and' | '&&';
@@ -37,6 +37,7 @@ MECHANIC_MODIFIER : 'immutable';
 MEMBER_MODIFIER : 'mutable' | 'derived' | 'cached' | 'static';
 
 ID : ID_INITIAL(ID_CHAR)*;
+TYPE : TYPE_INITIAL(ID_CHAR)*;
 
 //Ignored
 WS : [ \t\r\n\u000C]+ -> channel(HIDDEN);
@@ -57,12 +58,12 @@ declare : VAR ID '=' expression ';';
 assign : lhv '=' expression ';';
 lhv : ID #LocalAssign | expression '.' ID #InstanceAssign | expression '[' expression ']' #IndexAssign;
 ifBranch : IF '(' expression ')' '{' statement? '}' elseBranch?;
-elseBranch : ELSE ifBranch | ELSE '{' statement? '}';
 forLoop : FOR '(' ID ':' expression ')' '{' statement? '}';
 whileLoop : WHILE '(' expression ')' '{' statement? '}';
 error : expression THROW expression ';' | THROW expression ';';
 returnStmt : RETURN expression? ';';
 expressionStmt : expression ';';
+elseBranch : ELSE ifBranch | ELSE '{' statement? '}';
 
 //Expression
 expression : expression '^' expression #powerExpr
@@ -77,7 +78,7 @@ expression : expression '^' expression #powerExpr
     | expression '[' expression ']' #indexExpr
     | expression '.' ID tuple? #lookup
     | ID tuple? #lookupEnv
-    | typeExpr '[' (expression (',' expression)*)? ']' #arrayExpr
+    | TYPE '[' (expression (',' expression)*)? ']' #arrayExpr
     | tuple #tupleExpr
     | args (':' typeExpr)? '->' lambdaBody #lambdaExpr
     | '(' expression ')' #parenExpr;
@@ -85,8 +86,7 @@ expression : expression '^' expression #powerExpr
 //Miscellaneous
 constant : NULL #nullConst | BOOL #boolConst | INT #intConst | REAL #realConst | STR #strConst;
 tuple : '(' (expression (',' expression)*)? ')';
-typeExpr : PRIMITIVE_TYPE | uri | typeExpr '[]';
-uri : ID('.'ID)*;
+typeExpr : TYPE #baseTypeExpr | typeExpr '[]' #arrayTypeExpr;
 //tupleType : '<' typeExpr (',' typeExpr)* '>';
 //unionType : '<' typeExpr ('|' typeExpr)+ '>';
 //constructor : CONS args? '{' statement? '}';

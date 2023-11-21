@@ -13,9 +13,9 @@ object PlayerEvaluator : Evaluator<Player> {
         LambdaDataMember<Player>(
             "id",
             "The unique identifier of the player.",
-            listOf<Evaluator<*>>(),
             StringEvaluator
         ) { it.id }
+        //TODO other members
     ).associateBy { it.name })
 
 }

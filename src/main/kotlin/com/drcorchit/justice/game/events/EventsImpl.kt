@@ -3,6 +3,7 @@ package com.drcorchit.justice.game.events
 import com.drcorchit.justice.game.Game
 import com.drcorchit.justice.game.players.Player
 import com.drcorchit.justice.lang.evaluators.Evaluator
+import com.drcorchit.justice.lang.evaluators.NonSerializableEvaluator
 import com.drcorchit.justice.lang.members.LambdaMember
 import com.drcorchit.justice.lang.members.Member
 import com.drcorchit.justice.utils.Utils.binarySearch
@@ -13,7 +14,6 @@ import com.drcorchit.justice.utils.json.HttpResult
 import com.drcorchit.justice.utils.json.JsonUtils.toJsonArray
 import com.google.common.collect.ImmutableMap
 import com.google.gson.JsonArray
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 
 class EventsImpl(override val parent: Game) : Events {
@@ -21,6 +21,8 @@ class EventsImpl(override val parent: Game) : Events {
 
     //Maintains a list of all events from the client.
     private val eventHistory = mutableListOf<EventOutcome>()
+
+    private val evaluator by lazy { createEvaluator() }
 
     //the date events were last started
     override val scheduled = ScheduledEventsImpl(this)
@@ -68,24 +70,20 @@ class EventsImpl(override val parent: Game) : Events {
         TODO("Not yet implemented")
     }
 
-    private fun createEvaluator(): Evaluator<EventsImpl> {
-        val builder = ImmutableMap.builder<String, Member<EventsImpl>>()
+    override fun getEvaluator(): Evaluator<Events> {
+        return evaluator
+    }
+
+    private fun createEvaluator(): Evaluator<Events> {
+        val builder = ImmutableMap.builder<String, Member<Events>>()
         events.values.forEach {
-            val member = LambdaMember<EventsImpl>(it.name, it.description, it.parameters.toArgs(), it.returnType) { _, args: List<Any> -> it.run(args) }
+            val member = LambdaMember<Events>(it.name, it.description, it.parameters.toArgs(), it.returnType) { _, args: List<Any> -> it.run(args) }
             builder.put(member.name, member)
         }
 
-        return object : Evaluator<EventsImpl> {
-            override val clazz = EventsImpl::class
+        return object : NonSerializableEvaluator<Events>() {
+            override val clazz = Events::class
             override val members = builder.build()
-
-            override fun serialize(instance: EventsImpl): JsonElement {
-                throw UnsupportedOperationException("Module events cannot be serialized or deserialized.")
-            }
-
-            override fun deserialize(game: Game, ele: JsonElement): EventsImpl {
-                throw UnsupportedOperationException("Module events cannot be serialized or deserialized.")
-            }
         }
     }
 }

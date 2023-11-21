@@ -17,7 +17,7 @@ interface TypeEnv {
     fun declare(id: String, type: Evaluator<*>, mutable: Boolean)
 
     fun bind(info: JsonObject, game: Game, parent: Environment? = null, mutable: Boolean): Environment {
-        val output = MapEnvironment(parent)
+        val output = MutableEnvironment(parent)
         map.entries.forEach {
             val id = it.key
             val type = it.value.type
@@ -29,7 +29,7 @@ interface TypeEnv {
     }
 
     fun bind(args: List<Any>): Environment {
-        val output = MapEnvironment()
+        val output = MutableEnvironment()
         map.values.forEachIndexed { index, entry ->
             output.declare(entry.id, entry.type, args[index], false)
         }

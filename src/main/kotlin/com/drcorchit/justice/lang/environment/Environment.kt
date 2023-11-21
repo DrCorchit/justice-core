@@ -12,4 +12,5 @@ interface Environment {
 
     fun assign(id: String, value: Any)
 
+    fun toTypeEnv(): TypeEnv
 }

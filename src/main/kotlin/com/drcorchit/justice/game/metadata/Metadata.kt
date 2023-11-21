@@ -1,12 +1,13 @@
 package com.drcorchit.justice.game.metadata
 
 import com.drcorchit.justice.game.Game
+import com.drcorchit.justice.lang.evaluators.HasEvaluator
 import com.drcorchit.justice.utils.Version
 import com.drcorchit.justice.utils.logging.HasUri
 import com.drcorchit.justice.utils.logging.Uri
 import com.google.gson.JsonObject
 
-interface Metadata: HasUri {
+interface Metadata: HasUri, HasEvaluator<Metadata> {
     override val parent: Game
     override val uri: Uri
         get() = parent.uri.extend("metadata")

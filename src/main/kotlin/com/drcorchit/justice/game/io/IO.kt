@@ -1,4 +1,4 @@
-package com.drcorchit.justice.game.saving
+package com.drcorchit.justice.game.io
 
 import com.drcorchit.justice.game.Game
 import com.drcorchit.justice.utils.json.Result
@@ -8,7 +8,7 @@ import com.drcorchit.justice.utils.json.lastModified
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 
-interface Saving {
+interface IO {
 
     val basePath: String
 

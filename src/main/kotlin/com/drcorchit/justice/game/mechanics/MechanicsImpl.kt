@@ -28,7 +28,7 @@ class MechanicsImpl(override val parent: Game): Mechanics {
                 it.value to timestamp
             } else {
                 val path = it.value.asString
-                parent.saving.loadJson(path)
+                parent.io.loadJson(path)
             }
             val className = json.info.asJsonObject["class"].asString
             val clazz = Class.forName(className) as Class<GameMechanic<*>>

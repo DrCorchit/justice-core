@@ -1,13 +1,14 @@
 package com.drcorchit.justice.game.mechanics
 
 import com.drcorchit.justice.game.Game
+import com.drcorchit.justice.lang.evaluators.HasEvaluator
 import com.drcorchit.justice.utils.logging.HasUri
 import com.drcorchit.justice.utils.logging.Uri
 import com.drcorchit.justice.utils.logging.UriLogger
 import com.google.errorprone.annotations.CanIgnoreReturnValue
 import com.google.gson.JsonObject
 
-interface Mechanics: Iterable<GameMechanic<*>>, HasUri {
+interface Mechanics: Iterable<GameMechanic<*>>, HasUri, HasEvaluator<Mechanics> {
     override val parent: Game
     override val uri: Uri get() = parent.uri.extend("mechanics")
 

@@ -18,4 +18,8 @@ class MutableTypeEnv(override val parent: TypeEnv? = null) : TypeEnv {
         return map.values.map { it.type }
     }
 
+    fun immutableCopy(): ImmutableTypeEnv {
+        return ImmutableTypeEnv(map, parent)
+    }
+
 }

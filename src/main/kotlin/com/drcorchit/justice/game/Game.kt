@@ -1,13 +1,13 @@
 package com.drcorchit.justice.game
 
+import com.drcorchit.justice.game.evaluation.Types
 import com.drcorchit.justice.game.events.Events
 import com.drcorchit.justice.game.mechanics.Mechanics
 import com.drcorchit.justice.game.metadata.Metadata
 import com.drcorchit.justice.game.monitoring.Monitoring
 import com.drcorchit.justice.game.notifications.Notifying
-import com.drcorchit.justice.game.players.Player
 import com.drcorchit.justice.game.players.Players
-import com.drcorchit.justice.game.saving.Saving
+import com.drcorchit.justice.game.io.IO
 import com.drcorchit.justice.utils.json.JsonUtils.toJsonArray
 import com.drcorchit.justice.utils.json.Result
 import com.drcorchit.justice.utils.logging.HasUri
@@ -23,8 +23,6 @@ interface Game: HasUri {
     override val uri get() = Uri(null, id)
     override val parent get() = null
 
-    fun query(player: Player, query: String): Result
-    fun execute(player: Player, command: String): Result
     fun setState(newState: GameState): Result
     fun getState(): GameState
 
@@ -50,8 +48,9 @@ interface Game: HasUri {
     val mechanics: Mechanics
     val events: Events
     val metadata: Metadata
+    val types: Types
     val notifying: Notifying
-    val saving: Saving
+    val io: IO
     val monitoring: Monitoring
 
     fun summarize(): JsonObject {

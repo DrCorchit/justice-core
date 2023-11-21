@@ -1,4 +1,4 @@
-package com.drcorchit.justice.game.saving
+package com.drcorchit.justice.game.io
 
 import com.drcorchit.justice.utils.IOUtils
 import com.drcorchit.justice.utils.json.JsonUtils
@@ -8,7 +8,7 @@ import com.drcorchit.justice.utils.json.TimestampedJson
 import com.google.gson.JsonElement
 import java.io.File
 
-class LocalSaving(override val basePath: String) : Saving {
+class LocalIO(override val basePath: String) : IO {
 
     val parentFolder = File(basePath)
 
