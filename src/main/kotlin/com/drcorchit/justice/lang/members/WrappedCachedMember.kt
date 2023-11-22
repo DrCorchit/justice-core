@@ -1,27 +1,18 @@
 package com.drcorchit.justice.lang.members
 
 import com.drcorchit.justice.lang.annotations.CachedField
-import com.drcorchit.justice.utils.Utils
-import com.google.common.cache.LoadingCache
+import com.drcorchit.justice.lang.evaluators.Evaluator
 import kotlin.reflect.KCallable
 
-class WrappedCachedMember<T>(member: KCallable<*>, annotation: CachedField) :
-    WrappedMember<T>(member, annotation.description), FieldMember<T> {
-    private val cache: LoadingCache<T, Any> = Utils.createCache(annotation.cacheSize) { apply(it, listOf())!! }
+class WrappedCachedMember<T : Any>(private val member: KCallable<*>, annotation: CachedField) :
+    CachedFieldMember<T>(member.name, annotation.description, member.returnType.let { Evaluator.fromType(it) }) {
 
     init {
         require(argTypes.size == 1) { "Member $name is marked as a field, but has one or more arguments." }
     }
 
-    override fun get(instance: T): Any? {
-        return cache.getUnchecked(instance)
-    }
-
-    fun invalidate(instance: Any) {
-        cache.invalidate(instance)
-    }
-
-    fun invalidateAll() {
-        cache.invalidateAll()
+    override fun apply(instance: T, args: List<Any>): Any? {
+        val temp = (listOf(instance) + args).toTypedArray()
+        return member.call(*temp)
     }
 }

@@ -10,8 +10,8 @@ import com.drcorchit.justice.lang.members.Member
 
 class IndexNode(private val arrayExpr: Expression, private val indexExpr: Expression): Expression {
     override fun evaluate(context: EvaluationContext): Any {
-        val array = arrayExpr.evaluate(context)
-        val index = indexExpr.evaluate(context)
+        val array = arrayExpr.evaluate(context)!!
+        val index = indexExpr.evaluate(context)!!
 
         val type = context.game.types.getType(array)
         val member = type?.getMember("get") as Member<Any>
@@ -29,6 +29,6 @@ class IndexNode(private val arrayExpr: Expression, private val indexExpr: Expres
         if (member.returnType == null) {
             throw MemberDefinitionException("Method \"get\" must return a non-null type.")
         }
-        return member.returnType
+        return member.returnType!!
     }
 }

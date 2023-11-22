@@ -12,12 +12,13 @@ import com.drcorchit.justice.utils.json.Http.Companion.internalError
 import com.drcorchit.justice.utils.json.Http.Companion.ok
 import com.drcorchit.justice.utils.json.HttpResult
 import com.drcorchit.justice.utils.json.JsonUtils.toJsonArray
+import com.drcorchit.justice.utils.json.info
 import com.google.common.collect.ImmutableMap
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 
 class EventsImpl(override val parent: Game) : Events {
-    private val events = mutableMapOf<String, Event>()
+    private var events: ImmutableMap<String, Event> = ImmutableMap.of()
 
     //Maintains a list of all events from the client.
     private val eventHistory = mutableListOf<EventOutcome>()
@@ -67,7 +68,11 @@ class EventsImpl(override val parent: Game) : Events {
     }
 
     override fun deserialize(info: JsonObject) {
-        TODO("Not yet implemented")
+        events = ImmutableMap.copyOf(info.getAsJsonArray("events")
+            .map { parent.io.loadJson(it.asString) }
+            .map { EventImpl.deserialize(parent, it.info.asJsonObject) }
+            .associateBy { it.name })
+        scheduled.deserialize(info.getAsJsonObject("scheduled"))
     }
 
     override fun getEvaluator(): Evaluator<Events> {
@@ -77,7 +82,12 @@ class EventsImpl(override val parent: Game) : Events {
     private fun createEvaluator(): Evaluator<Events> {
         val builder = ImmutableMap.builder<String, Member<Events>>()
         events.values.forEach {
-            val member = LambdaMember<Events>(it.name, it.description, it.parameters.toArgs(), it.returnType) { _, args: List<Any> -> it.run(args) }
+            val member = LambdaMember<Events>(
+                it.name,
+                it.description,
+                it.parameters.toArgs(),
+                it.returnType
+            ) { _, args: List<Any> -> it.run(args) }
             builder.put(member.name, member)
         }
 

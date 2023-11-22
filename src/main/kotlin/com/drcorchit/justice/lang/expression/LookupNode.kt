@@ -1,9 +1,11 @@
 package com.drcorchit.justice.lang.expression
 
 import com.drcorchit.justice.exceptions.MemberNotFoundException
+import com.drcorchit.justice.exceptions.ReturnException
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
 import com.drcorchit.justice.lang.evaluators.Evaluator
+import com.drcorchit.justice.lang.members.FieldMember
 import com.google.common.collect.ImmutableList
 
 class LookupNode(
@@ -13,14 +15,23 @@ class LookupNode(
     //empty args means empty parens ()
     private val args: ImmutableList<Expression>?
 ) : Expression {
-    override fun evaluate(context: EvaluationContext): Any {
+    override fun evaluate(context: EvaluationContext): Any? {
         return if (base == null) {
+            //TODO what about stuff like sin() etc
             context.env[name]!!
         } else {
-            val left = base.evaluate(context)
-            val member = Evaluator.from(left).getMember(name)
-            val actualArgs = args?.map { it.evaluate(context) } ?: listOf()
-            member?.apply(left, actualArgs) ?: throw MemberNotFoundException(left::class.java, name)
+            val left = base.evaluate(context)!!
+            return when(val member = Evaluator.from(left).getMember(name)!!) {
+                is FieldMember<*> -> member.getCast(left)
+                else ->  {
+                    try {
+                        val actualArgs = args?.map { it.evaluate(context) } ?: listOf()
+                        member.apply(left, actualArgs)
+                    } catch (r: ReturnException) {
+                        return r.value
+                    }
+                }
+            }
         }
     }
 

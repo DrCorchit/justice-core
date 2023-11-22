@@ -32,21 +32,23 @@ class JusticeTypes(override val parent: Game) : Types {
             return output
         }
 
-    override fun query(query: Expression): Result {
+    override fun query(query: String): Result {
+        val expr = Expression.parse(this, query)
         val context = EvaluationContext(parent, baseEnv, false)
         //TODO Avoid this type of cast.
-        val type = query.dryRun(context.toDryRunContext()) as Evaluator<Any>
-        val result = query.evaluate(context)
+        val type = expr.dryRun(context.toDryRunContext()) as Evaluator<Any>
+        val result = expr.evaluate(context)
         val json = if (result == null) JsonNull.INSTANCE else type.serialize(result)
         val info = JsonObject()
         info.add("result", json)
         return Result.succeedWithInfo(info)
     }
 
-    override fun execute(command: Statement): Result {
+    override fun execute(command: String): Result {
+        val stmt = Statement.parse(this, command)
         val context = EvaluationContext(parent, baseEnv, true)
-        val type = command.dryRun(context.toDryRunContext())
-        val result = command.execute(context)
+        val type = stmt.dryRun(context.toDryRunContext())
+        val result = stmt.execute(context)
         return if (type == null || result == null) {
             Result.succeed()
         } else {

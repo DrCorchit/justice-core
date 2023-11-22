@@ -4,10 +4,10 @@ import com.drcorchit.justice.lang.evaluators.Evaluator
 import com.google.common.collect.ImmutableList
 import kotlin.reflect.KCallable
 
-open class WrappedMember<T>(
+open class WrappedMember<T : Any>(
     open val member: KCallable<*>,
     description: String,
-) : Member<T>(
+) : AbstractMember<T>(
     member.name,
     description,
     ImmutableList.copyOf(member.parameters.map { it.type }.map { Evaluator.fromType(it) }),

@@ -3,7 +3,8 @@ package com.drcorchit.justice.lang.evaluators
 import com.drcorchit.justice.game.Game
 import com.drcorchit.justice.game.mechanics.GameElement
 import com.drcorchit.justice.game.mechanics.GameMechanic
-import com.drcorchit.justice.lang.members.*
+import com.drcorchit.justice.lang.members.Member
+import com.drcorchit.justice.lang.members.WrappedDataMember
 import com.drcorchit.justice.utils.Utils
 import com.drcorchit.justice.utils.json.JsonUtils
 import com.google.common.cache.LoadingCache
@@ -33,7 +34,7 @@ interface Evaluator<T : Any> {
         return members[name]
     }
 
-    val members: ImmutableMap<String, Member<T>>
+    val members: ImmutableMap<String, out Member<T>>
 
     fun serialize(instance: T): JsonElement {
         val output = JsonObject()

@@ -4,7 +4,7 @@ import com.drcorchit.justice.game.evaluation.Types
 import com.drcorchit.justice.lang.evaluators.ArrayEvaluator
 import com.drcorchit.justice.lang.evaluators.Evaluator
 
-class ArrayTypeNode(private val eleType: TypeNode) : TypeNode {
+class ArrayTypeNode(private val eleType: TypeExpression) : TypeExpression {
     override val type = eleType.type + "[]"
 
     override fun evaluateType(types: Types): Evaluator<*>? {

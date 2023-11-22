@@ -1,4 +1,4 @@
-package com.drorchit.justice.parsing.expression
+package com.drcorchit.justice.lang.expression
 
 import com.drcorchit.justice.exceptions.CompileException
 import com.drcorchit.justice.game.evaluation.Types
@@ -7,12 +7,11 @@ import com.drcorchit.justice.lang.JusticeParser.*
 import com.drcorchit.justice.lang.environment.ImmutableTypeEnv
 import com.drcorchit.justice.lang.environment.TypeEnvEntry
 import com.drcorchit.justice.lang.evaluators.Evaluator
-import com.drcorchit.justice.lang.expression.*
 import com.drcorchit.justice.lang.statement.Statement
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
 
-class ExpressionVisitor(val universe: Types) : JusticeBaseVisitor<Expression>() {
+class ExpressionVisitor(private val universe: Types) : JusticeBaseVisitor<Expression>() {
 
     fun parse(ctx: ExpressionContext): Expression {
         return when (ctx) {
@@ -118,7 +117,7 @@ class ExpressionVisitor(val universe: Types) : JusticeBaseVisitor<Expression>() 
     }
 
     override fun visitArrayExpr(ctx: ArrayExprContext): Expression {
-        val typeNode = LookupTypeExpression(ctx.TYPE().text)
+        val typeNode = TypeNode(ctx.TYPE().text)
         val type = typeNode.evaluateType(universe) as Evaluator<*>
         return ArrayNode(type, ImmutableList.copyOf(ctx.expression().map { parse(it) }))
     }
@@ -162,9 +161,9 @@ class ExpressionVisitor(val universe: Types) : JusticeBaseVisitor<Expression>() 
         }
     }
 
-    fun handleType(ctx: TypeExprContext): TypeNode {
+    fun handleType(ctx: TypeExprContext): TypeExpression {
         return when (ctx) {
-            is BaseTypeExprContext -> LookupTypeExpression(ctx.TYPE().text)
+            is BaseTypeExprContext -> TypeNode(ctx.TYPE().text)
             is ArrayTypeExprContext -> ArrayTypeNode(handleType(ctx.typeExpr()))
             else -> throw CompileException("Unknown type context: $ctx")
         }

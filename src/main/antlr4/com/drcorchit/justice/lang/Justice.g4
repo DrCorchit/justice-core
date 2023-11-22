@@ -21,7 +21,6 @@ ELSE : 'else';
 FOR : 'for';
 WHILE : 'while';
 RETURN : 'return';
-THROW : 'throw' | 'throws';
 VAR : 'val' | 'var';
 FUN : 'fun';
 
@@ -53,20 +52,23 @@ func : MEMBER_MODIFIER* 'func' ID '(' args ')' (':' typeExpr) '{' statement '}';
 
 //Statement
 statement : (stmt)+;
-stmt : declare | assign | ifBranch | forLoop | whileLoop | error | returnStmt | expressionStmt;
-declare : VAR ID '=' expression ';';
-assign : lhv '=' expression ';';
+stmt :
+      VAR ID (':' typeExpr)? '=' expression ';' #declareStmt
+    | lhv '=' expression ';' #assignStmt
+    | IF '(' expression ')' block (ELSE block)? #ifStmt
+    | FOR '(' ID ':' expression ')' block #forStmt
+    | WHILE '(' expression ')' block #whileStmt
+    | expression 'throws' expression ';' #errorStmt1
+    | 'throw' expression ';' #errorStmt2
+    | RETURN expression? ';' #returnStmt
+    | expression ';' #expressionStmt;
+
+block : stmt | '{' statement? '}';
 lhv : ID #LocalAssign | expression '.' ID #InstanceAssign | expression '[' expression ']' #IndexAssign;
-ifBranch : IF '(' expression ')' '{' statement? '}' elseBranch?;
-forLoop : FOR '(' ID ':' expression ')' '{' statement? '}';
-whileLoop : WHILE '(' expression ')' '{' statement? '}';
-error : expression THROW expression ';' | THROW expression ';';
-returnStmt : RETURN expression? ';';
-expressionStmt : expression ';';
-elseBranch : ELSE ifBranch | ELSE '{' statement? '}';
 
 //Expression
-expression : expression '^' expression #powerExpr
+expression :
+      expression '^' expression #powerExpr
     | op = ('-' | '!') expression #unaryExpr
     | expression op = ('*' | '/' | '%') expression #multExpr
     | expression op = ('+' | '-') expression #addExpr

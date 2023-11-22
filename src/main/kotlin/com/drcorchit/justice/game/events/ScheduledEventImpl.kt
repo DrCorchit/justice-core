@@ -19,7 +19,7 @@ class ScheduledEventImpl(
         try {
             logger.info("run", "Starting scheduled event")
             val game = parent.parent.parent
-            val result = game.execute(game.players.system, code)
+            val result = game.types.execute(code)
             val latency = System.currentTimeMillis() - timestamp
             //val result: JsonResult = events.execute(getContext().with(Players::class.java, Players::getSystemPlayer), statement)
             logger.info("run", "Finished scheduled event result=$result")

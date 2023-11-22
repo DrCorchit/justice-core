@@ -1,19 +1,21 @@
 package com.drcorchit.justice.game.mechanics
 
-import com.drcorchit.justice.lang.annotations.CachedField
 import com.drcorchit.justice.lang.annotations.DataField
 import com.drcorchit.justice.lang.annotations.DerivedField
 import com.drcorchit.justice.lang.annotations.JFunction
+import com.drcorchit.justice.lang.evaluators.HasEvaluator
 import com.drcorchit.justice.utils.json.TimestampedJson
 import com.drcorchit.justice.utils.logging.HasUri
 import com.drcorchit.justice.utils.logging.Uri
 import com.google.gson.JsonObject
 
-interface GameMechanic<T : GameElement> : Iterable<T>, HasUri {
-    @get:DerivedField("Returns the unique identifier of the mechanic.")
+interface GameMechanic<T : GameElement> : Iterable<T>, HasUri, HasEvaluator<GameMechanic<T>> {
+    @DataField("Returns the unique identifier of the mechanic.")
     val name: String get() = javaClass.simpleName
 
-    @get:DerivedField("Returns the parent game of the mechanic.")
+    @DataField("Describes the purpose of the mechanic.")
+    val description: String
+
     override val parent: Mechanics
 
     override val uri: Uri get() = parent.uri.extend(name)
@@ -21,7 +23,7 @@ interface GameMechanic<T : GameElement> : Iterable<T>, HasUri {
     @DataField("The timestamp the game was last modified.")
     var lastModified: Long
 
-    @CachedField("Returns the number of elements in the mechanic.")
+    @DerivedField("Returns the number of elements in the mechanic.")
     fun size(): Int
 
     @JFunction("Returns true iff the mechanic contains an element with the given name or ID.")

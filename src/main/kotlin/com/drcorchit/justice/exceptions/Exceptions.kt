@@ -25,7 +25,7 @@ class MemberNotFoundException(instance: Any, name: String) :
 
 //Nothing is wrong; this is normal program flow.
 class ReturnException(val value: Any?) : Exception()
-class ReturnTypeException(val type: Evaluator<*>) : Exception() {
+class ReturnTypeException(val type: Evaluator<*>?) : Exception() {
 }
 
 class SerializationException(message: String = "") : Exception(message)

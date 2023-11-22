@@ -52,7 +52,7 @@ data class EventImpl(
     companion object {
         fun deserialize(game: Game, info: JsonObject): Event {
             val authorized = if (info.has("authorized")) {
-                Expression.parse(info["authorized"].asString)
+                Expression.parse(game.types, info["authorized"].asString)
             } else null
 
             val parameters = MutableTypeEnv()

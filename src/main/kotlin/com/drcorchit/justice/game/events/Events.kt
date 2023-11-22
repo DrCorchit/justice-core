@@ -6,7 +6,6 @@ import com.drcorchit.justice.lang.evaluators.HasEvaluator
 import com.drcorchit.justice.utils.json.HttpResult
 import com.drcorchit.justice.utils.logging.HasUri
 import com.drcorchit.justice.utils.logging.Uri
-import com.drcorchit.justice.utils.logging.UriLogger
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 
