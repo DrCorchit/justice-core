@@ -11,6 +11,7 @@ interface Types : HasUri {
     override val parent: Game
     override val uri: Uri get() = parent.uri.extend("evaluating")
 
+    //Contains global variables available in all evaluation contexts.
     val baseEnv: Environment
     val source: TypeSource
 

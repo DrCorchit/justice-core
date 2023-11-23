@@ -43,7 +43,7 @@ class JusticeTypes(override val parent: Game) : Types {
 
     override fun query(query: String): Result {
         val expr = Expression.parse(source, query)
-        val context = EvaluationContext(parent, baseEnv, false)
+        val context = EvaluationContext(source, baseEnv, false)
         val type = expr.dryRun(context.toDryRunContext())
         val result = expr.evaluate(context)
         val json = if (result == null) JsonNull.INSTANCE else type.serializeCast(result)
@@ -54,7 +54,7 @@ class JusticeTypes(override val parent: Game) : Types {
 
     override fun execute(command: String): Result {
         val stmt = Statement.parse(source, command)
-        val context = EvaluationContext(parent, baseEnv, true)
+        val context = EvaluationContext(source, baseEnv, true)
         val type = stmt.dryRun(context.toDryRunContext())
         val result = stmt.execute(context)
         return if (type == null || result == null) {

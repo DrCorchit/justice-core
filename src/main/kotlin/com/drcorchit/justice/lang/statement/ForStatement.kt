@@ -3,9 +3,9 @@ package com.drcorchit.justice.lang.statement
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
 import com.drcorchit.justice.lang.environment.MutableEnvironment
+import com.drcorchit.justice.lang.expression.Expression
 import com.drcorchit.justice.lang.types.AnyType
 import com.drcorchit.justice.lang.types.Type
-import com.drcorchit.justice.lang.expression.Expression
 
 class ForStatement(val id: String, val iter: Expression, val loop: Statement): Statement {
     override fun execute(context: EvaluationContext): Any? {
@@ -15,7 +15,7 @@ class ForStatement(val id: String, val iter: Expression, val loop: Statement): S
         env.declare(id, AnyType, null, true)
         iterable.forEach {
             env.assign(id, it!!)
-            loop.execute(EvaluationContext(context.game, env, context.allowMutation))
+            loop.execute(EvaluationContext(context.types, env, context.allowMutation))
         }
         return null
     }

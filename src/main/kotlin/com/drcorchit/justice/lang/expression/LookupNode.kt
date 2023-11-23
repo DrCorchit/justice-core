@@ -21,7 +21,9 @@ class LookupNode(
             context.env[name]!!
         } else {
             val left = base.evaluate(context)!!
-            return when(val member = context.game.types.source.typeOfInstance(left).getMember(name)!!) {
+            val type = context.types.typeOfInstance(left)
+            val member = type.getMember(name) ?: throw MemberNotFoundException(left, name)
+            return when(member) {
                 is FieldMember<*> -> member.getCast(left)
                 else ->  {
                     try {

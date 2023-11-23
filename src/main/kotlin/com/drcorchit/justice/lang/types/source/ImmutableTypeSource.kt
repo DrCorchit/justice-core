@@ -19,7 +19,7 @@ class ImmutableTypeSource(
         }?.value?.invoke(candidateSubclass) ?: ReflectionType(this, candidateSubclass)
     }
 
-    override fun getType(name: String): Type<*> {
+    override fun parseType(name: String): Type<*> {
         val kClass = typesBySimpleName.getOrElse(name) { Class.forName(name).kotlin }
         return getType(kClass)
     }

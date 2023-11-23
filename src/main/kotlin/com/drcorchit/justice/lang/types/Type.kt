@@ -24,6 +24,10 @@ interface Type<T : Any> : HasType<Type<*>> {
         return clazz.cast(instance)
     }
 
+    fun wrap(instance: Any): TypedThing<T> {
+        return TypedThing(cast(instance), this)
+    }
+
     fun getMember(name: String): Member<T>? {
         return members[name]
     }

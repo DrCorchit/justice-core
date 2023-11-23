@@ -59,7 +59,7 @@ data class EventImpl(
             parameters.declare("author", StringType, false)
             parameters.declare("timestamp", NumberType, false)
             info.getObject("arguments").entrySet().forEach {
-                val type = game.types.source.typeOfInstance(it.value)
+                val type = game.types.source.parseType(it.value.asString)
                 parameters.declare(it.key, type, false)
             }
 

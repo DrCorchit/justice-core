@@ -16,12 +16,12 @@ interface TypeSource {
         return getType(instance::class)
     }
 
-    fun getType(name: String): Type<*> {
+    fun parseType(name: String): Type<*> {
         val kClass = Class.forName(name).kotlin
         return getType(kClass)
     }
 
-    fun getType(kClass: KClass<*>): Type<*>
+    fun getType(kClass: KClass<*>, genericParameters: List<Type<*>>): Type<*>
 
     companion object {
         val universe: ImmutableTypeSource

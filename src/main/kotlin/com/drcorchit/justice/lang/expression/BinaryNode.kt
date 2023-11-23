@@ -4,8 +4,9 @@ import com.drcorchit.justice.exceptions.TypeException
 import com.drcorchit.justice.exceptions.UnrecognizedBinaryOpException
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
-import com.drcorchit.justice.lang.types.primitives.BooleanType
+import com.drcorchit.justice.lang.types.AnyType
 import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.primitives.BooleanType
 import com.drcorchit.justice.lang.types.primitives.NumberType
 import com.drcorchit.justice.utils.math.MathUtils
 import kotlin.math.pow
@@ -32,142 +33,128 @@ data class BinaryNode(val left: Expression, val right: Expression, val op: Binar
 
     sealed class BinaryOp(val symbol: String, val returnType: Type<*>, val expectedType: Type<*>) {
         abstract fun apply(left: () -> Any, right: () -> Any): Any
-    }
 
-    sealed class BooleanOp<T>(symbol: String, expectedType: Type<*>, private val transform: (Any) -> T) : BinaryOp(
-        symbol, BooleanType,
-        expectedType
-    ) {
-
-        override fun apply(left: () -> Any, right: () -> Any): Boolean {
-            return apply2({ transform.invoke(left.invoke()) }, { transform.invoke(right.invoke()) })
+        fun illegalOperands(x: Any, y: Any): Nothing {
+            throw IllegalArgumentException("Illegal arguments to '$symbol' operator: ${x::class} and ${y::class}")
         }
-
-        abstract fun apply2(left: () -> T, right: () -> T): Boolean
     }
 
-    sealed class ArithmeticOp(symbol: String) : BinaryOp(symbol, NumberType, NumberType) {
+    sealed class ArithmeticOp(symbol: String) : BinaryOp(symbol, NumberType, NumberType)
+
+    data object Or : BinaryOp("||", BooleanType, BooleanType) {
         override fun apply(left: () -> Any, right: () -> Any): Any {
-            val v1 = left.invoke()
-            val v2 = right.invoke()
-            return if (v1 is Long && v2 is Long) {
-                applyInt(v1, v2)
-            } else if (v1 is Number && v2 is Number) {
-                applyReal(v1.toDouble(), v2.toDouble())
-            } else {
-                throw IllegalArgumentException("Cannot apply binary operator to non-numerical types")
-            }
-        }
-
-        abstract fun applyInt(left: Long, right: Long): Long
-        abstract fun applyReal(left: Double, right: Double): Double
-    }
-
-    data object Or : BooleanOp<Boolean>("||", BooleanType, { it as Boolean }) {
-        override fun apply2(left: () -> Boolean, right: () -> Boolean): Boolean {
-            return left.invoke() || right.invoke()
+            return left.invoke() as Boolean || right.invoke() as Boolean
         }
     }
 
-    data object And : BooleanOp<Boolean>("&&", BooleanType, { it as Boolean }) {
-        override fun apply2(left: () -> Boolean, right: () -> Boolean): Boolean {
-            return left.invoke() && right.invoke()
+    data object And : BinaryOp("&&", BooleanType, BooleanType) {
+        override fun apply(left: () -> Any, right: () -> Any): Any {
+            return left.invoke() as Boolean && right.invoke() as Boolean
         }
     }
 
-    data object Eq : BooleanOp<Double>("==", NumberType, { (it as Number).toDouble() }) {
-        override fun apply2(left: () -> Double, right: () -> Double): Boolean {
+    data object Eq : BinaryOp("==", BooleanType, AnyType) {
+        override fun apply(left: () -> Any, right: () -> Any): Any {
             return left.invoke() == right.invoke()
         }
     }
 
-    data object Neq : BooleanOp<Double>("!=", NumberType, { (it as Number).toDouble() }) {
-        override fun apply2(left: () -> Double, right: () -> Double): Boolean {
+    data object Neq : BinaryOp("!=", BooleanType, AnyType) {
+        override fun apply(left: () -> Any, right: () -> Any): Any {
             return left.invoke() != right.invoke()
         }
     }
 
-    data object GT : BooleanOp<Double>(">", NumberType, { (it as Number).toDouble() }) {
-        override fun apply2(left: () -> Double, right: () -> Double): Boolean {
-            return left.invoke() > right.invoke()
+    data object GT : BinaryOp(">", BooleanType, NumberType) {
+        override fun apply(left: () -> Any, right: () -> Any): Any {
+            return (left.invoke() as Number).toDouble() > (right.invoke() as Number).toDouble()
         }
     }
 
-    data object GTE : BooleanOp<Double>(">=", NumberType, { (it as Number).toDouble() }) {
-        override fun apply2(left: () -> Double, right: () -> Double): Boolean {
-            return left.invoke() >= right.invoke()
+    data object GTE : BinaryOp(">=", BooleanType, NumberType) {
+        override fun apply(left: () -> Any, right: () -> Any): Any {
+            return (left.invoke() as Number).toDouble() >= (right.invoke() as Number).toDouble()
         }
     }
 
-    data object LT : BooleanOp<Double>("<", NumberType, { (it as Number).toDouble() }) {
-        override fun apply2(left: () -> Double, right: () -> Double): Boolean {
-            return left.invoke() < right.invoke()
+    data object LT : BinaryOp("<", BooleanType, NumberType) {
+        override fun apply(left: () -> Any, right: () -> Any): Any {
+            return (left.invoke() as Number).toDouble() < (right.invoke() as Number).toDouble()
         }
     }
 
-    data object LTE : BooleanOp<Double>("<=", NumberType, { (it as Number).toDouble() }) {
-        override fun apply2(left: () -> Double, right: () -> Double): Boolean {
-            return left.invoke() <= right.invoke()
+    data object LTE : BinaryOp("<=", BooleanType, NumberType) {
+        override fun apply(left: () -> Any, right: () -> Any): Any {
+            return (left.invoke() as Number).toDouble() <= (right.invoke() as Number).toDouble()
         }
     }
 
-    data object Add : ArithmeticOp("+") {
-        override fun applyInt(left: Long, right: Long): Long {
-            return left + right
-        }
-
-        override fun applyReal(left: Double, right: Double): Double {
-            return left + right
+    data object Add : BinaryOp("+", AnyType, AnyType) {
+        override fun apply(left: () -> Any, right: () -> Any): Any {
+            val x = left.invoke()
+            val y = right.invoke()
+            return if (x is Int && y is Int) x + y
+            else if (x is Long && y is Long) x + y
+            else if (x is Number && y is Number) x.toDouble() + y.toDouble()
+            else if (x is String || y is String) x.toString() + y.toString()
+            else illegalOperands(x, y)
         }
     }
 
     data object Sub : ArithmeticOp("-") {
-        override fun applyInt(left: Long, right: Long): Long {
-            return left - right
-        }
-
-        override fun applyReal(left: Double, right: Double): Double {
-            return left - right
+        override fun apply(left: () -> Any, right: () -> Any): Any {
+            val x = left.invoke()
+            val y = right.invoke()
+            return if (x is Int && y is Int) x - y
+            else if (x is Long && y is Long) x - y
+            else if (x is Number && y is Number) x.toDouble() - y.toDouble()
+            else illegalOperands(x, y)
         }
     }
 
     data object Mult : ArithmeticOp("*") {
-        override fun applyInt(left: Long, right: Long): Long {
-            return left * right
-        }
-
-        override fun applyReal(left: Double, right: Double): Double {
-            return left * right
+        override fun apply(left: () -> Any, right: () -> Any): Any {
+            val x = left.invoke()
+            val y = right.invoke()
+            return if (x is Int && y is Int) x * y
+            else if (x is Long && y is Long) x * y
+            else if (x is Number && y is Number) x.toDouble() * y.toDouble()
+            else illegalOperands(x, y)
         }
     }
 
     data object Div : ArithmeticOp("/") {
-        override fun applyInt(left: Long, right: Long): Long {
-            return left / right
-        }
-
-        override fun applyReal(left: Double, right: Double): Double {
-            return left / right
+        override fun apply(left: () -> Any, right: () -> Any): Any {
+            val x = left.invoke()
+            val y = right.invoke()
+            return if (x is Int && y is Int) x / y
+            else if (x is Long && y is Long) x / y
+            else if (x is Number && y is Number) x.toDouble() / y.toDouble()
+            else illegalOperands(x, y)
         }
     }
 
     data object Mod : ArithmeticOp("%") {
-        override fun applyInt(left: Long, right: Long): Long {
-            return MathUtils.modulus(left, right)
-        }
-
-        override fun applyReal(left: Double, right: Double): Double {
-            return MathUtils.modulus(left.toLong(), right.toLong()).toDouble()
+        override fun apply(left: () -> Any, right: () -> Any): Any {
+            val x = left.invoke()
+            val y = right.invoke()
+            return if (x is Int && y is Int) MathUtils.modulus(x, y)
+            else if (x is Long && y is Long) MathUtils.modulus(x, y)
+            else if (x is Number && y is Number) MathUtils.modulus(x.toLong(), y.toLong())
+            else illegalOperands(x, y)
         }
     }
 
     data object Pow : ArithmeticOp("^") {
-        override fun applyInt(left: Long, right: Long): Long {
-            return left.toDouble().pow(right.toDouble()).toLong()
-        }
-
-        override fun applyReal(left: Double, right: Double): Double {
-            return left.pow(right)
+        override fun apply(left: () -> Any, right: () -> Any): Any {
+            val x = left.invoke()
+            val y = right.invoke()
+            return if (x is Number && y is Number) {
+                val temp = x.toDouble().pow(y.toDouble())
+                if (x is Int && y is Int) temp.toInt()
+                else if (x is Long && y is Long) temp.toLong()
+                else temp
+            } else illegalOperands(x, y)
         }
     }
 

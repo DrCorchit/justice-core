@@ -13,7 +13,7 @@ interface TypeExpression: Expression {
     fun evaluateType(types: TypeSource): Type<*>?
 
     override fun evaluate(context: EvaluationContext): Type<*> {
-        return evaluateType(context.game.types.source)!!
+        return evaluateType(context.types)!!
     }
 
     override fun dryRun(context: DryRunContext): Type<*> {

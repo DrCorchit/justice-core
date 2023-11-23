@@ -26,7 +26,7 @@ class MutableTypeSource : TypeSource {
         typesBySuperClass[superclass] = rule
     }
 
-    override fun getType(name: String): Type<*> {
+    override fun parseType(name: String): Type<*> {
         val kClass = typesBySimpleName.getOrElse(name) { Class.forName(name).kotlin }
         return getType(kClass)
     }

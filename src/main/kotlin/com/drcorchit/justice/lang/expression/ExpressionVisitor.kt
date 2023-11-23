@@ -28,7 +28,7 @@ class ExpressionVisitor(private val universe: TypeSource) : JusticeBaseVisitor<E
             is LookupContext -> visitLookup(ctx)
             is LookupEnvContext -> visitLookupEnv(ctx)
             is ArrayExprContext -> visitArrayExpr(ctx)
-            is TupleExprContext -> visitTupleExpr(ctx)
+            //is TupleExprContext -> visitTupleExpr(ctx)
             is LambdaExprContext -> visitLambdaExpr(ctx)
             is ParenExprContext -> visitParenExpr(ctx)
             else -> throw UnsupportedOperationException("Unsupported expression type: ${ctx.javaClass.simpleName} (${ctx.text})")
@@ -84,17 +84,18 @@ class ExpressionVisitor(private val universe: TypeSource) : JusticeBaseVisitor<E
     }
 
     override fun visitConstExpr(ctx: ConstExprContext): Expression {
-        return when (ctx.constant()) {
+        return when (val const = ctx.constant()) {
             is NullConstContext -> throw UnsupportedOperationException("Null literal is not currently supported.")
-            is BoolConstContext -> if (ctx.text.toBooleanStrict()) ConstantNode.TRUE else ConstantNode.FALSE
-            is IntConstContext -> ConstantNode(ctx.text.toLong())
-            is RealConstContext -> when (ctx.text) {
+            is BoolConstContext -> if (const.BOOL().text.toBooleanStrict()) ConstantNode.TRUE else ConstantNode.FALSE
+            is IntConstContext -> ConstantNode(const.INT().text.toInt())
+            is LongConstContext -> ConstantNode(const.INT().text.toLong())
+            is RealConstContext -> when (const.REAL().text) {
                 "pi" -> ConstantNode.PI
                 "e" -> ConstantNode.E
-                else -> ConstantNode(ctx.text.toDouble())
+                else -> ConstantNode(const.REAL().text.toDouble())
             }
 
-            is StrConstContext -> ConstantNode(ctx.text)
+            is StrConstContext -> ConstantNode(const.text)
             else -> throw IllegalArgumentException("Unknown constant: ${ctx.text}")
         }
     }
@@ -124,7 +125,8 @@ class ExpressionVisitor(private val universe: TypeSource) : JusticeBaseVisitor<E
 
     override fun visitLambdaExpr(ctx: LambdaExprContext): LambdaNode {
         val args = handleArgs(ctx.args())
-        val returnType = handleType(ctx.typeExpr()).evaluateType(universe)
+        val returnExpr = ctx.typeExpr()
+        val returnType = if (returnExpr == null) null else handleType(returnExpr).evaluateType(universe)
         return handleLambda(args, returnType, ctx.lambdaBody())
     }
 

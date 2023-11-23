@@ -5,6 +5,6 @@ import com.drcorchit.justice.lang.types.source.TypeSource
 
 class TypeNode(override val type: String) : TypeExpression {
     override fun evaluateType(types: TypeSource): Type<*>? {
-        return types.getType(type)
+        return types.parseType(type)
     }
 }

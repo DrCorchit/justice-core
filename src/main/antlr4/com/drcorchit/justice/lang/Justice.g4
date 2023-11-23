@@ -81,14 +81,14 @@ expression :
     | expression '.' ID tuple? #lookup
     | ID tuple? #lookupEnv
     | TYPE '[' (expression (',' expression)*)? ']' #arrayExpr
-    | tuple #tupleExpr
+    //| tuple #tupleExpr
     | args (':' typeExpr)? '->' lambdaBody #lambdaExpr
     | '(' expression ')' #parenExpr;
 
 //Miscellaneous
-constant : NULL #nullConst | BOOL #boolConst | INT #intConst | REAL #realConst | STR #strConst;
+constant : NULL #nullConst | BOOL #boolConst | INT #intConst | INT 'L' #longConst | REAL #realConst | STR #strConst;
 tuple : '(' (expression (',' expression)*)? ')';
-typeExpr : TYPE #baseTypeExpr | typeExpr '[]' #arrayTypeExpr;
+typeExpr : TYPE #baseTypeExpr | typeExpr '[]' #arrayTypeExpr | TYPE '<' typeExpr (',' typeExpr) '>' #genericsTypeExpr;
 //tupleType : '<' typeExpr (',' typeExpr)* '>';
 //unionType : '<' typeExpr ('|' typeExpr)+ '>';
 //constructor : CONS args? '{' statement? '}';

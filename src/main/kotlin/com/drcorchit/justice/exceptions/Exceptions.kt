@@ -1,7 +1,7 @@
 package com.drcorchit.justice.exceptions
 
-import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.lang.members.Member
+import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.logging.Uri
 
 //Compile exceptions
@@ -46,6 +46,3 @@ class UnimplementedMemberException(uri: Uri, member: Member<*>) :
 
 class UnrecognizedBinaryOpException(op: String) : CompileException(op)
 class UnrecognizedUnaryOpException(op: String) : CompileException(op)
-class UnsupportedTypeException(string: String) : Exception("Type \"$string\" is not currently supported.") {
-    constructor(clazz: Class<*>): this(clazz.name)
-}

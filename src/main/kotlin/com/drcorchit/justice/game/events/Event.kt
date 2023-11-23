@@ -23,14 +23,14 @@ interface Event: HasUri {
         json.addProperty("author", author.id)
         json.addProperty("timestamp", timestamp)
         val env = parameters.bind(info, parent.parent, null, false)
-        val context = EvaluationContext(parent.parent, env, true)
+        val context = EvaluationContext(parent.parent.types.source, env, true)
         check(isAuthorized(context))
         return run(context)
     }
 
     fun run(args: List<Any>): Any? {
-        val env = parameters.bind(args)
-        return run(EvaluationContext(parent.parent, env, true))
+        val env = parameters.bind(parent.parent.types.baseEnv, args)
+        return run(EvaluationContext(parent.parent.types.source, env, true))
     }
 
     fun run(context: EvaluationContext): Any?

@@ -12,7 +12,7 @@ class IndexNode(private val arrayExpr: Expression, private val indexExpr: Expres
         val array = arrayExpr.evaluate(context)!!
         val index = indexExpr.evaluate(context)!!
 
-        val type = context.game.types.source.typeOfInstance(array)
+        val type = context.types.typeOfInstance(array)
         val member = type.getMember("get")!!
         return member.applyCast(array, listOf(index))!!
     }

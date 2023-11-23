@@ -28,8 +28,8 @@ interface TypeEnv {
         return output
     }
 
-    fun bind(args: List<Any?>): Environment {
-        val output = MutableEnvironment()
+    fun bind(parent: Environment?, args: List<Any?>): Environment {
+        val output = MutableEnvironment(parent)
         map.values.forEachIndexed { index, entry ->
             output.declare(entry.id, entry.type, args[index], false)
         }

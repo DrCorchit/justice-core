@@ -1,6 +1,7 @@
 package com.drcorchit.justice.lang.members
 
 import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.TypedThing
 import com.google.common.collect.ImmutableList
 
 interface Member<T : Any> {
@@ -15,5 +16,9 @@ interface Member<T : Any> {
 
     fun applyCast(instance: Any, args: List<Any?>): Any? {
         return apply(clazz.cast(instance), args)
+    }
+
+    fun applyTyped(instance: T, args: List<Any?>): TypedThing<*> {
+        return returnType!!.wrap(apply(instance, args)!!)
     }
 }
