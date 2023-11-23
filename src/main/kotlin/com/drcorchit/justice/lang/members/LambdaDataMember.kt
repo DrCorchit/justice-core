@@ -20,7 +20,7 @@ class LambdaDataMember<T : Any>(
     }
 
     override fun deserialize(self: T, game: Game, ele: JsonElement) {
-        val value = returnType!!.deserialize(game, ele)
+        val value = returnType.deserialize(game, ele)
         setter.invoke(self, value)
     }
 }

@@ -6,19 +6,18 @@ import com.drcorchit.justice.game.players.Player
 import com.drcorchit.justice.game.players.PlayerType
 import com.drcorchit.justice.game.players.Players
 import com.drcorchit.justice.game.players.PlayersType
-import com.drcorchit.justice.lang.types.ArrayType
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.lang.types.primitives.*
 import kotlin.reflect.KClass
 
 interface TypeSource {
     fun typeOfInstance(instance: Any): Type<*> {
-        return getType(instance::class)
+        return getType(instance::class, listOf())
     }
 
     fun parseType(name: String): Type<*> {
         val kClass = Class.forName(name).kotlin
-        return getType(kClass)
+        return getType(kClass, listOf())
     }
 
     fun getType(kClass: KClass<*>, genericParameters: List<Type<*>>): Type<*>
@@ -33,7 +32,7 @@ interface TypeSource {
             temp.registerType(Long::class) { _ -> LongType }
             temp.registerType(Double::class) { _ -> RealType }
             temp.registerType(String::class) { _ -> StringType }
-            temp.registerType(Array::class) { _ -> ArrayType }
+            //temp.registerType(Array::class) { _ -> ArrayType }
             temp.registerType(Player::class) { _ -> PlayerType }
             temp.registerType(Players::class) { _ -> PlayersType }
             temp.registerType(Metadata::class) { _ -> MetadataType }

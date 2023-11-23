@@ -8,8 +8,6 @@ class ArrayTypeNode(private val eleType: TypeExpression) : TypeExpression {
     override val type = eleType.type + "[]"
 
     override fun evaluateType(types: TypeSource): Type<*> {
-        //val eleType = eleType.evaluateType(types)
-        //TODO array type should have generic parameter
-        return ArrayType
+        return ArrayType(this.eleType.evaluateType(types))
     }
 }

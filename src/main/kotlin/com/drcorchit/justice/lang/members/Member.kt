@@ -9,16 +9,12 @@ interface Member<T : Any> {
     val name: String
     val description: String
     val argTypes: ImmutableList<Type<*>>
-    val returnType: Type<*>?
+    val returnType: Type<*>
     val hasSideEffects: Boolean
 
     fun apply(instance: T, args: List<Any?>): Any?
 
-    fun applyCast(instance: Any, args: List<Any?>): Any? {
-        return apply(clazz.cast(instance), args)
-    }
-
-    fun applyTyped(instance: T, args: List<Any?>): TypedThing<*> {
-        return returnType!!.wrap(apply(instance, args)!!)
+    fun applyAndWrap(instance: T, args: List<Any?>): TypedThing<*> {
+        return returnType.wrap(apply(instance, args)!!)
     }
 }

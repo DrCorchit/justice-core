@@ -5,13 +5,14 @@ import com.drcorchit.justice.game.evaluation.EvaluationContext
 import com.drcorchit.justice.lang.JusticeLexer
 import com.drcorchit.justice.lang.JusticeParser
 import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.TypedThing
 import com.drcorchit.justice.lang.types.source.TypeSource
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 
 interface Expression {
 
-    fun evaluate(context: EvaluationContext): Any?
+    fun evaluate(context: EvaluationContext): TypedThing<*>
 
     fun dryRun(context: DryRunContext): Type<*>
 

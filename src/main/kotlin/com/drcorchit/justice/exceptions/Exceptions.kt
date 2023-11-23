@@ -2,17 +2,12 @@ package com.drcorchit.justice.exceptions
 
 import com.drcorchit.justice.lang.members.Member
 import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.TypedThing
 import com.drcorchit.justice.utils.logging.Uri
 
 //Compile exceptions
 open class CompileException(message: String = "") : Exception(message)
 class IllegalAssignmentException(message: String = "") : CompileException(message)
-
-//The URI doesn't point to anything
-class IllegalUriException(uri: String) : Exception(uri)
-
-//The uri is malformed
-class InvalidUriException(uri: Uri) : Exception("Invalid uri: $uri")
 
 //Thrown by "throw" or "throws" statements
 class JusticeException(message: String) : Exception(message)
@@ -24,8 +19,8 @@ class MemberNotFoundException(instance: Any, name: String) :
     CompileException("No such member: ${instance::class.qualifiedName}\$$name")
 
 //Nothing is wrong; this is normal program flow.
-class ReturnException(val value: Any?) : Exception()
-class ReturnTypeException(val type: Type<*>?) : Exception() {
+class ReturnException(val value: TypedThing<*>) : Exception()
+class ReturnTypeException(val type: Type<*>) : Exception() {
 }
 
 class SerializationException(message: String = "") : Exception(message)

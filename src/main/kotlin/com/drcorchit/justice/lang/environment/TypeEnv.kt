@@ -1,5 +1,7 @@
 package com.drcorchit.justice.lang.environment
 
+import com.drcorchit.justice.exceptions.MemberNotFoundException
+import com.drcorchit.justice.exceptions.TypeException
 import com.drcorchit.justice.game.Game
 import com.drcorchit.justice.lang.types.Type
 import com.google.gson.JsonObject
@@ -15,6 +17,18 @@ interface TypeEnv {
     }
 
     fun declare(id: String, type: Type<*>, mutable: Boolean)
+
+    fun assignDry(id: String, type: Type<*>) {
+        //TODO immutable assignment check
+        val expectedType = get(id)
+        if (expectedType == null) {
+            throw MemberNotFoundException("env", id)
+        } else {
+            if (!expectedType.accept(type)) {
+                throw TypeException("env", expectedType, type)
+            }
+        }
+    }
 
     fun bind(info: JsonObject, game: Game, parent: Environment? = null, mutable: Boolean): Environment {
         val output = MutableEnvironment(parent)

@@ -1,11 +1,10 @@
 package com.drcorchit.justice.lang.expression
 
 import com.drcorchit.justice.exceptions.MemberNotFoundException
-import com.drcorchit.justice.exceptions.ReturnException
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
-import com.drcorchit.justice.lang.members.FieldMember
 import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.TypedThing
 import com.google.common.collect.ImmutableList
 
 class LookupNode(
@@ -15,25 +14,16 @@ class LookupNode(
     //empty args means empty parens ()
     private val args: ImmutableList<Expression>?
 ) : Expression {
-    override fun evaluate(context: EvaluationContext): Any? {
+    override fun evaluate(context: EvaluationContext): TypedThing<*> {
+        val actualArgs = args?.map { it.evaluate(context) } ?: listOf()
+
         return if (base == null) {
-            //TODO what about stuff like sin() etc
+            //TODO what about global functions like sin() or instance member functions?
             context.env[name]!!
         } else {
-            val left = base.evaluate(context)!!
-            val type = context.types.typeOfInstance(left)
-            val member = type.getMember(name) ?: throw MemberNotFoundException(left, name)
-            return when(member) {
-                is FieldMember<*> -> member.getCast(left)
-                else ->  {
-                    try {
-                        val actualArgs = args?.map { it.evaluate(context) } ?: listOf()
-                        member.applyCast(left, actualArgs)
-                    } catch (r: ReturnException) {
-                        return r.value
-                    }
-                }
-            }
+            //TODO what about return exceptions?
+            val left = base.evaluate(context)
+            return left.evaluateMember(name, actualArgs)
         }
     }
 
@@ -51,7 +41,7 @@ class LookupNode(
                 member.argTypes.zip(actualArgTypes).forEach {
                     check(it.first.accept(it.second))
                 }
-                member.returnType!!
+                member.returnType
             }
         }
     }

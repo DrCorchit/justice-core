@@ -6,6 +6,7 @@ import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
 import com.drcorchit.justice.lang.types.AnyType
 import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.TypedThing
 import com.drcorchit.justice.lang.types.primitives.BooleanType
 import com.drcorchit.justice.lang.types.primitives.NumberType
 import com.drcorchit.justice.utils.math.MathUtils
@@ -13,8 +14,9 @@ import kotlin.math.pow
 
 data class BinaryNode(val left: Expression, val right: Expression, val op: BinaryOp) : Expression {
 
-    override fun evaluate(context: EvaluationContext): Any {
-        return op.apply({ left.evaluate(context)!! }, { right.evaluate(context)!! })
+    override fun evaluate(context: EvaluationContext): TypedThing<*> {
+        val value = op.apply({ left.evaluate(context).thing }, { right.evaluate(context).thing })
+        return TypedThing.wrapPrimitive(value)
     }
 
     override fun dryRun(context: DryRunContext): Type<*> {
@@ -49,7 +51,7 @@ data class BinaryNode(val left: Expression, val right: Expression, val op: Binar
 
     data object And : BinaryOp("&&", BooleanType, BooleanType) {
         override fun apply(left: () -> Any, right: () -> Any): Any {
-            return left.invoke() as Boolean && right.invoke() as Boolean
+            return (left.invoke() as Boolean && right.invoke() as Boolean)
         }
     }
 

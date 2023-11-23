@@ -6,15 +6,14 @@ import com.drcorchit.justice.exceptions.TypeException
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
 import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.TypedThing
+import com.drcorchit.justice.lang.types.UnitType
 
 class IndexNode(private val arrayExpr: Expression, private val indexExpr: Expression): Expression {
-    override fun evaluate(context: EvaluationContext): Any {
-        val array = arrayExpr.evaluate(context)!!
-        val index = indexExpr.evaluate(context)!!
-
-        val type = context.types.typeOfInstance(array)
-        val member = type.getMember("get")!!
-        return member.applyCast(array, listOf(index))!!
+    override fun evaluate(context: EvaluationContext): TypedThing<*> {
+        val array = arrayExpr.evaluate(context)
+        val index = indexExpr.evaluate(context)
+        return array.evaluateMember("get", listOf(index))
     }
 
     override fun dryRun(context: DryRunContext): Type<*> {
@@ -25,9 +24,9 @@ class IndexNode(private val arrayExpr: Expression, private val indexExpr: Expres
         if (!expectedType.accept(actualType)) {
             throw TypeException("get", expectedType, actualType)
         }
-        if (member.returnType == null) {
-            throw MemberDefinitionException("Method \"get\" must return a non-null type.")
+        if (member.returnType == UnitType) {
+            throw MemberDefinitionException("Method \"get\" must return a non-unit type.")
         }
-        return member.returnType!!
+        return member.returnType
     }
 }

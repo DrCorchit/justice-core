@@ -10,6 +10,7 @@ import com.drcorchit.justice.lang.environment.MutableTypeEnv
 import com.drcorchit.justice.lang.expression.Expression
 import com.drcorchit.justice.lang.statement.Statement
 import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.UnitType
 import com.drcorchit.justice.lang.types.primitives.NumberType
 import com.drcorchit.justice.lang.types.primitives.StringType
 import com.drcorchit.justice.utils.Version
@@ -27,7 +28,7 @@ data class EventImpl(
     private val code: Statement,
 ) : Event {
     override val uri = parent.uri.extend(name)
-    override val returnType: Type<*>? by lazy { calculateReturnType() }
+    override val returnType: Type<*> by lazy { calculateReturnType() }
 
     override fun isAuthorized(context: EvaluationContext): Boolean {
         return authorized != null && authorized.evaluate(context) as Boolean
@@ -41,9 +42,10 @@ data class EventImpl(
         }
     }
 
-    private fun calculateReturnType(): Type<*>? {
+    private fun calculateReturnType(): Type<*> {
         return try {
             code.dryRun(DryRunContext(parent.parent.types.source, parameters))
+            UnitType
         } catch (returned: ReturnTypeException) {
             returned.type
         }

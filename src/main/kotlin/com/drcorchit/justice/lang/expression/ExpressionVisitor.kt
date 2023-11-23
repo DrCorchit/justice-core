@@ -136,13 +136,11 @@ class ExpressionVisitor(private val universe: TypeSource) : JusticeBaseVisitor<E
 
     fun handleLambda(args: ImmutableTypeEnv, returnType: Type<*>?, ctx: LambdaBodyContext): LambdaNode {
         return when (ctx) {
-            is ExpressionLambdaBodyContext -> ExpressionLambdaNode(args, returnType, parse(ctx.expression()))
-            is StatementLambdaBodyContext -> StatementLambdaNode(
-                args,
-                returnType,
-                Statement.parse(universe, ctx.statement())
+            is ExpressionLambdaBodyContext -> LambdaNode.ExpressionLambdaNode(
+                args, returnType, parse(ctx.expression()))
+            is StatementLambdaBodyContext -> LambdaNode.StatementLambdaNode(
+                args, returnType, Statement.parse(universe, ctx.statement())
             )
-
             else -> throw UnsupportedOperationException("Unsupported lambda type: ${ctx.javaClass.simpleName}")
         }
     }
@@ -157,8 +155,7 @@ class ExpressionVisitor(private val universe: TypeSource) : JusticeBaseVisitor<E
         else {
             val map = ctx.arg().associate { it.ID().text to handleType(it.typeExpr()) }
             return ImmutableTypeEnv(
-                map.mapValues { TypeEnvEntry(it.key, it.value.evaluateType(universe)!!, false) },
-                null
+                map.mapValues { TypeEnvEntry(it.key, it.value.evaluateType(universe)!!, false) }, null
             )
         }
     }

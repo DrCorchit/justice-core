@@ -7,18 +7,18 @@ import com.drcorchit.justice.game.evaluation.EvaluationContext
 import com.drcorchit.justice.lang.JusticeLexer
 import com.drcorchit.justice.lang.JusticeParser
 import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.TypedThing
 import com.drcorchit.justice.lang.types.source.TypeSource
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 
 interface Statement {
 
-    //A statement MAY yield a value when run.
     @Throws(ReturnException::class)
-    fun execute(context: EvaluationContext): Any?
+    fun execute(context: EvaluationContext): TypedThing<*>
 
     @Throws(ReturnTypeException::class)
-    fun dryRun(context: DryRunContext): Type<*>?
+    fun dryRun(context: DryRunContext): Type<*>
 
     companion object {
         @JvmStatic

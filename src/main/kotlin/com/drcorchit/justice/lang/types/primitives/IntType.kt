@@ -11,6 +11,14 @@ object IntType : Type<Int> {
     override val clazz = Int::class.java
     override val members: ImmutableMap<String, Member<Int>> = ImmutableMap.of()
 
+    override fun cast(instance: Any): Int {
+        return if (instance is Number) {
+            instance.toInt()
+        } else {
+            clazz.cast(instance)
+        }
+    }
+
     override fun serialize(instance: Int): JsonElement {
         return JsonPrimitive(instance)
     }

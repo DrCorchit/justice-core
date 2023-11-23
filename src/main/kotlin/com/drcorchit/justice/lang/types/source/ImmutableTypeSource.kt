@@ -21,10 +21,10 @@ class ImmutableTypeSource(
 
     override fun parseType(name: String): Type<*> {
         val kClass = typesBySimpleName.getOrElse(name) { Class.forName(name).kotlin }
-        return getType(kClass)
+        return getType(kClass, listOf())
     }
 
-    override fun getType(kClass: KClass<*>): Type<*> {
+    override fun getType(kClass: KClass<*>, args: List<Type<*>>): Type<*> {
         val temp = cache.get(kClass)
         if (temp == AnyType) {
             println("Unsupported type: ${kClass.qualifiedName}")

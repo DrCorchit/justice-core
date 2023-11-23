@@ -1,7 +1,9 @@
 package com.drcorchit.justice.lang.expression
 
+import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
 import com.drcorchit.justice.lang.environment.MutableEnvironment
+import com.drcorchit.justice.lang.environment.MutableTypeEnv
 import com.drcorchit.justice.lang.types.source.TypeSource
 import org.junit.jupiter.api.Assertions
 import kotlin.test.Test
@@ -45,7 +47,7 @@ class ExpressionTest {
         )
         actuals.zip(expecteds).forEach {
             val expr = Expression.parse(TypeSource.universe, it.first)
-            val actual = expr.evaluate(context)
+            val actual = expr.evaluate(context).thing
             val expected = it.second
             Assertions.assertEquals(expected, actual, "Error in expression: ${it.first}")
         }
@@ -54,11 +56,13 @@ class ExpressionTest {
     @Test
     fun lambdaTest() {
         val context = EvaluationContext(TypeSource.universe, MutableEnvironment(), false)
+        val dryRunContext = DryRunContext(TypeSource.universe, MutableTypeEnv())
         val actuals = listOf("(() -> 3).invoke()")
         val expecteds = listOf(3)
         actuals.zip(expecteds).forEach {
             val expr = Expression.parse(TypeSource.universe, it.first)
-            val actual = expr.evaluate(context)
+            expr.dryRun(dryRunContext)
+            val actual = expr.evaluate(context).thing
             val expected = it.second
             Assertions.assertEquals(expected, actual, "Error in expression: ${it.first}")
         }

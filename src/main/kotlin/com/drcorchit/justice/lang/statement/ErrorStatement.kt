@@ -4,22 +4,24 @@ import com.drcorchit.justice.exceptions.JusticeRuntimeException
 import com.drcorchit.justice.exceptions.TypeException
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
-import com.drcorchit.justice.lang.types.primitives.BooleanType
-import com.drcorchit.justice.lang.types.Type
-import com.drcorchit.justice.lang.types.primitives.StringType
 import com.drcorchit.justice.lang.expression.Expression
+import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.TypedThing
+import com.drcorchit.justice.lang.types.UnitType
+import com.drcorchit.justice.lang.types.primitives.BooleanType
+import com.drcorchit.justice.lang.types.primitives.StringType
 
 class ErrorStatement(private val condition: Expression?, private val message: Expression) : Statement {
-    override fun execute(context: EvaluationContext): Any? {
-        val result = condition?.evaluate(context) as? Boolean ?: true
+    override fun execute(context: EvaluationContext): TypedThing<*> {
+        val result = condition?.evaluate(context)?.thing as? Boolean ?: true
         if (result) {
-            val msg = message.evaluate(context) as String
+            val msg = message.evaluate(context).thing as String
             throw JusticeRuntimeException(msg)
         }
-        return null
+        return TypedThing.UNIT
     }
 
-    override fun dryRun(context: DryRunContext): Type<*>? {
+    override fun dryRun(context: DryRunContext): Type<*> {
         if (condition != null) {
             val actualConditionType = condition.dryRun(context)
             if (actualConditionType != BooleanType) {
@@ -30,6 +32,6 @@ class ErrorStatement(private val condition: Expression?, private val message: Ex
         if (actualThrowableType != StringType) {
             throw TypeException("throw message", StringType, actualThrowableType)
         }
-        return null
+        return UnitType
     }
 }

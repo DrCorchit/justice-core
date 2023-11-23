@@ -1,12 +1,14 @@
 package com.drcorchit.justice.lang.environment
 
 import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.TypedThing
 
 class MutableEnvironment(override val parent: Environment? = null) : Environment {
     val map = mutableMapOf<String, EnvEntry>()
 
-    override fun get(id: String): Any? {
-        return map[id]?.value
+    override fun get(id: String): TypedThing<*>? {
+        val entry = map[id]
+        return entry?.type?.wrap(entry.value!!)
     }
 
     override fun declare(id: String, type: Type<*>, initialValue: Any?, mutable: Boolean) {

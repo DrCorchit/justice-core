@@ -5,7 +5,7 @@ import com.drcorchit.justice.lang.members.*
 import com.drcorchit.justice.lang.types.source.TypeSource
 import com.google.common.collect.ImmutableMap
 
-object ArrayType : Type<Array<*>> {
+class ArrayType(val type: Type<*>) : Type<Array<*>> {
     override val clazz = Array::class.java
     override val members: ImmutableMap<String, Member<Array<*>>> = ImmutableMap.copyOf(listOf(
         DerivedReflectionMember(TypeSource.universe, Array::class.java, Array<*>::size, DerivedField("The size of the array")),

@@ -15,8 +15,8 @@ open class ReflectionMember<T : Any>(
     clazz,
     member.name,
     description,
-    ImmutableList.copyOf(member.parameters.map { types.getType(it.type.classifier as KClass<*>) }),
-    types.getType(member.returnType.classifier as KClass<*>),
+    ImmutableList.copyOf(member.parameters.map { types.getType(it.type.classifier as KClass<*>, listOf()) }),
+    types.getType(member.returnType.classifier as KClass<*>, listOf()),
     hasSideEffects
 ) {
 

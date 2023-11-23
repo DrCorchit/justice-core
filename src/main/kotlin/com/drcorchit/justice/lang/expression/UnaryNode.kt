@@ -4,14 +4,16 @@ import com.drcorchit.justice.exceptions.TypeException
 import com.drcorchit.justice.exceptions.UnrecognizedUnaryOpException
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
-import com.drcorchit.justice.lang.types.primitives.BooleanType
 import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.TypedThing
+import com.drcorchit.justice.lang.types.primitives.BooleanType
 import com.drcorchit.justice.lang.types.primitives.NumberType
 
 data class UnaryNode(val expr: Expression, val op: UnaryOp) : Expression {
 
-    override fun evaluate(context: EvaluationContext): Any {
-        return op.apply(expr.evaluate(context)!!)
+    override fun evaluate(context: EvaluationContext): TypedThing<*> {
+        val value = op.apply(expr.evaluate(context).thing)
+        return TypedThing.wrapPrimitive(value)
     }
 
     override fun dryRun(context: DryRunContext): Type<*> {

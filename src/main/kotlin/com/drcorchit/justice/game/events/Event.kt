@@ -14,7 +14,7 @@ interface Event: HasUri {
     val version: Version
     val description: String
     val parameters: ImmutableTypeEnv
-    val returnType: Type<*>?
+    val returnType: Type<*>
 
     fun isAuthorized(context: EvaluationContext): Boolean
 

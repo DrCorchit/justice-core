@@ -8,7 +8,7 @@ open class LambdaMember<T : Any>(
     name: String,
     description: String,
     argTypes: List<Type<*>>,
-    returnType: Type<*>?,
+    returnType: Type<*>,
     hasSideEffects: Boolean,
     private val impl: (T, List<Any?>) -> Any?
 ) : AbstractMember<T>(clazz, name, description, ImmutableList.copyOf(argTypes), returnType, hasSideEffects) {
