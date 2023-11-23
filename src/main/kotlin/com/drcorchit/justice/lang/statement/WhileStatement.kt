@@ -3,8 +3,8 @@ package com.drcorchit.justice.lang.statement
 import com.drcorchit.justice.exceptions.TypeException
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
-import com.drcorchit.justice.lang.evaluators.BooleanEvaluator
-import com.drcorchit.justice.lang.evaluators.Evaluator
+import com.drcorchit.justice.lang.types.primitives.BooleanType
+import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.lang.expression.Expression
 
 class WhileStatement(val condition: Expression, val loop: Statement): Statement {
@@ -15,10 +15,10 @@ class WhileStatement(val condition: Expression, val loop: Statement): Statement 
         return null
     }
 
-    override fun dryRun(context: DryRunContext): Evaluator<*>? {
+    override fun dryRun(context: DryRunContext): Type<*>? {
         val actualType = condition.dryRun(context)
-        if (actualType != BooleanEvaluator) {
-            throw TypeException("while", BooleanEvaluator, actualType)
+        if (actualType != BooleanType) {
+            throw TypeException("while", BooleanType, actualType)
         }
         loop.dryRun(context)
         return null

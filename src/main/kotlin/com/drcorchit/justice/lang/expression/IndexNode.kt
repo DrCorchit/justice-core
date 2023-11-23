@@ -5,20 +5,19 @@ import com.drcorchit.justice.exceptions.MemberNotFoundException
 import com.drcorchit.justice.exceptions.TypeException
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
-import com.drcorchit.justice.lang.evaluators.Evaluator
-import com.drcorchit.justice.lang.members.Member
+import com.drcorchit.justice.lang.types.Type
 
 class IndexNode(private val arrayExpr: Expression, private val indexExpr: Expression): Expression {
     override fun evaluate(context: EvaluationContext): Any {
         val array = arrayExpr.evaluate(context)!!
         val index = indexExpr.evaluate(context)!!
 
-        val type = context.game.types.getType(array)
-        val member = type?.getMember("get") as Member<Any>
-        return member.apply(array, listOf(index))!!
+        val type = context.game.types.source.typeOfInstance(array)
+        val member = type.getMember("get")!!
+        return member.applyCast(array, listOf(index))!!
     }
 
-    override fun dryRun(context: DryRunContext): Evaluator<*> {
+    override fun dryRun(context: DryRunContext): Type<*> {
         val arrayType = arrayExpr.dryRun(context)
         val member = arrayType.getMember("get") ?: throw MemberNotFoundException(arrayType, "get")
         val expectedType = member.argTypes[1]

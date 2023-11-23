@@ -1,17 +1,17 @@
 package com.drcorchit.justice.lang.expression
 
 import com.drcorchit.justice.exceptions.CompileException
-import com.drcorchit.justice.game.evaluation.Types
 import com.drcorchit.justice.lang.JusticeBaseVisitor
 import com.drcorchit.justice.lang.JusticeParser.*
 import com.drcorchit.justice.lang.environment.ImmutableTypeEnv
 import com.drcorchit.justice.lang.environment.TypeEnvEntry
-import com.drcorchit.justice.lang.evaluators.Evaluator
 import com.drcorchit.justice.lang.statement.Statement
+import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.source.TypeSource
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
 
-class ExpressionVisitor(private val universe: Types) : JusticeBaseVisitor<Expression>() {
+class ExpressionVisitor(private val universe: TypeSource) : JusticeBaseVisitor<Expression>() {
 
     fun parse(ctx: ExpressionContext): Expression {
         return when (ctx) {
@@ -118,7 +118,7 @@ class ExpressionVisitor(private val universe: Types) : JusticeBaseVisitor<Expres
 
     override fun visitArrayExpr(ctx: ArrayExprContext): Expression {
         val typeNode = TypeNode(ctx.TYPE().text)
-        val type = typeNode.evaluateType(universe) as Evaluator<*>
+        val type = typeNode.evaluateType(universe) as Type<*>
         return ArrayNode(type, ImmutableList.copyOf(ctx.expression().map { parse(it) }))
     }
 
@@ -132,7 +132,7 @@ class ExpressionVisitor(private val universe: Types) : JusticeBaseVisitor<Expres
         return parse(ctx.expression())
     }
 
-    fun handleLambda(args: ImmutableTypeEnv, returnType: Evaluator<*>?, ctx: LambdaBodyContext): LambdaNode {
+    fun handleLambda(args: ImmutableTypeEnv, returnType: Type<*>?, ctx: LambdaBodyContext): LambdaNode {
         return when (ctx) {
             is ExpressionLambdaBodyContext -> ExpressionLambdaNode(args, returnType, parse(ctx.expression()))
             is StatementLambdaBodyContext -> StatementLambdaNode(
@@ -151,12 +151,12 @@ class ExpressionVisitor(private val universe: Types) : JusticeBaseVisitor<Expres
     }
 
     fun handleArgs(ctx: ArgsContext?): ImmutableTypeEnv {
-        return if (ctx == null) ImmutableTypeEnv(ImmutableMap.of(), universe.baseEnv.toTypeEnv())
+        return if (ctx == null) ImmutableTypeEnv(ImmutableMap.of(), null)
         else {
             val map = ctx.arg().associate { it.ID().text to handleType(it.typeExpr()) }
             return ImmutableTypeEnv(
                 map.mapValues { TypeEnvEntry(it.key, it.value.evaluateType(universe)!!, false) },
-                universe.baseEnv.toTypeEnv()
+                null
             )
         }
     }

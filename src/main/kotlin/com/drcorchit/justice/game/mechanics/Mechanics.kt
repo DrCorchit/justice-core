@@ -1,17 +1,16 @@
 package com.drcorchit.justice.game.mechanics
 
 import com.drcorchit.justice.game.Game
-import com.drcorchit.justice.lang.evaluators.HasEvaluator
-import com.drcorchit.justice.lang.evaluators.NonSerializableEvaluator
 import com.drcorchit.justice.lang.members.LambdaFieldMember
-import com.drcorchit.justice.lang.members.Member
+import com.drcorchit.justice.lang.types.HasType
+import com.drcorchit.justice.lang.types.NonSerializableType
 import com.drcorchit.justice.utils.logging.HasUri
 import com.drcorchit.justice.utils.logging.Uri
 import com.google.common.collect.ImmutableMap
 import com.google.errorprone.annotations.CanIgnoreReturnValue
 import com.google.gson.JsonObject
 
-interface Mechanics : Iterable<GameMechanic<*>>, HasUri, HasEvaluator<Mechanics> {
+interface Mechanics : Iterable<GameMechanic<*>>, HasUri, HasType<Mechanics> {
     override val parent: Game
     override val uri: Uri get() = parent.uri.extend("mechanics")
 
@@ -38,19 +37,15 @@ interface Mechanics : Iterable<GameMechanic<*>>, HasUri, HasEvaluator<Mechanics>
     fun serialize(): JsonObject
     fun deserialize(info: JsonObject, timestamp: Long)
 
-    companion object {
-        fun makeEvaluator(mechanics: Mechanics): NonSerializableEvaluator<Mechanics> {
-            val builder = ImmutableMap.builder<String, Member<Mechanics>>()
-            mechanics.forEach {
-                builder.put(
-                    it.name,
-                    LambdaFieldMember(it.name, it.description, it.getEvaluator()) { _ -> it })
-            }
+    fun makeEvaluator(): NonSerializableType<Mechanics> {
+        val members = this.map {
+            val type = parent.types.source.typeOfInstance(it)
+            LambdaFieldMember(Mechanics::class.java, it.name, it.description, type) { _ -> it }
+        }.associateBy { it.name }.let { ImmutableMap.copyOf(it) }
 
-            return object : NonSerializableEvaluator<Mechanics>() {
-                override val clazz = Mechanics::class
-                override val members = builder.build()
-            }
+        return object : NonSerializableType<Mechanics>() {
+            override val clazz = Mechanics::class.java
+            override val members = members
         }
     }
 }

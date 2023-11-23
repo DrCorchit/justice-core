@@ -2,10 +2,10 @@ package com.drcorchit.justice.game.events
 
 import com.drcorchit.justice.game.Game
 import com.drcorchit.justice.game.players.Player
-import com.drcorchit.justice.lang.evaluators.Evaluator
-import com.drcorchit.justice.lang.evaluators.NonSerializableEvaluator
 import com.drcorchit.justice.lang.members.LambdaMember
 import com.drcorchit.justice.lang.members.Member
+import com.drcorchit.justice.lang.types.NonSerializableType
+import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.Utils.binarySearch
 import com.drcorchit.justice.utils.json.Http.Companion.badRequest
 import com.drcorchit.justice.utils.json.Http.Companion.internalError
@@ -43,7 +43,7 @@ class EventsImpl(override val parent: Game) : Events {
             parent.monitoring.recordLatency(parent, eventID, latency)
             eventHistory.add(EventOutcome(eventID, player, now, latency, info))
             if (value != null) {
-                val valueJson = Evaluator.from(value).serialize(value)
+                val valueJson = parent.types.source.typeOfInstance(value).serializeCast(value)
                 val resultJson = JsonObject()
                 resultJson.add("result", valueJson)
                 ok(resultJson)
@@ -75,24 +75,26 @@ class EventsImpl(override val parent: Game) : Events {
         scheduled.deserialize(info.getAsJsonObject("scheduled"))
     }
 
-    override fun getEvaluator(): Evaluator<Events> {
+    override fun getType(): Type<Events> {
         return evaluator
     }
 
-    private fun createEvaluator(): Evaluator<Events> {
+    private fun createEvaluator(): Type<Events> {
         val builder = ImmutableMap.builder<String, Member<Events>>()
         events.values.forEach {
-            val member = LambdaMember<Events>(
+            val member = LambdaMember(
+                Events::class.java,
                 it.name,
                 it.description,
                 it.parameters.toArgs(),
-                it.returnType
-            ) { _, args: List<Any> -> it.run(args) }
+                it.returnType,
+                true
+            ) { _: Events, args: List<Any?> -> it.run(args.map { arg -> arg!! }) }
             builder.put(member.name, member)
         }
 
-        return object : NonSerializableEvaluator<Events>() {
-            override val clazz = Events::class
+        return object : NonSerializableType<Events>() {
+            override val clazz = Events::class.java
             override val members = builder.build()
         }
     }

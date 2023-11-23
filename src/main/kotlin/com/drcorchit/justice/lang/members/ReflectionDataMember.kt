@@ -2,11 +2,12 @@ package com.drcorchit.justice.lang.members
 
 import com.drcorchit.justice.game.Game
 import com.drcorchit.justice.lang.annotations.DataField
+import com.drcorchit.justice.lang.types.source.TypeSource
 import com.google.gson.JsonElement
 import kotlin.reflect.KMutableProperty
 
-class WrappedDataMember<T : Any>(override val member: KMutableProperty<*>, val annotation: DataField) :
-    WrappedMember<T>(member, annotation.description), DataFieldMember<T> {
+class ReflectionDataMember<T : Any>(types: TypeSource, clazz: Class<T>, override val member: KMutableProperty<*>, val annotation: DataField) :
+    ReflectionMember<T>(types, clazz, member, annotation.description, false), DataFieldMember<T> {
     override val mutable = annotation.mutable
 
     init {
@@ -14,7 +15,6 @@ class WrappedDataMember<T : Any>(override val member: KMutableProperty<*>, val a
     }
 
     override fun get(instance: T): Any? {
-        //Isn't this equivalent to apply(instance, listOf())? TODO test this and possibly remove override.
         return member.getter.call(instance)
     }
 

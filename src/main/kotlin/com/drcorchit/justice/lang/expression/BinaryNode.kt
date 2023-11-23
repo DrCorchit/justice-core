@@ -4,9 +4,9 @@ import com.drcorchit.justice.exceptions.TypeException
 import com.drcorchit.justice.exceptions.UnrecognizedBinaryOpException
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
-import com.drcorchit.justice.lang.evaluators.BooleanEvaluator
-import com.drcorchit.justice.lang.evaluators.Evaluator
-import com.drcorchit.justice.lang.evaluators.NumberEvaluator
+import com.drcorchit.justice.lang.types.primitives.BooleanType
+import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.primitives.NumberType
 import com.drcorchit.justice.utils.math.MathUtils
 import kotlin.math.pow
 
@@ -16,7 +16,7 @@ data class BinaryNode(val left: Expression, val right: Expression, val op: Binar
         return op.apply({ left.evaluate(context)!! }, { right.evaluate(context)!! })
     }
 
-    override fun dryRun(context: DryRunContext): Evaluator<*> {
+    override fun dryRun(context: DryRunContext): Type<*> {
         val leftType = left.dryRun(context)
         if (!op.expectedType.accept(leftType)) {
             throw TypeException(op.symbol, op.expectedType, leftType)
@@ -30,12 +30,12 @@ data class BinaryNode(val left: Expression, val right: Expression, val op: Binar
         return op.returnType
     }
 
-    sealed class BinaryOp(val symbol: String, val returnType: Evaluator<*>, val expectedType: Evaluator<*>) {
+    sealed class BinaryOp(val symbol: String, val returnType: Type<*>, val expectedType: Type<*>) {
         abstract fun apply(left: () -> Any, right: () -> Any): Any
     }
 
-    sealed class BooleanOp<T>(symbol: String, expectedType: Evaluator<*>, private val transform: (Any) -> T) : BinaryOp(
-        symbol, BooleanEvaluator,
+    sealed class BooleanOp<T>(symbol: String, expectedType: Type<*>, private val transform: (Any) -> T) : BinaryOp(
+        symbol, BooleanType,
         expectedType
     ) {
 
@@ -46,7 +46,7 @@ data class BinaryNode(val left: Expression, val right: Expression, val op: Binar
         abstract fun apply2(left: () -> T, right: () -> T): Boolean
     }
 
-    sealed class ArithmeticOp(symbol: String) : BinaryOp(symbol, NumberEvaluator, NumberEvaluator) {
+    sealed class ArithmeticOp(symbol: String) : BinaryOp(symbol, NumberType, NumberType) {
         override fun apply(left: () -> Any, right: () -> Any): Any {
             val v1 = left.invoke()
             val v2 = right.invoke()
@@ -63,49 +63,49 @@ data class BinaryNode(val left: Expression, val right: Expression, val op: Binar
         abstract fun applyReal(left: Double, right: Double): Double
     }
 
-    data object Or : BooleanOp<Boolean>("||", BooleanEvaluator, { it as Boolean }) {
+    data object Or : BooleanOp<Boolean>("||", BooleanType, { it as Boolean }) {
         override fun apply2(left: () -> Boolean, right: () -> Boolean): Boolean {
             return left.invoke() || right.invoke()
         }
     }
 
-    data object And : BooleanOp<Boolean>("&&", BooleanEvaluator, { it as Boolean }) {
+    data object And : BooleanOp<Boolean>("&&", BooleanType, { it as Boolean }) {
         override fun apply2(left: () -> Boolean, right: () -> Boolean): Boolean {
             return left.invoke() && right.invoke()
         }
     }
 
-    data object Eq : BooleanOp<Double>("==", NumberEvaluator, { (it as Number).toDouble() }) {
+    data object Eq : BooleanOp<Double>("==", NumberType, { (it as Number).toDouble() }) {
         override fun apply2(left: () -> Double, right: () -> Double): Boolean {
             return left.invoke() == right.invoke()
         }
     }
 
-    data object Neq : BooleanOp<Double>("!=", NumberEvaluator, { (it as Number).toDouble() }) {
+    data object Neq : BooleanOp<Double>("!=", NumberType, { (it as Number).toDouble() }) {
         override fun apply2(left: () -> Double, right: () -> Double): Boolean {
             return left.invoke() != right.invoke()
         }
     }
 
-    data object GT : BooleanOp<Double>(">", NumberEvaluator, { (it as Number).toDouble() }) {
+    data object GT : BooleanOp<Double>(">", NumberType, { (it as Number).toDouble() }) {
         override fun apply2(left: () -> Double, right: () -> Double): Boolean {
             return left.invoke() > right.invoke()
         }
     }
 
-    data object GTE : BooleanOp<Double>(">=", NumberEvaluator, { (it as Number).toDouble() }) {
+    data object GTE : BooleanOp<Double>(">=", NumberType, { (it as Number).toDouble() }) {
         override fun apply2(left: () -> Double, right: () -> Double): Boolean {
             return left.invoke() >= right.invoke()
         }
     }
 
-    data object LT : BooleanOp<Double>("<", NumberEvaluator, { (it as Number).toDouble() }) {
+    data object LT : BooleanOp<Double>("<", NumberType, { (it as Number).toDouble() }) {
         override fun apply2(left: () -> Double, right: () -> Double): Boolean {
             return left.invoke() < right.invoke()
         }
     }
 
-    data object LTE : BooleanOp<Double>("<=", NumberEvaluator, { (it as Number).toDouble() }) {
+    data object LTE : BooleanOp<Double>("<=", NumberType, { (it as Number).toDouble() }) {
         override fun apply2(left: () -> Double, right: () -> Double): Boolean {
             return left.invoke() <= right.invoke()
         }

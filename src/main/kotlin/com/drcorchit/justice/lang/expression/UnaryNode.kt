@@ -4,9 +4,9 @@ import com.drcorchit.justice.exceptions.TypeException
 import com.drcorchit.justice.exceptions.UnrecognizedUnaryOpException
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
-import com.drcorchit.justice.lang.evaluators.BooleanEvaluator
-import com.drcorchit.justice.lang.evaluators.Evaluator
-import com.drcorchit.justice.lang.evaluators.NumberEvaluator
+import com.drcorchit.justice.lang.types.primitives.BooleanType
+import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.primitives.NumberType
 
 data class UnaryNode(val expr: Expression, val op: UnaryOp) : Expression {
 
@@ -14,7 +14,7 @@ data class UnaryNode(val expr: Expression, val op: UnaryOp) : Expression {
         return op.apply(expr.evaluate(context)!!)
     }
 
-    override fun dryRun(context: DryRunContext): Evaluator<*> {
+    override fun dryRun(context: DryRunContext): Type<*> {
         val type = expr.dryRun(context)
         if (!op.type.accept(type)) {
             throw TypeException(op.symbol, op.type, type)
@@ -22,17 +22,17 @@ data class UnaryNode(val expr: Expression, val op: UnaryOp) : Expression {
         return op.type
     }
 
-    sealed class UnaryOp(val symbol: String, val type: Evaluator<*>) {
+    sealed class UnaryOp(val symbol: String, val type: Type<*>) {
         abstract fun apply(thing: Any): Any
     }
 
-    data object Not : UnaryOp("!", BooleanEvaluator) {
+    data object Not : UnaryOp("!", BooleanType) {
         override fun apply(thing: Any): Boolean {
             return !(thing as Boolean)
         }
     }
 
-    data object Minus : UnaryOp("-", NumberEvaluator) {
+    data object Minus : UnaryOp("-", NumberType) {
         override fun apply(thing: Any): Number {
             return when (thing) {
                 is Int -> -thing

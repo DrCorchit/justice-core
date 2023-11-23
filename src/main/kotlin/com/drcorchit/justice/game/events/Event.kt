@@ -3,7 +3,7 @@ package com.drcorchit.justice.game.events
 import com.drcorchit.justice.game.evaluation.EvaluationContext
 import com.drcorchit.justice.game.players.Player
 import com.drcorchit.justice.lang.environment.ImmutableTypeEnv
-import com.drcorchit.justice.lang.evaluators.Evaluator
+import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.Version
 import com.drcorchit.justice.utils.logging.HasUri
 import com.google.gson.JsonObject
@@ -14,7 +14,7 @@ interface Event: HasUri {
     val version: Version
     val description: String
     val parameters: ImmutableTypeEnv
-    val returnType: Evaluator<*>?
+    val returnType: Type<*>?
 
     fun isAuthorized(context: EvaluationContext): Boolean
 

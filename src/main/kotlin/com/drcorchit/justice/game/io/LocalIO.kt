@@ -13,6 +13,7 @@ class LocalIO(override val basePath: String) : IO {
     val parentFolder = File(basePath)
 
     init {
+        parentFolder.mkdirs()
         require(parentFolder.isDirectory)
     }
 

@@ -2,7 +2,7 @@ package com.drcorchit.justice.lang.expression
 
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
-import com.drcorchit.justice.lang.evaluators.Evaluator
+import com.drcorchit.justice.lang.types.Type
 
 class ConstantNode (val value: Any): Expression {
     companion object {
@@ -16,7 +16,7 @@ class ConstantNode (val value: Any): Expression {
         return value
     }
 
-    override fun dryRun(context: DryRunContext): Evaluator<*> {
-        return context.game.types.getType(value)!!
+    override fun dryRun(context: DryRunContext): Type<*> {
+        return context.types.typeOfInstance(value)
     }
 }

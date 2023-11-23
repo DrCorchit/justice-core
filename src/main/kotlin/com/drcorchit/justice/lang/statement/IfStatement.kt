@@ -3,8 +3,8 @@ package com.drcorchit.justice.lang.statement
 import com.drcorchit.justice.exceptions.TypeException
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
-import com.drcorchit.justice.lang.evaluators.BooleanEvaluator
-import com.drcorchit.justice.lang.evaluators.Evaluator
+import com.drcorchit.justice.lang.types.primitives.BooleanType
+import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.lang.expression.Expression
 
 class IfStatement(val condition: Expression, val ifClause: Statement, val elseClause: Statement?) :
@@ -18,10 +18,10 @@ class IfStatement(val condition: Expression, val ifClause: Statement, val elseCl
         }
     }
 
-    override fun dryRun(context: DryRunContext): Evaluator<*>? {
+    override fun dryRun(context: DryRunContext): Type<*>? {
         val conditionType = condition.dryRun(context)
-        if (conditionType != BooleanEvaluator) {
-            throw TypeException("if condition", BooleanEvaluator, conditionType)
+        if (conditionType != BooleanType) {
+            throw TypeException("if condition", BooleanType, conditionType)
         }
         ifClause.dryRun(context)
         elseClause?.dryRun(context)

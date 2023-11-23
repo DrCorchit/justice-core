@@ -2,25 +2,25 @@ package com.drcorchit.justice.lang.expression
 
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
-import com.drcorchit.justice.game.evaluation.Types
-import com.drcorchit.justice.lang.evaluators.Evaluator
-import com.drcorchit.justice.lang.evaluators.EvaluatorEvaluator
+import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.TypeType
+import com.drcorchit.justice.lang.types.source.TypeSource
 
 interface TypeExpression: Expression {
 
     val type: String
 
-    fun evaluateType(types: Types): Evaluator<*>?
+    fun evaluateType(types: TypeSource): Type<*>?
 
-    override fun evaluate(context: EvaluationContext): Evaluator<*> {
-        return evaluateType(context.game.types)!!
+    override fun evaluate(context: EvaluationContext): Type<*> {
+        return evaluateType(context.game.types.source)!!
     }
 
-    override fun dryRun(context: DryRunContext): Evaluator<*> {
-        check(evaluateType(context.game.types) != null) {
+    override fun dryRun(context: DryRunContext): Type<*> {
+        check(evaluateType(context.types) != null) {
             "Unable to resolve type: type"
         }
-        return EvaluatorEvaluator
+        return TypeType
     }
 
 }

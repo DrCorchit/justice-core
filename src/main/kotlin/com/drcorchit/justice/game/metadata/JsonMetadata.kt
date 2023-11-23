@@ -1,20 +1,15 @@
 package com.drcorchit.justice.game.metadata
 
 import com.drcorchit.justice.game.Game
-import com.drcorchit.justice.lang.evaluators.Evaluator
-import com.drcorchit.justice.lang.evaluators.IntEvaluator
-import com.drcorchit.justice.lang.evaluators.NonSerializableEvaluator
-import com.drcorchit.justice.lang.members.LambdaFieldMember
+import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.Version
 import com.drcorchit.justice.utils.json.JsonUtils
 import com.drcorchit.justice.utils.json.JsonUtils.getBool
-import com.google.common.collect.ImmutableMap
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 
 class JsonMetadata(override val parent: Game) : Metadata {
     private var json = JsonObject()
-    private val evaluator by lazy { makeEvaluator() }
 
     override val start: Long get() = json["start"].asLong
     override val age: Long get() = System.currentTimeMillis() - start
@@ -63,21 +58,7 @@ class JsonMetadata(override val parent: Game) : Metadata {
         json = info
     }
 
-    override fun getEvaluator(): Evaluator<Metadata> {
-        return evaluator
-    }
-
-    fun makeEvaluator(): Evaluator<Metadata> {
-        val members = listOf(
-            LambdaFieldMember<Metadata>("seed", "The seed of the game's primary RNG.", IntEvaluator) {
-                it.parent.seed
-            }
-            //TODO add other members.
-        )
-
-        return object : NonSerializableEvaluator<Metadata>() {
-            override val clazz = Metadata::class
-            override val members = ImmutableMap.copyOf(members.associateBy { it.name })
-        }
+    override fun getType(): Type<Metadata> {
+        return MetadataType
     }
 }

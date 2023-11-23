@@ -1,12 +1,12 @@
 package com.drcorchit.justice.game.mechanics
 
 import com.drcorchit.justice.game.Game
-import com.drcorchit.justice.lang.evaluators.Evaluator
+import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.json.info
 import com.google.gson.JsonObject
 
 class MechanicsImpl(override val parent: Game): Mechanics {
-    private val evaluator: Evaluator<Mechanics> by lazy { Mechanics.makeEvaluator(this) }
+    private val mechType: Type<Mechanics> by lazy { makeEvaluator() }
     private val mechanics = LinkedHashMap<String, GameMechanic<*>>()
 
     override fun has(mechanic: String): Boolean {
@@ -44,7 +44,7 @@ class MechanicsImpl(override val parent: Game): Mechanics {
         return mechanics.values.iterator()
     }
 
-    override fun getEvaluator(): Evaluator<Mechanics> {
-        return evaluator
+    override fun getType(): Type<Mechanics> {
+        return mechType
     }
 }

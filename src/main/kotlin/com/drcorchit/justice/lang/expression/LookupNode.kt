@@ -4,8 +4,8 @@ import com.drcorchit.justice.exceptions.MemberNotFoundException
 import com.drcorchit.justice.exceptions.ReturnException
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
-import com.drcorchit.justice.lang.evaluators.Evaluator
 import com.drcorchit.justice.lang.members.FieldMember
+import com.drcorchit.justice.lang.types.Type
 import com.google.common.collect.ImmutableList
 
 class LookupNode(
@@ -21,12 +21,12 @@ class LookupNode(
             context.env[name]!!
         } else {
             val left = base.evaluate(context)!!
-            return when(val member = Evaluator.from(left).getMember(name)!!) {
+            return when(val member = context.game.types.source.typeOfInstance(left).getMember(name)!!) {
                 is FieldMember<*> -> member.getCast(left)
                 else ->  {
                     try {
                         val actualArgs = args?.map { it.evaluate(context) } ?: listOf()
-                        member.apply(left, actualArgs)
+                        member.applyCast(left, actualArgs)
                     } catch (r: ReturnException) {
                         return r.value
                     }
@@ -35,14 +35,14 @@ class LookupNode(
         }
     }
 
-    override fun dryRun(context: DryRunContext): Evaluator<*> {
+    override fun dryRun(context: DryRunContext): Type<*> {
         return if (base == null) {
             context.env[name]!!
         } else {
             val left = base.dryRun(context)
             val member = left.getMember(name)
             if (member == null) {
-                throw MemberNotFoundException(left.clazz.java, name)
+                throw MemberNotFoundException(left.clazz, name)
             } else {
                 check(args?.size == member.argTypes.size)
                 val actualArgTypes = args?.map { it.dryRun(context) } ?: listOf()

@@ -1,18 +1,12 @@
 package com.drcorchit.justice.lang.members
 
-import com.drcorchit.justice.lang.evaluators.Evaluator
-import com.drcorchit.justice.utils.Utils.createCache
-import com.google.common.collect.ImmutableList
+import com.google.common.cache.LoadingCache
 
-abstract class CachedFieldMember<T : Any>(name: String, description: String, returnType: Evaluator<*>) :
-    AbstractMember<T>(name, description, ImmutableList.of(), returnType), FieldMember<T> {
+interface CachedFieldMember<T : Any>: FieldMember<T> {
+    val cache: LoadingCache<T, Any>
 
-    val cache = createCache<T, Any>(500) {
-        apply(it, listOf())!!
-    }
-
-    override fun get(instance: T): Any? {
-        return cache.getUnchecked(instance)
+    override fun get(instance: T): Any {
+        return cache.get(instance)
     }
 
     fun invalidate(instance: Any) {

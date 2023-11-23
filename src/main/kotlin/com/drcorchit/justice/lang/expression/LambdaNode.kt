@@ -5,14 +5,14 @@ import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
 import com.drcorchit.justice.game.evaluation.Lambda
 import com.drcorchit.justice.lang.environment.ImmutableTypeEnv
-import com.drcorchit.justice.lang.evaluators.Evaluator
 import com.drcorchit.justice.lang.statement.Statement
+import com.drcorchit.justice.lang.types.Type
 
-sealed class LambdaNode(val parameters: ImmutableTypeEnv, val returnType: Evaluator<*>?) : Expression
+sealed class LambdaNode(val parameters: ImmutableTypeEnv, val returnType: Type<*>?) : Expression
 
 class ExpressionLambdaNode(
     parameters: ImmutableTypeEnv,
-    returnType: Evaluator<*>?,
+    returnType: Type<*>?,
     private val expr: Expression
 ) :
     LambdaNode(parameters, returnType) {
@@ -20,14 +20,14 @@ class ExpressionLambdaNode(
         return expr.evaluate(context)
     }
 
-    override fun dryRun(context: DryRunContext): Evaluator<*> {
+    override fun dryRun(context: DryRunContext): Type<*> {
         return expr.dryRun(context)
     }
 }
 
 class StatementLambdaNode(
     parameters: ImmutableTypeEnv,
-    returnType: Evaluator<*>?,
+    returnType: Type<*>?,
     private val stmt: Statement
 ) :
     LambdaNode(parameters, returnType) {
@@ -43,8 +43,8 @@ class StatementLambdaNode(
         }
     }
 
-    override fun dryRun(context: DryRunContext): Evaluator<*> {
-        val newContext = DryRunContext(context.game, parameters)
+    override fun dryRun(context: DryRunContext): Type<*> {
+        val newContext = DryRunContext(context.types, parameters)
         stmt.dryRun(newContext)
         return Lambda.getLambdaEvaluator(parameters, returnType)
     }

@@ -3,13 +3,12 @@ package com.drcorchit.justice.game.mechanics
 import com.drcorchit.justice.lang.annotations.DataField
 import com.drcorchit.justice.lang.annotations.DerivedField
 import com.drcorchit.justice.lang.annotations.JFunction
-import com.drcorchit.justice.lang.evaluators.HasEvaluator
 import com.drcorchit.justice.utils.json.TimestampedJson
 import com.drcorchit.justice.utils.logging.HasUri
 import com.drcorchit.justice.utils.logging.Uri
 import com.google.gson.JsonObject
 
-interface GameMechanic<T : GameElement> : Iterable<T>, HasUri, HasEvaluator<GameMechanic<T>> {
+interface GameMechanic<T : GameElement> : Iterable<T>, HasUri {
     @DataField("Returns the unique identifier of the mechanic.")
     val name: String get() = javaClass.simpleName
 

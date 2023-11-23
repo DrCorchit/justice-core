@@ -1,6 +1,6 @@
 package com.drcorchit.justice.lang.environment
 
-import com.drcorchit.justice.lang.evaluators.Evaluator
+import com.drcorchit.justice.lang.types.Type
 
 class MutableEnvironment(override val parent: Environment? = null) : Environment {
     val map = mutableMapOf<String, EnvEntry>()
@@ -9,7 +9,7 @@ class MutableEnvironment(override val parent: Environment? = null) : Environment
         return map[id]?.value
     }
 
-    override fun declare(id: String, type: Evaluator<*>, initialValue: Any?, mutable: Boolean) {
+    override fun declare(id: String, type: Type<*>, initialValue: Any?, mutable: Boolean) {
         check(map[id] == null)
         map[id] = EnvEntry(id, initialValue, type, mutable)
     }
@@ -24,5 +24,5 @@ class MutableEnvironment(override val parent: Environment? = null) : Environment
         return output
     }
 
-    data class EnvEntry(val id: String, var value: Any?, val type: Evaluator<*>, val mutable: Boolean)
+    data class EnvEntry(val id: String, var value: Any?, val type: Type<*>, val mutable: Boolean)
 }

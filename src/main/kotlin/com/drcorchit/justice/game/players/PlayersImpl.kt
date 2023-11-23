@@ -8,22 +8,17 @@ import com.google.gson.JsonObject
 import java.util.*
 
 class PlayersImpl(override val parent: Game) : Players {
-    override val system = PlayerImpl("system", "system", moderator = true, human = false)
     private val playersByID = LinkedHashMap<String, Player>()
     private val playersByName = TreeMap<String, Player>()
     private var min: Int = 2
     private var max: Int = 10
 
     data class PlayerImpl(
-        override val id: String,
+        override var id: String,
         override var name: String,
         override var moderator: Boolean,
         override var human: Boolean
     ) : Player {
-        override fun serialize(): JsonObject {
-            return JsonUtils.GSON.toJsonTree(this).asJsonObject
-        }
-
         override fun toString(): String {
             return name
         }
@@ -34,9 +29,11 @@ class PlayersImpl(override val parent: Game) : Players {
     override val maxPlayerCount: Int
         get() = max
 
+
     override fun getPlayer(usernameOrID: String): Player? {
         return playersByID[usernameOrID] ?: playersByName[usernameOrID]
     }
+
 
     override fun addPlayer(player: Player): Result {
         return if (playersByID.containsKey(player.id)) {
@@ -63,7 +60,7 @@ class PlayersImpl(override val parent: Game) : Players {
         val output = JsonObject()
         output.addProperty("minPlayerCount", minPlayerCount)
         output.addProperty("maxPlayerCount", maxPlayerCount)
-        output.add("players", playersByID.values.map { it.serialize() }.toJsonArray())
+        output.add("players", playersByID.values.map { PlayerType.serialize(it) }.toJsonArray())
         return output
     }
 
@@ -74,6 +71,7 @@ class PlayersImpl(override val parent: Game) : Players {
             .map { JsonUtils.GSON.fromJson(info, PlayerImpl::class.java) }
             .forEach { playersByID[it.id] = it; playersByName[it.name] = it }
     }
+
 
     override val size: Int
         get() = playersByID.size

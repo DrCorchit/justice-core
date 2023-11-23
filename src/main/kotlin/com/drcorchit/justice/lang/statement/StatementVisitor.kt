@@ -1,14 +1,14 @@
 package com.drcorchit.justice.lang.statement
 
 import com.drcorchit.justice.exceptions.CompileException
-import com.drcorchit.justice.game.evaluation.Types
 import com.drcorchit.justice.lang.JusticeBaseVisitor
 import com.drcorchit.justice.lang.JusticeParser.*
 import com.drcorchit.justice.lang.expression.Expression
 import com.drcorchit.justice.lang.expression.ExpressionVisitor
+import com.drcorchit.justice.lang.types.source.TypeSource
 import com.google.common.collect.ImmutableList
 
-class StatementVisitor(private val universe: Types) : JusticeBaseVisitor<Statement>() {
+class StatementVisitor(private val universe: TypeSource) : JusticeBaseVisitor<Statement>() {
     val expression = ExpressionVisitor(universe)
 
     fun parse(stmt: StatementContext): Statement {
@@ -99,11 +99,13 @@ class StatementVisitor(private val universe: Types) : JusticeBaseVisitor<Stateme
         return ReturnStatement(expr)
     }
 
-    fun handleBlock(ctx: BlockContext): Statement {
+    override fun visitExpressionStmt(ctx: ExpressionStmtContext): Statement {
+        return ExpressionStatement(expression.parse(ctx.expression()))
+    }
+
+    private fun handleBlock(ctx: BlockContext): Statement {
         return if (ctx.statement() != null) parse(ctx.statement())
         else if (ctx.stmt() != null) parse(ctx.stmt())
         else throw CompileException("Invalid block: ${ctx.text}")
     }
-
-
 }

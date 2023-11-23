@@ -1,6 +1,6 @@
 package com.drcorchit.justice.exceptions
 
-import com.drcorchit.justice.lang.evaluators.Evaluator
+import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.lang.members.Member
 import com.drcorchit.justice.utils.logging.Uri
 
@@ -25,7 +25,7 @@ class MemberNotFoundException(instance: Any, name: String) :
 
 //Nothing is wrong; this is normal program flow.
 class ReturnException(val value: Any?) : Exception()
-class ReturnTypeException(val type: Evaluator<*>?) : Exception() {
+class ReturnTypeException(val type: Type<*>?) : Exception() {
 }
 
 class SerializationException(message: String = "") : Exception(message)
@@ -34,10 +34,10 @@ class DeserializationException(message: String = "") : Exception(message)
 class TypeException(message: String) : CompileException(message) {
     constructor(field: String, expected: String, actual: String) : this("$field expected $expected; got $actual")
 
-    constructor(field: String, expected: Evaluator<*>, actual: Evaluator<*>) : this(
+    constructor(field: String, expected: Type<*>, actual: Type<*>) : this(
         field,
-        expected.clazz.qualifiedName ?: "<anonymous>",
-        actual.clazz.qualifiedName ?: "anonymous"
+        expected.clazz.name ?: "<anonymous>",
+        actual.clazz.name ?: "<anonymous>"
     )
 }
 

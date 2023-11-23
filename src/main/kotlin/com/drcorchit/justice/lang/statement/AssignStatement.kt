@@ -3,9 +3,9 @@ package com.drcorchit.justice.lang.statement
 import com.drcorchit.justice.exceptions.JusticeException
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
-import com.drcorchit.justice.lang.evaluators.Evaluator
 import com.drcorchit.justice.lang.expression.Expression
 import com.drcorchit.justice.lang.members.DataFieldMember
+import com.drcorchit.justice.lang.types.Type
 
 sealed class AssignStatement(private val rhv: Expression) : Statement {
     override fun execute(context: EvaluationContext): Any? {
@@ -14,7 +14,7 @@ sealed class AssignStatement(private val rhv: Expression) : Statement {
         return newValue
     }
 
-    override fun dryRun(context: DryRunContext): Evaluator<*>? {
+    override fun dryRun(context: DryRunContext): Type<*>? {
         val actualType = rhv.dryRun(context)
         //TODO
         return null
@@ -32,8 +32,8 @@ sealed class AssignStatement(private val rhv: Expression) : Statement {
         override fun assign(newValue: Any, context: EvaluationContext) {
             check(context.allowMutation)
             val instance = lhv.evaluate(context)!!
-            val type = context.game.types.getType(instance)
-            val member = type!!.getMember(memberName)!!
+            val type = context.game.types.source.typeOfInstance(instance)
+            val member = type.getMember(memberName)!!
             if (member is DataFieldMember<*>) {
                 member.setCast(instance, newValue)
             }
@@ -45,7 +45,7 @@ sealed class AssignStatement(private val rhv: Expression) : Statement {
             check(context.allowMutation)
             val arrayListOrMap = lhv.evaluate(context)!!
             val indexOrKey = indexExpr.evaluate(context)
-            val type = context.game.types.getType(arrayListOrMap)!!
+            val type = context.game.types.source.typeOfInstance(arrayListOrMap)
             val set = type.getMember("set")
             val put = type.getMember("put")
             if (set != null) {

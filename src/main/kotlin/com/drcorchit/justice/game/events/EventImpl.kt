@@ -5,13 +5,13 @@ import com.drcorchit.justice.exceptions.ReturnTypeException
 import com.drcorchit.justice.game.Game
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.EvaluationContext
-import com.drcorchit.justice.game.players.PlayerEvaluator
 import com.drcorchit.justice.lang.environment.ImmutableTypeEnv
 import com.drcorchit.justice.lang.environment.MutableTypeEnv
-import com.drcorchit.justice.lang.evaluators.Evaluator
-import com.drcorchit.justice.lang.evaluators.NumberEvaluator
 import com.drcorchit.justice.lang.expression.Expression
 import com.drcorchit.justice.lang.statement.Statement
+import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.primitives.NumberType
+import com.drcorchit.justice.lang.types.primitives.StringType
 import com.drcorchit.justice.utils.Version
 import com.drcorchit.justice.utils.json.JsonUtils.getObject
 import com.drcorchit.justice.utils.json.JsonUtils.getString
@@ -27,7 +27,7 @@ data class EventImpl(
     private val code: Statement,
 ) : Event {
     override val uri = parent.uri.extend(name)
-    override val returnType: Evaluator<*>? by lazy { calculateReturnType() }
+    override val returnType: Type<*>? by lazy { calculateReturnType() }
 
     override fun isAuthorized(context: EvaluationContext): Boolean {
         return authorized != null && authorized.evaluate(context) as Boolean
@@ -41,9 +41,9 @@ data class EventImpl(
         }
     }
 
-    private fun calculateReturnType(): Evaluator<*>? {
+    private fun calculateReturnType(): Type<*>? {
         return try {
-            code.dryRun(DryRunContext(parent.parent, parameters))
+            code.dryRun(DryRunContext(parent.parent.types.source, parameters))
         } catch (returned: ReturnTypeException) {
             returned.type
         }
@@ -52,18 +52,18 @@ data class EventImpl(
     companion object {
         fun deserialize(game: Game, info: JsonObject): Event {
             val authorized = if (info.has("authorized")) {
-                Expression.parse(game.types, info["authorized"].asString)
+                Expression.parse(game.types.source, info["authorized"].asString)
             } else null
 
             val parameters = MutableTypeEnv()
-            parameters.declare("author", PlayerEvaluator, false)
-            parameters.declare("timestamp", NumberEvaluator, false)
+            parameters.declare("author", StringType, false)
+            parameters.declare("timestamp", NumberType, false)
             info.getObject("arguments").entrySet().forEach {
-                val type = game.types.getType(it.value)!!
+                val type = game.types.source.typeOfInstance(it.value)
                 parameters.declare(it.key, type, false)
             }
 
-            val code = Statement.parse(game.types, info["code"].asString)
+            val code = Statement.parse(game.types.source, info["code"].asString)
 
             return EventImpl(
                 game.events,

@@ -1,7 +1,7 @@
 package com.drcorchit.justice.lang.environment
 
 import com.drcorchit.justice.game.Game
-import com.drcorchit.justice.lang.evaluators.Evaluator
+import com.drcorchit.justice.lang.types.Type
 import com.google.gson.JsonObject
 
 interface TypeEnv {
@@ -10,11 +10,11 @@ interface TypeEnv {
 
     val map: Map<String, TypeEnvEntry>
 
-    operator fun get(id: String): Evaluator<*>? {
+    operator fun get(id: String): Type<*>? {
         return map[id]?.type
     }
 
-    fun declare(id: String, type: Evaluator<*>, mutable: Boolean)
+    fun declare(id: String, type: Type<*>, mutable: Boolean)
 
     fun bind(info: JsonObject, game: Game, parent: Environment? = null, mutable: Boolean): Environment {
         val output = MutableEnvironment(parent)
@@ -28,7 +28,7 @@ interface TypeEnv {
         return output
     }
 
-    fun bind(args: List<Any>): Environment {
+    fun bind(args: List<Any?>): Environment {
         val output = MutableEnvironment()
         map.values.forEachIndexed { index, entry ->
             output.declare(entry.id, entry.type, args[index], false)
@@ -36,5 +36,5 @@ interface TypeEnv {
         return output
     }
 
-    fun toArgs(): List<Evaluator<*>>
+    fun toArgs(): List<Type<*>>
 }
