@@ -8,18 +8,18 @@ import com.google.common.collect.ImmutableMap
 class Lambda(
     private val parameters: ImmutableTypeEnv,
     private val returnType: Type<*>,
-    private val impl: (List<Any?>) -> Any?
-) : HasType<Lambda> {
+    private val impl: (List<Any>) -> Any
+) {
     private val evaluator by lazy {
         getLambdaEvaluator(parameters, returnType)
     }
 
-    override fun getType(): Type<Lambda> {
+    fun getType(): Type<Lambda> {
         return evaluator
     }
 
-    fun wrap(): TypedThing<Lambda> {
-        return TypedThing(this, getType())
+    fun wrap(): Thing<Lambda> {
+        return Thing(this, evaluator)
     }
 
     companion object {
@@ -34,9 +34,7 @@ class Lambda(
                         parameters.toArgs(),
                         returnType,
                         true
-                    ) { instance, args ->
-                        instance.impl.invoke(args)!!
-                    }
+                    ) { instance, args -> instance.impl.invoke(args) }
                     //TODO args/return type could be added as members
                 ).associateBy { it.name })
             }

@@ -1,12 +1,13 @@
 package com.drcorchit.justice.lang.types
 
-import com.drcorchit.justice.lang.types.primitives.StringType
 import com.drcorchit.justice.lang.members.LambdaFieldMember
+import com.drcorchit.justice.lang.members.Member
+import com.drcorchit.justice.lang.types.primitives.StringType
 import com.google.common.collect.ImmutableMap
 
 object AnyType : NonSerializableType<Any>() {
     override val clazz = Any::class.java
-    override val members: ImmutableMap<String, LambdaFieldMember<Any>> = listOf(
+    override val members: ImmutableMap<String, Member<Any>> = listOf(
         LambdaFieldMember(
             clazz,
             "toString",
@@ -14,4 +15,12 @@ object AnyType : NonSerializableType<Any>() {
             StringType
         ) { it.toString() }
     ).associateBy { it.name }.let { ImmutableMap.copyOf(it) }
+
+    override fun cast(instance: Any): Any {
+        return instance
+    }
+
+    override fun accept(other: Type<*>): Boolean {
+        return true
+    }
 }

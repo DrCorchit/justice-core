@@ -2,7 +2,6 @@ package com.drcorchit.justice.lang.members
 
 import com.drcorchit.justice.lang.annotations.*
 import com.drcorchit.justice.lang.types.ReflectionType
-import com.drcorchit.justice.lang.types.source.TypeSource
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -30,7 +29,7 @@ class AnnotationsTest {
     @Test
     fun fieldsTest() {
         val test = Test1()
-        val eval = ReflectionType(TypeSource.universe, Test1::class)
+        val eval = ReflectionType(Test1::class)
 
         val mutable = eval.getMember("w") as ReflectionDataMember
         Assertions.assertEquals(3, mutable.get(test))
@@ -69,7 +68,7 @@ class AnnotationsTest {
     @Test
     fun functionsTest() {
         val test = Test2()
-        val eval = ReflectionType(TypeSource.universe, Test2::class)
+        val eval = ReflectionType(Test2::class)
         val foo = eval.getMember("foo")!!
         val bar = eval.getMember("bar")!!
         Assertions.assertEquals(10, foo.apply(test, listOf(3, 4)))

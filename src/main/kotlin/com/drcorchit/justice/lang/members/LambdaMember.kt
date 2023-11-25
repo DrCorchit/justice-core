@@ -10,9 +10,9 @@ open class LambdaMember<T : Any>(
     argTypes: List<Type<*>>,
     returnType: Type<*>,
     hasSideEffects: Boolean,
-    private val impl: (T, List<Any?>) -> Any?
+    private val impl: (T, List<Any>) -> Any
 ) : AbstractMember<T>(clazz, name, description, ImmutableList.copyOf(argTypes), returnType, hasSideEffects) {
-    override fun apply(instance: T, args: List<Any?>): Any? {
+    override fun apply(instance: T, args: List<Any>): Any {
         return impl.invoke(instance, args)
     }
 }

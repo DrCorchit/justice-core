@@ -5,65 +5,72 @@ import com.drcorchit.justice.game.events.Events
 import com.drcorchit.justice.game.mechanics.GameElement
 import com.drcorchit.justice.game.mechanics.GameMechanic
 import com.drcorchit.justice.game.mechanics.Mechanics
-import com.drcorchit.justice.lang.environment.Environment
-import com.drcorchit.justice.lang.environment.MutableEnvironment
-import com.drcorchit.justice.lang.expression.Expression
-import com.drcorchit.justice.lang.statement.Statement
+import com.drcorchit.justice.game.metadata.MetadataType
+import com.drcorchit.justice.game.players.PlayersType
+import com.drcorchit.justice.lang.code.expression.Expression
+import com.drcorchit.justice.lang.code.statement.Statement
 import com.drcorchit.justice.lang.types.ElementType
 import com.drcorchit.justice.lang.types.MechanicType
-import com.drcorchit.justice.lang.types.source.ImmutableTypeSource
-import com.drcorchit.justice.lang.types.source.TypeSource
+import com.drcorchit.justice.lang.types.Thing
+import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.json.Result
-import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import kotlin.reflect.KClass
 
 class JusticeTypes(override val parent: Game) : Types {
-    override val source: ImmutableTypeSource
+    override val universe: ImmutableTypeUniverse
 
     init {
-        val builder = TypeSource.universe.mutableCopy()
-        builder.registerType(Mechanics::class) { _ -> parent.mechanics.getType() }
+        val builder = TypeUniverse.getDefault().mutableCopy()
+        builder.registerType(Mechanics::class) { parent.mechanics.getType() }
         builder.registerType(Events::class) { parent.events.getType() }
-        builder.registerType(GameMechanic::class) { MechanicType(builder, it as KClass<out GameMechanic<*>>) }
-        builder.registerType(GameElement::class) { ElementType(builder, it as KClass<out GameElement>) }
-        source = builder.immutableCopy()
+        builder.registerType(GameMechanic::class) { MechanicType(it.kClass as KClass<out GameMechanic<*>>, builder) }
+        builder.registerType(GameElement::class) { ElementType(it.kClass as KClass<out GameElement>, builder) }
+        universe = builder.immutableCopy()
     }
 
-    override val baseEnv: Environment
-        get() {
-            val output = MutableEnvironment()
-            //Adding entries equates to adding global variables visible in all contexts!
-            output.declare("players", parent.players.getType(), parent.players, false)
-            output.declare("mechanics", parent.mechanics.getType(), parent.mechanics, false)
-            output.declare("events", parent.events.getType(), parent.events, false)
-            output.declare("metadata", parent.metadata.getType(), parent.metadata, false)
-            return output
-        }
-
     override fun query(query: String): Result {
-        val expr = Expression.parse(source, query)
-        val context = EvaluationContext(source, baseEnv, false)
-        val type = expr.dryRun(context.toDryRunContext())
-        val result = expr.evaluate(context)
-        val json = if (result == null) JsonNull.INSTANCE else type.serializeCast(result)
-        val info = JsonObject()
-        info.add("result", json)
-        return Result.succeedWithInfo(info)
+        return try {
+            val expr = Expression.parse(universe, query)
+            expr.dryRun(getDryRunContext(false, null))
+            val result = expr.run(getExecutionContext(false, null))
+            val info = JsonObject()
+            info.add("result", result.serialize())
+            Result.succeedWithInfo(info)
+        } catch (e: Exception) {
+            Result.failWithError(e)
+        }
     }
 
     override fun execute(command: String): Result {
-        val stmt = Statement.parse(source, command)
-        val context = EvaluationContext(source, baseEnv, true)
-        val type = stmt.dryRun(context.toDryRunContext())
-        val result = stmt.execute(context)
-        return if (type == null || result == null) {
-            Result.succeed()
-        } else {
-            val json = type.serializeCast(result)
+        return try {
+            val stmt = Statement.parse(universe, command)
+            stmt.dryRun(getDryRunContext(true, null))
+            val result = stmt.run(getExecutionContext(true, null))
             val info = JsonObject()
-            info.add("result", json)
+            info.add("result", result.serialize())
             Result.succeedWithInfo(info)
+        } catch (e: Exception) {
+            Result.failWithError(e)
         }
+    }
+
+    override fun getExecutionContext(allowSideEffects: Boolean, self: Thing<*>?): ExecutionContext {
+        val output = StackExecutionContext(universe, allowSideEffects, self)
+        //Adding entries equates to adding global variables visible in all contexts!
+        output.declareGlobal("players", parent.players.asThing)
+        output.declareGlobal("mechanics", parent.mechanics.asThing)
+        output.declareGlobal("events", parent.events.asThing)
+        output.declareGlobal("metadata", parent.metadata.asThing)
+        return output
+    }
+
+    override fun getDryRunContext(allowSideEffects: Boolean, self: Type<*>?): DryRunContext {
+        val output = StackDryRunContext(universe, allowSideEffects, self)
+        output.declareGlobal("players", PlayersType)
+        output.declareGlobal("mechanics", parent.mechanics.getType())
+        output.declareGlobal("events", parent.events.getType())
+        output.declareGlobal("metadata", MetadataType)
+        return output
     }
 }

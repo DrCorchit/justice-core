@@ -37,6 +37,7 @@ MEMBER_MODIFIER : 'mutable' | 'derived' | 'cached' | 'static';
 
 ID : ID_INITIAL(ID_CHAR)*;
 TYPE : TYPE_INITIAL(ID_CHAR)*;
+VERSION : INT '.' INT '.' INT ('-' ID);
 
 //Ignored
 WS : [ \t\r\n\u000C]+ -> channel(HIDDEN);
@@ -48,10 +49,18 @@ mechanic : MECHANIC_TYPE MECHANIC_MODIFIER* 'mechanic' ID '{' member* '}';
 //Func means that the member may accept arguments or mutate the underlying object. It is never backed by data.
 member : field | func;
 field : MEMBER_MODIFIER* 'field' ID ':' typeExpr ('=' expression)?;
-func : MEMBER_MODIFIER* 'func' ID '(' args ')' (':' typeExpr) '{' statement '}';
+func : MEMBER_MODIFIER* 'func' ID '(' args ')' (':' typeExpr) '{' stmt* '}';
+
+event : eventMetadata eventParameters eventAuthorization? eventCode;
+eventMetadata : 'event' ID '@' VERSION (':' STR)? ';';
+eventParameters : 'parameters' '{' (eventParameter (',' eventParameter)*) '}';
+eventParameter : ID ':' typeExpr;
+eventAuthorization : 'authorized' expression ';'  #authExpr | 'authorized' '{' stmt* '}' #authStmt;
+eventCode : 'code' '{' stmt* '}';
 
 //Statement
-statement : (stmt)+;
+statement : stmt+;
+block : stmt ';' | '{' stmt* '}';
 stmt :
       VAR ID (':' typeExpr)? '=' expression ';' #declareStmt
     | lhv '=' expression ';' #assignStmt
@@ -63,7 +72,6 @@ stmt :
     | RETURN expression? ';' #returnStmt
     | expression ';' #expressionStmt;
 
-block : stmt | '{' statement? '}';
 lhv : ID #LocalAssign | expression '.' ID #InstanceAssign | expression '[' expression ']' #IndexAssign;
 
 //Expression
@@ -80,7 +88,7 @@ expression :
     | expression '[' expression ']' #indexExpr
     | expression '.' ID tuple? #lookup
     | ID tuple? #lookupEnv
-    | TYPE '[' (expression (',' expression)*)? ']' #arrayExpr
+    | typeExpr '[' (expression (',' expression)*)? ']' #arrayExpr
     //| tuple #tupleExpr
     | args (':' typeExpr)? '->' lambdaBody #lambdaExpr
     | '(' expression ')' #parenExpr;
@@ -88,11 +96,11 @@ expression :
 //Miscellaneous
 constant : NULL #nullConst | BOOL #boolConst | INT #intConst | INT 'L' #longConst | REAL #realConst | STR #strConst;
 tuple : '(' (expression (',' expression)*)? ')';
-typeExpr : TYPE #baseTypeExpr | typeExpr '[]' #arrayTypeExpr | TYPE '<' typeExpr (',' typeExpr) '>' #genericsTypeExpr;
+typeExpr : TYPE #simpleTypeExpr | typeExpr '[]' #arrayTypeExpr | TYPE '<' typeExpr (',' typeExpr) '>' #genericsTypeExpr;
 //tupleType : '<' typeExpr (',' typeExpr)* '>';
 //unionType : '<' typeExpr ('|' typeExpr)+ '>';
 //constructor : CONS args? '{' statement? '}';
 args : '(' (arg (',' arg)*)? ')';
 arg : ID ':' typeExpr;
 //genericsExpr : '<' typeExpr (',' typeExpr)* '>';
-lambdaBody : expression #expressionLambdaBody | '{' statement? '}' #statementLambdaBody;
+lambdaBody : expression #expressionLambdaBody | '{' stmt* '}' #statementLambdaBody;

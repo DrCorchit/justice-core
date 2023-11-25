@@ -2,16 +2,17 @@ package com.drcorchit.justice.game.metadata
 
 import com.drcorchit.justice.game.Game
 import com.drcorchit.justice.lang.annotations.DerivedField
-import com.drcorchit.justice.lang.types.HasType
+import com.drcorchit.justice.lang.types.Thing
 import com.drcorchit.justice.utils.Version
 import com.drcorchit.justice.utils.logging.HasUri
 import com.drcorchit.justice.utils.logging.Uri
 import com.google.gson.JsonObject
 
-interface Metadata: HasUri, HasType<Metadata> {
+interface Metadata: HasUri {
     override val parent: Game
     override val uri: Uri
         get() = parent.uri.extend("metadata")
+    val asThing: Thing<Metadata> get() = Thing(this, MetadataType)
 
     @get:DerivedField("The date the game was started, in milliseconds since 1970.")
     val start: Long

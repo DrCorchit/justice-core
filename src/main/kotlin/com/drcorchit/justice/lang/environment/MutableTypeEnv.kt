@@ -1,11 +1,13 @@
 package com.drcorchit.justice.lang.environment
 
+import com.drcorchit.justice.exceptions.IllegalAssignmentException
+import com.drcorchit.justice.exceptions.TypeException
 import com.drcorchit.justice.lang.types.Type
 
-class MutableTypeEnv(override val parent: TypeEnv? = null) : TypeEnv {
-    override val map = mutableMapOf<String, TypeEnvEntry>()
+class MutableTypeEnv : TypeEnv {
+    private val map = mutableMapOf<String, TypeEnvEntry>()
 
-    override fun get(id: String): Type<*>? {
+    override fun lookup(id: String): Type<*>? {
         return map[id]?.type
     }
 
@@ -14,12 +16,18 @@ class MutableTypeEnv(override val parent: TypeEnv? = null) : TypeEnv {
         map[id] = TypeEnvEntry(id, type, mutable)
     }
 
-    override fun toArgs(): List<Type<*>> {
-        return map.values.map { it.type }
+    override fun assign(id: String, value: Type<*>) {
+        val entry = map[id]
+        if (entry == null) {
+            throw IllegalAssignmentException("Cannot assign a value before it has been declared.")
+        } else if (!entry.mutable) {
+            throw IllegalAssignmentException("Cannot assign an immutable value.")
+        } else if (!entry.type.accept(value)) {
+            throw TypeException(id, entry.type, value)
+        }
     }
 
     fun immutableCopy(): ImmutableTypeEnv {
-        return ImmutableTypeEnv(map, parent)
+        return ImmutableTypeEnv(map)
     }
-
 }

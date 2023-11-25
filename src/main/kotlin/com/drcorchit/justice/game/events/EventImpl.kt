@@ -3,12 +3,13 @@ package com.drcorchit.justice.game.events
 import com.drcorchit.justice.exceptions.ReturnException
 import com.drcorchit.justice.exceptions.ReturnTypeException
 import com.drcorchit.justice.game.Game
-import com.drcorchit.justice.game.evaluation.DryRunContext
-import com.drcorchit.justice.game.evaluation.EvaluationContext
+import com.drcorchit.justice.game.evaluation.ExecutionContext
+import com.drcorchit.justice.lang.code.expression.Expression
+import com.drcorchit.justice.lang.code.statement.Statement
 import com.drcorchit.justice.lang.environment.ImmutableTypeEnv
 import com.drcorchit.justice.lang.environment.MutableTypeEnv
-import com.drcorchit.justice.lang.expression.Expression
-import com.drcorchit.justice.lang.statement.Statement
+import com.drcorchit.justice.lang.types.EventType
+import com.drcorchit.justice.lang.types.Thing
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.lang.types.UnitType
 import com.drcorchit.justice.lang.types.primitives.NumberType
@@ -30,13 +31,13 @@ data class EventImpl(
     override val uri = parent.uri.extend(name)
     override val returnType: Type<*> by lazy { calculateReturnType() }
 
-    override fun isAuthorized(context: EvaluationContext): Boolean {
-        return authorized != null && authorized.evaluate(context) as Boolean
+    override fun isAuthorized(context: ExecutionContext): Boolean {
+        return authorized != null && authorized.run(context).value as Boolean
     }
 
-    override fun run(context: EvaluationContext): Any? {
+    override fun run(context: ExecutionContext): Thing<*> {
         return try {
-            code.execute(context)
+            code.run(context)
         } catch (returned: ReturnException) {
             returned.value
         }
@@ -44,7 +45,7 @@ data class EventImpl(
 
     private fun calculateReturnType(): Type<*> {
         return try {
-            code.dryRun(DryRunContext(parent.parent.types.source, parameters))
+            code.dryRun(parent.parent.types.getDryRunContext(true, EventType))
             UnitType
         } catch (returned: ReturnTypeException) {
             returned.type
@@ -54,18 +55,18 @@ data class EventImpl(
     companion object {
         fun deserialize(game: Game, info: JsonObject): Event {
             val authorized = if (info.has("authorized")) {
-                Expression.parse(game.types.source, info["authorized"].asString)
+                Expression.parse(game.types.universe, info["authorized"].asString)
             } else null
 
             val parameters = MutableTypeEnv()
             parameters.declare("author", StringType, false)
             parameters.declare("timestamp", NumberType, false)
             info.getObject("arguments").entrySet().forEach {
-                val type = game.types.source.parseType(it.value.asString)
+                val type = game.types.universe.parseType(it.value.asString)
                 parameters.declare(it.key, type, false)
             }
 
-            val code = Statement.parse(game.types.source, info["code"].asString)
+            val code = Statement.parse(game.types.universe, info["code"].asString)
 
             return EventImpl(
                 game.events,

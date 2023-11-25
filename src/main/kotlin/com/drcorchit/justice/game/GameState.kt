@@ -7,7 +7,8 @@ enum class GameState(val isJoiningEnabled: Boolean, val isEventsEnabled: Boolean
     OPEN(true, true, true),
     CLOSED(false, true, true),
     //The difference between paused and retired games is that retired games will eventually be garbage collected
-    RETIRED(false, false, false), PAUSED(false, false, true);
+    RETIRED(false, false, false),
+    PAUSED(false, false, true);
 
     companion object {
         //Retired games may be cleaned up at any time 1 week after their last modified date

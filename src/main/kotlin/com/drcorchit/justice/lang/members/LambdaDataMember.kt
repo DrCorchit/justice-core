@@ -9,7 +9,7 @@ class LambdaDataMember<T : Any>(
     name: String,
     description: String,
     returnType: Type<*>,
-    getter: (T) -> Any?,
+    getter: (T) -> Any,
     private val setter: ((T, Any) -> Unit),
     override val mutable: Boolean
 ) : LambdaFieldMember<T>(clazz, name, description, returnType, getter), DataFieldMember<T> {

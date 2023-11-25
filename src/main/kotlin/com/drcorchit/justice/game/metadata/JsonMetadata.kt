@@ -1,7 +1,6 @@
 package com.drcorchit.justice.game.metadata
 
 import com.drcorchit.justice.game.Game
-import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.Version
 import com.drcorchit.justice.utils.json.JsonUtils
 import com.drcorchit.justice.utils.json.JsonUtils.getBool
@@ -56,9 +55,5 @@ class JsonMetadata(override val parent: Game) : Metadata {
 
     override fun deserialize(info: JsonObject) {
         json = info
-    }
-
-    override fun getType(): Type<Metadata> {
-        return MetadataType
     }
 }

@@ -1,19 +1,21 @@
 package com.drcorchit.justice.lang.types
 
+import com.drcorchit.justice.game.evaluation.TypeUniverse
 import com.drcorchit.justice.lang.annotations.CachedField
 import com.drcorchit.justice.lang.annotations.DataField
 import com.drcorchit.justice.lang.annotations.DerivedField
 import com.drcorchit.justice.lang.annotations.JFunction
 import com.drcorchit.justice.lang.members.*
-import com.drcorchit.justice.lang.types.source.TypeSource
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSet
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty
 
-open class ReflectionType<T : Any>(val types: TypeSource, clazz: KClass<T>) : Type<T> {
+open class ReflectionType<T : Any>(clazz: KClass<T>, private val types: TypeUniverse? = null) : Type<T> {
     override val clazz = clazz.java
+    private val universe: TypeUniverse get() = types ?: TypeUniverse.getDefault()
+
     final override val members: ImmutableMap<String, Member<T>> by lazy {
         convertClass(clazz).associateBy { it.name }.let { ImmutableMap.copyOf(it) }
     }
@@ -40,18 +42,18 @@ open class ReflectionType<T : Any>(val types: TypeSource, clazz: KClass<T>) : Ty
                 "Cannot construct JMember: Class member $member has conflicting field annotations: $fieldAnnotations"
             }
             return when (val annotation = fieldAnnotations.first()) {
-                is CachedField -> CachedReflectionMember(types, clazz, member, annotation)
-                is DerivedField -> DerivedReflectionMember(types, clazz, member, annotation)
+                is CachedField -> CachedReflectionMember(universe, clazz, member, annotation)
+                is DerivedField -> DerivedReflectionMember(universe, clazz, member, annotation)
                 is DataField -> {
                     val mutableMember = member as KMutableProperty<*>
-                    ReflectionDataMember(types, clazz, mutableMember, annotation)
+                    ReflectionDataMember(universe, clazz, mutableMember, annotation)
                 }
 
                 else -> throw IllegalArgumentException("Unknown field annotation: $annotation")
             }
         } else {
             val annotation = functionAnnotations.filterIsInstance<JFunction>().first()
-            return ReflectionFunctionMember(types, clazz, member, annotation)
+            return ReflectionFunctionMember(universe, clazz, member, annotation)
         }
     }
 

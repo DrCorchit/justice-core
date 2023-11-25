@@ -3,16 +3,16 @@ package com.drcorchit.justice.game.players
 import com.drcorchit.justice.game.Game
 import com.drcorchit.justice.lang.annotations.DerivedField
 import com.drcorchit.justice.lang.annotations.JFunction
-import com.drcorchit.justice.lang.types.Type
-import com.drcorchit.justice.lang.types.HasType
+import com.drcorchit.justice.lang.types.Thing
 import com.drcorchit.justice.utils.json.Result
 import com.drcorchit.justice.utils.logging.HasUri
 import com.drcorchit.justice.utils.logging.Uri
 import com.google.gson.JsonObject
 
-interface Players : Set<Player>, HasUri, HasType<Players> {
+interface Players : Set<Player>, HasUri {
     override val parent: Game
     override val uri: Uri get() = parent.uri.extend("players")
+    val asThing: Thing<Players> get() = Thing(this, PlayersType)
 
     @get:DerivedField("The minimum number of players required to play the game.")
     val minPlayerCount: Int
@@ -34,8 +34,4 @@ interface Players : Set<Player>, HasUri, HasType<Players> {
 
     @get:DerivedField("Returns the number of players currently in the game.")
     override val size: Int
-
-    override fun getType(): Type<Players> {
-        return PlayersType
-    }
 }

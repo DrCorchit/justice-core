@@ -5,6 +5,7 @@ import com.drcorchit.justice.game.players.Player
 import com.drcorchit.justice.lang.members.LambdaMember
 import com.drcorchit.justice.lang.members.Member
 import com.drcorchit.justice.lang.types.NonSerializableType
+import com.drcorchit.justice.lang.types.Thing
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.Utils.binarySearch
 import com.drcorchit.justice.utils.json.Http.Companion.badRequest
@@ -38,14 +39,13 @@ class EventsImpl(override val parent: Game) : Events {
         }
 
         return try {
-            val value = event.run(player, now, info)
+            val value = event.run(player, info)
             val latency = System.currentTimeMillis() - now
             parent.monitoring.recordLatency(parent, eventID, latency)
             eventHistory.add(EventOutcome(eventID, player, now, latency, info))
-            if (value != null) {
-                val valueJson = parent.types.source.typeOfInstance(value).serializeCast(value)
+            if (value != Thing.UNIT) {
                 val resultJson = JsonObject()
-                resultJson.add("result", valueJson)
+                resultJson.add("result", value.serialize())
                 ok(resultJson)
             } else {
                 ok()

@@ -10,8 +10,4 @@ interface DataFieldMember<T : Any>: FieldMember<T> {
     fun set(self: T, newValue: Any)
     //Sets the value of the field even if it is marked as mutable.
     fun deserialize(self: T, game: Game, ele: JsonElement)
-
-    fun setCast(instance: Any, newValue: Any) {
-        set(clazz.cast(instance), newValue)
-    }
 }

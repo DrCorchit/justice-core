@@ -1,15 +1,15 @@
 package com.drcorchit.justice.lang.types
 
 import com.drcorchit.justice.game.Game
+import com.drcorchit.justice.game.evaluation.TypeUniverse
 import com.drcorchit.justice.game.mechanics.GameElement
 import com.drcorchit.justice.game.mechanics.GameMechanic
-import com.drcorchit.justice.lang.types.source.TypeSource
 import com.drcorchit.justice.utils.logging.Uri
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import kotlin.reflect.KClass
 
-class ElementType<T: GameElement>(types: TypeSource, clazz: KClass<T>): ReflectionType<T>(types, clazz) {
+class ElementType<T: GameElement>(clazz: KClass<T>, types: TypeUniverse): ReflectionType<T>(clazz, types) {
     override fun serialize(instance: T): JsonElement {
         return JsonPrimitive(instance.uri.toString())
     }

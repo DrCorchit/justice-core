@@ -1,10 +1,9 @@
 package com.drcorchit.justice.lang.expression
 
-import com.drcorchit.justice.game.evaluation.DryRunContext
-import com.drcorchit.justice.game.evaluation.EvaluationContext
-import com.drcorchit.justice.lang.environment.MutableEnvironment
-import com.drcorchit.justice.lang.environment.MutableTypeEnv
-import com.drcorchit.justice.lang.types.source.TypeSource
+import com.drcorchit.justice.game.evaluation.StackDryRunContext
+import com.drcorchit.justice.game.evaluation.StackExecutionContext
+import com.drcorchit.justice.game.evaluation.TypeUniverse
+import com.drcorchit.justice.lang.code.expression.Expression
 import org.junit.jupiter.api.Assertions
 import kotlin.test.Test
 
@@ -12,7 +11,7 @@ class ExpressionTest {
 
     @Test
     fun arithmeticTest() {
-        val context = EvaluationContext(TypeSource.universe, MutableEnvironment(), false)
+        val context = StackExecutionContext(TypeUniverse.getDefault(), false)
         val actuals = listOf(
             "2 + 2",
             "2 - 0.1",
@@ -46,8 +45,8 @@ class ExpressionTest {
             true
         )
         actuals.zip(expecteds).forEach {
-            val expr = Expression.parse(TypeSource.universe, it.first)
-            val actual = expr.evaluate(context).thing
+            val expr = Expression.parse(TypeUniverse.getDefault(), it.first)
+            val actual = expr.run(context).value
             val expected = it.second
             Assertions.assertEquals(expected, actual, "Error in expression: ${it.first}")
         }
@@ -55,14 +54,16 @@ class ExpressionTest {
 
     @Test
     fun lambdaTest() {
-        val context = EvaluationContext(TypeSource.universe, MutableEnvironment(), false)
-        val dryRunContext = DryRunContext(TypeSource.universe, MutableTypeEnv())
-        val actuals = listOf("(() -> 3).invoke()")
-        val expecteds = listOf(3)
+        val context = StackExecutionContext(TypeUniverse.getDefault(), false)
+        val dryRunContext = StackDryRunContext(TypeUniverse.getDefault(), false)
+        val actuals = listOf("(() -> 3).invoke()",
+            "((x: Int, y: Int) -> x+y).invoke(2,3)")
+        val expecteds = listOf(3,
+            5)
         actuals.zip(expecteds).forEach {
-            val expr = Expression.parse(TypeSource.universe, it.first)
+            val expr = Expression.parse(TypeUniverse.getDefault(), it.first)
             expr.dryRun(dryRunContext)
-            val actual = expr.evaluate(context).thing
+            val actual = expr.run(context).value
             val expected = it.second
             Assertions.assertEquals(expected, actual, "Error in expression: ${it.first}")
         }

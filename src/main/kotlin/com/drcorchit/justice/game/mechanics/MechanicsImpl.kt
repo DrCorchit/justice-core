@@ -33,7 +33,7 @@ class MechanicsImpl(override val parent: Game): Mechanics {
                 parent.io.loadJson(path)
             }
             val className = json.info.asJsonObject["class"].asString
-            val clazz = Class.forName(className) as Class<GameMechanic<*>>
+            val clazz = Class.forName(className) as Class<out GameMechanic<*>>
             val mech = clazz.getConstructor(Game::class.java).newInstance(parent)
             mechanics[it.key] = mech
             mech.sync(json)

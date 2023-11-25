@@ -1,8 +1,8 @@
 package com.drcorchit.justice.exceptions
 
 import com.drcorchit.justice.lang.members.Member
+import com.drcorchit.justice.lang.types.Thing
 import com.drcorchit.justice.lang.types.Type
-import com.drcorchit.justice.lang.types.TypedThing
 import com.drcorchit.justice.utils.logging.Uri
 
 //Compile exceptions
@@ -15,11 +15,11 @@ open class JusticeRuntimeException(message: String = "") : Exception(message)
 
 //A member was declared with an illegal name, or fails to extend an inherited member correctly
 class MemberDefinitionException(reason: String) : CompileException(reason)
-class MemberNotFoundException(instance: Any, name: String) :
-    CompileException("No such member: ${instance::class.qualifiedName}\$$name")
+class MemberNotFoundException(clazz: Class<*>, name: String) :
+    CompileException("No such member: ${clazz.name}\$$name")
 
 //Nothing is wrong; this is normal program flow.
-class ReturnException(val value: TypedThing<*>) : Exception()
+class ReturnException(val value: Thing<*>) : Exception()
 class ReturnTypeException(val type: Type<*>) : Exception() {
 }
 

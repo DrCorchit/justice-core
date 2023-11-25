@@ -7,7 +7,7 @@ open class LambdaFieldMember<T : Any>(
     name: String,
     description: String,
     returnType: Type<*>,
-    getter: (T) -> Any?
+    getter: (T) -> Any
 ) : LambdaMember<T>(
     clazz,
     name,

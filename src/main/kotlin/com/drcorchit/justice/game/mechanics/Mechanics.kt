@@ -2,17 +2,21 @@ package com.drcorchit.justice.game.mechanics
 
 import com.drcorchit.justice.game.Game
 import com.drcorchit.justice.lang.members.LambdaFieldMember
-import com.drcorchit.justice.lang.types.HasType
+import com.drcorchit.justice.lang.members.Member
+import com.drcorchit.justice.lang.types.MechanicType
 import com.drcorchit.justice.lang.types.NonSerializableType
+import com.drcorchit.justice.lang.types.Thing
+import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.logging.HasUri
 import com.drcorchit.justice.utils.logging.Uri
 import com.google.common.collect.ImmutableMap
 import com.google.errorprone.annotations.CanIgnoreReturnValue
 import com.google.gson.JsonObject
 
-interface Mechanics : Iterable<GameMechanic<*>>, HasUri, HasType<Mechanics> {
+interface Mechanics : Iterable<GameMechanic<*>>, HasUri {
     override val parent: Game
     override val uri: Uri get() = parent.uri.extend("mechanics")
+    val asThing: Thing<Mechanics> get() = Thing(this, getType())
 
     fun has(mechanic: String): Boolean
 
@@ -34,14 +38,15 @@ interface Mechanics : Iterable<GameMechanic<*>>, HasUri, HasType<Mechanics> {
         } else false
     }
 
+    fun getType(): Type<Mechanics>
     fun serialize(): JsonObject
     fun deserialize(info: JsonObject, timestamp: Long)
 
     fun makeEvaluator(): NonSerializableType<Mechanics> {
         val members = this.map {
-            val type = parent.types.source.typeOfInstance(it)
+            val type = MechanicType(it::class, parent.types.universe)
             LambdaFieldMember(Mechanics::class.java, it.name, it.description, type) { _ -> it }
-        }.associateBy { it.name }.let { ImmutableMap.copyOf(it) }
+        }.associateBy { it.name }.let { ImmutableMap.copyOf<String, Member<Mechanics>>(it) }
 
         return object : NonSerializableType<Mechanics>() {
             override val clazz = Mechanics::class.java
