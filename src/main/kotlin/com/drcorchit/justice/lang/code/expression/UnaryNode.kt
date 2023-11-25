@@ -5,7 +5,7 @@ import com.drcorchit.justice.exceptions.UnrecognizedUnaryOpException
 import com.drcorchit.justice.game.evaluation.DryRunContext
 import com.drcorchit.justice.game.evaluation.ExecutionContext
 import com.drcorchit.justice.lang.types.Type
-import com.drcorchit.justice.lang.types.Thing
+import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.types.primitives.BooleanType
 import com.drcorchit.justice.lang.types.primitives.NumberType
 

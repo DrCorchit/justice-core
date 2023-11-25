@@ -1,6 +1,6 @@
 package com.drcorchit.justice.lang.members
 
-import com.drcorchit.justice.lang.types.Thing
+import com.drcorchit.justice.lang.code.Thing
 
 interface FieldMember<T : Any> : Member<T> {
     fun get(instance: T): Any {

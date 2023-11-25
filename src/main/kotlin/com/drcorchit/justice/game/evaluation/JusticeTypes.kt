@@ -11,7 +11,7 @@ import com.drcorchit.justice.lang.code.expression.Expression
 import com.drcorchit.justice.lang.code.statement.Statement
 import com.drcorchit.justice.lang.types.ElementType
 import com.drcorchit.justice.lang.types.MechanicType
-import com.drcorchit.justice.lang.types.Thing
+import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.json.Result
 import com.google.gson.JsonObject

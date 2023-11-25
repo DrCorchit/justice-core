@@ -2,6 +2,7 @@ package com.drcorchit.justice.lang.types
 
 import com.drcorchit.justice.exceptions.TypeException
 import com.drcorchit.justice.game.Game
+import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.members.DataFieldMember
 import com.drcorchit.justice.lang.members.Member
 import com.google.common.collect.ImmutableMap
@@ -9,9 +10,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 
 interface Type<T : Any> {
-    //TODO let evaluators have parents.
-    //val parent: Type<in T>?
-
+    val parent: Type<in T>? get() = AnyType
     val clazz: Class<T>
 
     fun accept(other: Type<*>): Boolean {
@@ -33,11 +32,12 @@ interface Type<T : Any> {
     val members: ImmutableMap<String, Member<T>>
 
     fun getMember(name: String): Member<T>? {
-        return members[name]
+        return members[name] ?: parent?.getMember(name)
     }
 
     fun serialize(instance: T): JsonElement {
         val output = JsonObject()
+        //TODO serialize parent members
         members.values.filterIsInstance<DataFieldMember<T>>().forEach {
             val jsonValue = it.getAndWrap(instance).serialize()
             output.add(it.name, jsonValue)

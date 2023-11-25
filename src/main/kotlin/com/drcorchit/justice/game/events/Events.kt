@@ -3,7 +3,7 @@ package com.drcorchit.justice.game.events
 import com.drcorchit.justice.game.Game
 import com.drcorchit.justice.game.players.Player
 import com.drcorchit.justice.lang.types.Type
-import com.drcorchit.justice.lang.types.Thing
+import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.utils.json.HttpResult
 import com.drcorchit.justice.utils.logging.HasUri
 import com.drcorchit.justice.utils.logging.Uri

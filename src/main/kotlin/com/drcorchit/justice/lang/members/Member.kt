@@ -1,8 +1,8 @@
 package com.drcorchit.justice.lang.members
 
 import com.drcorchit.justice.lang.annotations.DerivedField
+import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.types.Type
-import com.drcorchit.justice.lang.types.Thing
 import com.google.common.collect.ImmutableList
 
 interface Member<in T : Any> {

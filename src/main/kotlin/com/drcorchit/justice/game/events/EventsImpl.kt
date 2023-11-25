@@ -5,7 +5,7 @@ import com.drcorchit.justice.game.players.Player
 import com.drcorchit.justice.lang.members.LambdaMember
 import com.drcorchit.justice.lang.members.Member
 import com.drcorchit.justice.lang.types.NonSerializableType
-import com.drcorchit.justice.lang.types.Thing
+import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.Utils.binarySearch
 import com.drcorchit.justice.utils.json.Http.Companion.badRequest

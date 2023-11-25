@@ -3,7 +3,7 @@ package com.drcorchit.justice.game.players
 import com.drcorchit.justice.game.Game
 import com.drcorchit.justice.lang.annotations.DerivedField
 import com.drcorchit.justice.lang.annotations.JFunction
-import com.drcorchit.justice.lang.types.Thing
+import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.utils.json.Result
 import com.drcorchit.justice.utils.logging.HasUri
 import com.drcorchit.justice.utils.logging.Uri

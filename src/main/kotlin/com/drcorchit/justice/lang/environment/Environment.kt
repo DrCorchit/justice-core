@@ -1,7 +1,7 @@
 package com.drcorchit.justice.lang.environment
 
 import com.drcorchit.justice.lang.types.Type
-import com.drcorchit.justice.lang.types.Thing
+import com.drcorchit.justice.lang.code.Thing
 
 interface Environment {
     fun lookup(id: String): Thing<*>?

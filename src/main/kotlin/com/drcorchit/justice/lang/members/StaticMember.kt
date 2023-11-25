@@ -1,7 +1,7 @@
 package com.drcorchit.justice.lang.members
 
 import com.drcorchit.justice.lang.types.Type
-import com.drcorchit.justice.lang.types.Thing
+import com.drcorchit.justice.lang.code.Thing
 import com.google.common.collect.ImmutableList
 
 abstract class StaticMember(name: String, description: String, argTypes: ImmutableList<Type<*>>, returnType: Type<*>) :

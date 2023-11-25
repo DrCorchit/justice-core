@@ -8,8 +8,8 @@ import com.drcorchit.justice.game.evaluation.StackDryRunContext
 import com.drcorchit.justice.game.evaluation.StackExecutionContext
 import com.drcorchit.justice.lang.code.Code
 import com.drcorchit.justice.lang.environment.ImmutableTypeEnv
-import com.drcorchit.justice.lang.types.Lambda
-import com.drcorchit.justice.lang.types.Thing
+import com.drcorchit.justice.lang.code.Lambda
+import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.types.Type
 
 class LambdaNode(val parameters: ImmutableTypeEnv, val returnType: Type<*>?, val code: Code) : Expression {

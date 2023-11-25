@@ -12,7 +12,7 @@ import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty
 
-open class ReflectionType<T : Any>(clazz: KClass<T>, private val types: TypeUniverse? = null) : Type<T> {
+open class ReflectionType<T : Any>(clazz: KClass<T>, private val types: TypeUniverse? = null, override val parent: Type<in T> = AnyType) : Type<T> {
     override val clazz = clazz.java
     private val universe: TypeUniverse get() = types ?: TypeUniverse.getDefault()
 

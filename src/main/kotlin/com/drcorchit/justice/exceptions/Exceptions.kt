@@ -1,7 +1,7 @@
 package com.drcorchit.justice.exceptions
 
 import com.drcorchit.justice.lang.members.Member
-import com.drcorchit.justice.lang.types.Thing
+import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.logging.Uri
 

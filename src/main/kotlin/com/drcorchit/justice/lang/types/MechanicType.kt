@@ -9,6 +9,7 @@ import com.google.gson.JsonPrimitive
 import kotlin.reflect.KClass
 
 class MechanicType<T : GameMechanic<*>>(clazz: KClass<T>, types: TypeUniverse): ReflectionType<T>(clazz, types) {
+
     override fun serialize(instance: T): JsonElement {
         return JsonPrimitive(instance.uri.toString())
     }

@@ -9,7 +9,7 @@ import com.drcorchit.justice.lang.code.statement.Statement
 import com.drcorchit.justice.lang.environment.ImmutableTypeEnv
 import com.drcorchit.justice.lang.environment.MutableTypeEnv
 import com.drcorchit.justice.lang.types.EventType
-import com.drcorchit.justice.lang.types.Thing
+import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.lang.types.UnitType
 import com.drcorchit.justice.lang.types.primitives.NumberType

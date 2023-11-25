@@ -5,7 +5,7 @@ import com.drcorchit.justice.lang.members.LambdaFieldMember
 import com.drcorchit.justice.lang.members.Member
 import com.drcorchit.justice.lang.types.MechanicType
 import com.drcorchit.justice.lang.types.NonSerializableType
-import com.drcorchit.justice.lang.types.Thing
+import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.logging.HasUri
 import com.drcorchit.justice.utils.logging.Uri

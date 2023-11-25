@@ -6,6 +6,7 @@ import com.drcorchit.justice.lang.types.primitives.StringType
 import com.google.common.collect.ImmutableMap
 
 object AnyType : NonSerializableType<Any>() {
+    override val parent = null
     override val clazz = Any::class.java
     override val members: ImmutableMap<String, Member<Any>> = listOf(
         LambdaFieldMember(

@@ -1,10 +1,13 @@
-package com.drcorchit.justice.lang.types
+package com.drcorchit.justice.lang.code
 
 import com.drcorchit.justice.exceptions.JusticeException
 import com.drcorchit.justice.exceptions.MemberNotFoundException
 import com.drcorchit.justice.lang.members.DataFieldMember
 import com.drcorchit.justice.lang.members.FieldMember
 import com.drcorchit.justice.lang.members.Member
+import com.drcorchit.justice.lang.types.MemberType
+import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.UnitType
 import com.drcorchit.justice.lang.types.primitives.*
 import com.google.gson.JsonElement
 

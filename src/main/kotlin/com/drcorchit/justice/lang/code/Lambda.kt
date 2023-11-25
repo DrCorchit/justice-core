@@ -1,8 +1,10 @@
-package com.drcorchit.justice.lang.types
+package com.drcorchit.justice.lang.code
 
 import com.drcorchit.justice.lang.environment.ImmutableTypeEnv
 import com.drcorchit.justice.lang.members.LambdaMember
 import com.drcorchit.justice.lang.members.Member
+import com.drcorchit.justice.lang.types.NonSerializableType
+import com.drcorchit.justice.lang.types.Type
 import com.google.common.collect.ImmutableMap
 
 class Lambda(
