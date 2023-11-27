@@ -1,23 +1,39 @@
 package com.drcorchit.justice.lang.types
 
-import com.drcorchit.justice.game.evaluation.TypeUniverse
+import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
 import com.drcorchit.justice.lang.annotations.CachedField
 import com.drcorchit.justice.lang.annotations.DataField
 import com.drcorchit.justice.lang.annotations.DerivedField
 import com.drcorchit.justice.lang.annotations.JFunction
 import com.drcorchit.justice.lang.members.*
+import com.drcorchit.justice.lang.types.Type.Companion.toMemberMap
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSet
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty
 
-open class ReflectionType<T : Any>(clazz: KClass<T>, private val types: TypeUniverse? = null, override val parent: Type<in T> = AnyType) : Type<T> {
-    override val clazz = clazz.java
-    private val universe: TypeUniverse get() = types ?: TypeUniverse.getDefault()
+open class ReflectionType<T : Any>(
+    clazz: KClass<T>,
+    tempUniverse: TypeUniverse? = null,
+    tempParent: Type<*> = AnyType
+) : Type<T> {
+    final override val clazz = clazz.java
+    final override val parent: Type<in T>?
+    private val universe by lazy { tempUniverse ?: TypeUniverse.getDefault() }
+
+    init {
+        if (tempParent == clazz.java) {
+            throw IllegalArgumentException("A Type cannot be its own parent!")
+        } else if (tempParent.clazz.isAssignableFrom(clazz.java)) {
+            parent = tempParent as Type<in T>
+        } else {
+            throw IllegalArgumentException("Type ${tempParent.clazz.name} is not a supertype of ${clazz.qualifiedName}")
+        }
+    }
 
     final override val members: ImmutableMap<String, Member<T>> by lazy {
-        convertClass(clazz).associateBy { it.name }.let { ImmutableMap.copyOf(it) }
+        convertClass(clazz).toMemberMap()
     }
 
     private fun convertClass(thing: KClass<T>): List<Member<T>> {

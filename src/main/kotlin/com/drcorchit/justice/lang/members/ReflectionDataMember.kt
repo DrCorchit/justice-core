@@ -1,7 +1,7 @@
 package com.drcorchit.justice.lang.members
 
 import com.drcorchit.justice.game.Game
-import com.drcorchit.justice.game.evaluation.TypeUniverse
+import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
 import com.drcorchit.justice.lang.annotations.DataField
 import com.google.gson.JsonElement
 import kotlin.reflect.KMutableProperty

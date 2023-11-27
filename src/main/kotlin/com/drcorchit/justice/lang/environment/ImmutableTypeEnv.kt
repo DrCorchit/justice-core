@@ -11,7 +11,7 @@ class ImmutableTypeEnv(
 ) {
     private val map: ImmutableMap<String, TypeEnvEntry> = ImmutableMap.copyOf(parameters)
 
-    fun bind(info: JsonObject, game: Game, mutable: Boolean): Environment {
+    fun bind(info: JsonObject, game: Game): Environment {
         val output = MapEnvironment()
         map.values.forEach {
             val value = it.type.deserialize(game, info[it.id])

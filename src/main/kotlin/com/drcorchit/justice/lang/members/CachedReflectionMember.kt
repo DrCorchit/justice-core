@@ -1,6 +1,6 @@
 package com.drcorchit.justice.lang.members
 
-import com.drcorchit.justice.game.evaluation.TypeUniverse
+import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
 import com.drcorchit.justice.lang.annotations.CachedField
 import com.drcorchit.justice.utils.Utils.createCache
 import com.google.common.cache.LoadingCache

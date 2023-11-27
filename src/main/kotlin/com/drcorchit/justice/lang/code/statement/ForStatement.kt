@@ -1,11 +1,14 @@
 package com.drcorchit.justice.lang.code.statement
 
 import com.drcorchit.justice.exceptions.TypeException
-import com.drcorchit.justice.game.evaluation.DryRunContext
-import com.drcorchit.justice.game.evaluation.ExecutionContext
+import com.drcorchit.justice.game.evaluation.context.DryRunContext
+import com.drcorchit.justice.game.evaluation.context.ExecutionContext
 import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.code.expression.Expression
-import com.drcorchit.justice.lang.types.*
+import com.drcorchit.justice.lang.types.AnyType
+import com.drcorchit.justice.lang.types.IterableType
+import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.UnitType
 
 class ForStatement(val id: String, val iter: Expression, val loop: Statement): Statement {
     var type: IterableType? = null
@@ -35,5 +38,9 @@ class ForStatement(val id: String, val iter: Expression, val loop: Statement): S
         loop.dryRun(context)
         context.pop()
         return UnitType
+    }
+
+    override fun toString(): String {
+        return "for ($iter) {\n$loop\n}"
     }
 }

@@ -1,11 +1,12 @@
 package com.drcorchit.justice.game.mechanics
 
 import com.drcorchit.justice.game.Game
+import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.members.LambdaFieldMember
 import com.drcorchit.justice.lang.members.Member
 import com.drcorchit.justice.lang.types.MechanicType
 import com.drcorchit.justice.lang.types.NonSerializableType
-import com.drcorchit.justice.lang.code.Thing
+import com.drcorchit.justice.lang.types.ReflectionType
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.logging.HasUri
 import com.drcorchit.justice.utils.logging.Uri
@@ -44,8 +45,8 @@ interface Mechanics : Iterable<GameMechanic<*>>, HasUri {
 
     fun makeEvaluator(): NonSerializableType<Mechanics> {
         val members = this.map {
-            val type = MechanicType(it::class, parent.types.universe)
-            LambdaFieldMember(Mechanics::class.java, it.name, it.description, type) { _ -> it }
+            val type = ReflectionType(it::class, parent.types.universe, MechanicType)
+            LambdaFieldMember(Mechanics::class.java, it.name, "Allows access to the ${it.name} mechanic.", type) { _ -> it }
         }.associateBy { it.name }.let { ImmutableMap.copyOf<String, Member<Mechanics>>(it) }
 
         return object : NonSerializableType<Mechanics>() {

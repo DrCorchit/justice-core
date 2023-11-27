@@ -12,9 +12,6 @@ interface GameMechanic<T : GameElement> : Iterable<T>, HasUri {
     @DataField("Returns the unique identifier of the mechanic.")
     val name: String get() = javaClass.simpleName
 
-    @DataField("Describes the purpose of the mechanic.")
-    val description: String
-
     override val parent: Mechanics
 
     override val uri: Uri get() = parent.uri.extend(name)
@@ -25,11 +22,11 @@ interface GameMechanic<T : GameElement> : Iterable<T>, HasUri {
     @DerivedField("Returns the number of elements in the mechanic.")
     fun size(): Int
 
-    @JFunction("Returns true iff the mechanic contains an element with the given name or ID.")
-    fun has(key: Any): Boolean
+    @JFunction("Returns true iff the mechanic contains an element with the given Uri.")
+    fun has(uri: Uri): Boolean
 
-    @JFunction("Returns the element with the given name or ID.")
-    operator fun get(key: Any): T
+    @JFunction("Returns the element with the given uri.")
+    operator fun get(uri: Uri): T
 
     //Some game elements have a default member. (E.g. Buffs, Resources, Features). This function is optional.
     //Game elements which do not have a default member should throw a NoSuchElementException when this is called

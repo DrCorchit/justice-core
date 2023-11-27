@@ -1,6 +1,6 @@
 package com.drcorchit.justice.lang.types
 
-import com.drcorchit.justice.game.evaluation.TypeUniverse
+import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
 import com.drcorchit.justice.lang.annotations.DerivedField
 import com.drcorchit.justice.lang.members.*
 import com.google.common.collect.ImmutableMap

@@ -10,6 +10,7 @@ import com.drcorchit.justice.game.notifications.Notifying
 import com.drcorchit.justice.game.players.Players
 import com.drcorchit.justice.utils.json.JsonUtils.toJsonArray
 import com.drcorchit.justice.utils.json.Result
+import com.drcorchit.justice.utils.json.TimestampedJson
 import com.drcorchit.justice.utils.logging.HasUri
 import com.drcorchit.justice.utils.logging.Uri
 import com.drcorchit.justice.utils.math.Rng
@@ -36,7 +37,7 @@ interface Game: HasUri {
         return output
     }
 
-    fun deserialize(info: JsonObject)
+    fun deserialize(info: TimestampedJson)
 
     val random: Rng
     var seed: Long

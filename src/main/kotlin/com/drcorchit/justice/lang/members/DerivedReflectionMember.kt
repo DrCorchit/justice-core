@@ -1,7 +1,7 @@
 package com.drcorchit.justice.lang.members
 
 import com.drcorchit.justice.lang.annotations.DerivedField
-import com.drcorchit.justice.game.evaluation.TypeUniverse
+import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
 import kotlin.reflect.KCallable
 
 class DerivedReflectionMember<T : Any>(types: TypeUniverse, clazz: Class<T>, member: KCallable<*>, annotation: DerivedField) :

@@ -4,7 +4,7 @@ import com.drcorchit.justice.lang.JusticeLexer
 import com.drcorchit.justice.lang.JusticeParser
 import com.drcorchit.justice.lang.code.Code
 import com.drcorchit.justice.lang.code.Visitor
-import com.drcorchit.justice.game.evaluation.TypeUniverse
+import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 

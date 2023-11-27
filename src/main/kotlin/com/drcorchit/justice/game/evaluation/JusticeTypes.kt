@@ -1,32 +1,35 @@
 package com.drcorchit.justice.game.evaluation
 
 import com.drcorchit.justice.game.Game
-import com.drcorchit.justice.game.events.Events
-import com.drcorchit.justice.game.mechanics.GameElement
-import com.drcorchit.justice.game.mechanics.GameMechanic
-import com.drcorchit.justice.game.mechanics.Mechanics
+import com.drcorchit.justice.game.evaluation.context.DryRunContext
+import com.drcorchit.justice.game.evaluation.context.ExecutionContext
+import com.drcorchit.justice.game.evaluation.context.StackDryRunContext
+import com.drcorchit.justice.game.evaluation.context.StackExecutionContext
+import com.drcorchit.justice.game.evaluation.instantiators.ElementTypeInstantiator
+import com.drcorchit.justice.game.evaluation.instantiators.MechanicTypeInstantiator
+import com.drcorchit.justice.game.evaluation.instantiators.SimpleTypeInstantiator
+import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
 import com.drcorchit.justice.game.metadata.MetadataType
 import com.drcorchit.justice.game.players.PlayersType
+import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.code.expression.Expression
 import com.drcorchit.justice.lang.code.statement.Statement
-import com.drcorchit.justice.lang.types.ElementType
-import com.drcorchit.justice.lang.types.MechanicType
-import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.json.Result
 import com.google.gson.JsonObject
-import kotlin.reflect.KClass
 
 class JusticeTypes(override val parent: Game) : Types {
-    override val universe: ImmutableTypeUniverse
+    override val universe: TypeUniverse
 
     init {
-        val builder = TypeUniverse.getDefault().mutableCopy()
-        builder.registerType(Mechanics::class) { parent.mechanics.getType() }
-        builder.registerType(Events::class) { parent.events.getType() }
-        builder.registerType(GameMechanic::class) { MechanicType(it.kClass as KClass<out GameMechanic<*>>, builder) }
-        builder.registerType(GameElement::class) { ElementType(it.kClass as KClass<out GameElement>, builder) }
-        universe = builder.immutableCopy()
+        val builder = TypeUniverse.getDefault()
+        builder.registerType(PlayersType)
+        builder.registerType(SimpleTypeInstantiator(parent.mechanics.getType()))
+        builder.registerType(SimpleTypeInstantiator(parent.events.getType()))
+        builder.registerType(MetadataType)
+        builder.registerType(MechanicTypeInstantiator(builder))
+        builder.registerType(ElementTypeInstantiator(builder))
+        universe = builder
     }
 
     override fun query(query: String): Result {

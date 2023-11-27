@@ -1,13 +1,18 @@
 package com.drcorchit.justice.game.mechanics
 
-abstract class AbstractElement(final override val parent: AbstractMechanic<*>, name: String, id: Int) : GameElement {
-    override var name: String = name
-        set(name) {
-            field = name
-            touch()
-        }
+import com.drcorchit.justice.utils.logging.Uri
 
-    override val uri by lazy { parent.uri.extend(id.toString()) }
+abstract class AbstractElement(override val uri: Uri) : GameElement {
 
-    override var description: String = "No description available."
+    override fun toString(): String {
+        return uri.toString()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is AbstractElement && other.uri == uri
+    }
+
+    override fun hashCode(): Int {
+        return uri.hashCode()
+    }
 }

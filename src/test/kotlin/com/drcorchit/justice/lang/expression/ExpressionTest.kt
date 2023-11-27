@@ -1,8 +1,8 @@
 package com.drcorchit.justice.lang.expression
 
-import com.drcorchit.justice.game.evaluation.StackDryRunContext
-import com.drcorchit.justice.game.evaluation.StackExecutionContext
-import com.drcorchit.justice.game.evaluation.TypeUniverse
+import com.drcorchit.justice.game.evaluation.context.StackDryRunContext
+import com.drcorchit.justice.game.evaluation.context.StackExecutionContext
+import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
 import com.drcorchit.justice.lang.code.expression.Expression
 import org.junit.jupiter.api.Assertions
 import kotlin.test.Test

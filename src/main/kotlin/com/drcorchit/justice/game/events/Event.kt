@@ -1,13 +1,14 @@
 package com.drcorchit.justice.game.events
 
-import com.drcorchit.justice.game.evaluation.ExecutionContext
+import com.drcorchit.justice.game.evaluation.context.ExecutionContext
 import com.drcorchit.justice.game.players.Player
+import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.environment.ImmutableTypeEnv
 import com.drcorchit.justice.lang.types.EventType
-import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.Version
 import com.drcorchit.justice.utils.logging.HasUri
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 
 interface Event: HasUri {
@@ -25,7 +26,7 @@ interface Event: HasUri {
         json.addProperty("author", author.id)
         json.addProperty("timestamp", System.currentTimeMillis())
         val context = parent.parent.types.getExecutionContext(true, Thing(this, EventType))
-        context.push(parameters.bind(info, parent.parent, false))
+        context.push(parameters.bind(info, parent.parent))
         check(isAuthorized(context))
         return run(context)
     }
@@ -37,4 +38,8 @@ interface Event: HasUri {
     }
 
     fun run(context: ExecutionContext): Thing<*>
+
+    //If loaded from an external source, return that source.
+    //If loaded from a class,
+    fun serialize(): JsonElement
 }

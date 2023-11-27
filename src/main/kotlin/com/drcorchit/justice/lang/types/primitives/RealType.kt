@@ -12,6 +12,7 @@ import kotlin.reflect.full.isSuperclassOf
 object RealType : Type<Double> {
     override val clazz = Double::class.java
     override val members: ImmutableMap<String, Member<Double>> = ImmutableMap.of()
+    override val parent = NumberType
 
     override fun accept(other: Type<*>): Boolean {
         return Number::class.isSuperclassOf(other.clazz.kotlin)

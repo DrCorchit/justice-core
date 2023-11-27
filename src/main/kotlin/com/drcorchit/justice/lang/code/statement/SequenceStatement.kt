@@ -1,9 +1,9 @@
 package com.drcorchit.justice.lang.code.statement
 
-import com.drcorchit.justice.game.evaluation.DryRunContext
-import com.drcorchit.justice.game.evaluation.ExecutionContext
-import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.game.evaluation.context.DryRunContext
+import com.drcorchit.justice.game.evaluation.context.ExecutionContext
 import com.drcorchit.justice.lang.code.Thing
+import com.drcorchit.justice.lang.types.Type
 import com.google.common.collect.ImmutableList
 
 class SequenceStatement(val statements: ImmutableList<Statement>) : Statement {
@@ -15,5 +15,9 @@ class SequenceStatement(val statements: ImmutableList<Statement>) : Statement {
     override fun dryRun(context: DryRunContext): Type<*> {
         statements.dropLast(1).forEach { _ -> dryRun(context) }
         return statements.last().dryRun(context)
+    }
+
+    override fun toString(): String {
+        return statements.joinToString("\n")
     }
 }

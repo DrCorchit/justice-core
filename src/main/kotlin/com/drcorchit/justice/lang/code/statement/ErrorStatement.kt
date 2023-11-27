@@ -2,11 +2,11 @@ package com.drcorchit.justice.lang.code.statement
 
 import com.drcorchit.justice.exceptions.JusticeRuntimeException
 import com.drcorchit.justice.exceptions.TypeException
-import com.drcorchit.justice.game.evaluation.DryRunContext
-import com.drcorchit.justice.game.evaluation.ExecutionContext
+import com.drcorchit.justice.game.evaluation.context.DryRunContext
+import com.drcorchit.justice.game.evaluation.context.ExecutionContext
+import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.code.expression.Expression
 import com.drcorchit.justice.lang.types.Type
-import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.types.UnitType
 import com.drcorchit.justice.lang.types.primitives.BooleanType
 import com.drcorchit.justice.lang.types.primitives.StringType
@@ -33,5 +33,13 @@ class ErrorStatement(private val condition: Expression?, private val message: Ex
             throw TypeException("throw message", StringType, actualThrowableType)
         }
         return UnitType
+    }
+
+    override fun toString(): String {
+        return if (condition == null) {
+            "throw $message"
+        } else {
+            "$condition throws $message"
+        }
     }
 }

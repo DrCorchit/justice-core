@@ -1,6 +1,6 @@
 package com.drcorchit.justice.lang.members
 
-import com.drcorchit.justice.game.evaluation.TypeUniverse
+import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
 import com.drcorchit.justice.lang.types.Type
 import com.google.common.collect.ImmutableList
 import kotlin.reflect.KCallable

@@ -1,5 +1,6 @@
-package com.drcorchit.justice.game.evaluation
+package com.drcorchit.justice.game.evaluation.context
 
+import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
 import com.drcorchit.justice.lang.environment.Environment
 import com.drcorchit.justice.lang.environment.MapEnvironment
 import com.drcorchit.justice.lang.code.Thing

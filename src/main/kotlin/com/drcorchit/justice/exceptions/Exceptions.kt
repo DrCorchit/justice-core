@@ -1,7 +1,7 @@
 package com.drcorchit.justice.exceptions
 
-import com.drcorchit.justice.lang.members.Member
 import com.drcorchit.justice.lang.code.Thing
+import com.drcorchit.justice.lang.members.Member
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.logging.Uri
 
@@ -20,9 +20,10 @@ class MemberNotFoundException(clazz: Class<*>, name: String) :
 
 //Nothing is wrong; this is normal program flow.
 class ReturnException(val value: Thing<*>) : Exception()
-class ReturnTypeException(val type: Type<*>) : Exception() {
-}
+//TODO remove return type exception.
+class ReturnTypeException(val type: Type<*>) : Exception()
 
+//TODO use these or remove.
 class SerializationException(message: String = "") : Exception(message)
 class DeserializationException(message: String = "") : Exception(message)
 

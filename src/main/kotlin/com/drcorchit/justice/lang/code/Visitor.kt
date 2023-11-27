@@ -1,7 +1,7 @@
 package com.drcorchit.justice.lang.code
 
 import com.drcorchit.justice.exceptions.CompileException
-import com.drcorchit.justice.game.evaluation.TypeUniverse
+import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
 import com.drcorchit.justice.lang.JusticeBaseVisitor
 import com.drcorchit.justice.lang.JusticeParser
 import com.drcorchit.justice.lang.code.expression.*

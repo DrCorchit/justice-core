@@ -5,10 +5,12 @@ import com.drcorchit.justice.utils.json.JsonUtils.getBool
 import com.drcorchit.justice.utils.json.JsonUtils.getOrDefault
 import com.drcorchit.justice.utils.json.TimestampedJson
 import com.drcorchit.justice.utils.json.info
+import com.drcorchit.justice.utils.logging.Uri
 import com.drcorchit.justice.utils.math.Layout
 import com.drcorchit.justice.utils.math.Space
 
-abstract class GridMechanic<T : GridElement>(override val parent: Mechanics, override val name: String) : GameMechanic<T> {
+abstract class GridMechanic<T : GridElement>(override val parent: Mechanics, override val name: String) :
+    GameMechanic<T> {
 
     override var lastModified: Long = System.currentTimeMillis()
 
@@ -18,18 +20,16 @@ abstract class GridMechanic<T : GridElement>(override val parent: Mechanics, ove
         return grid.space.size
     }
 
-    override fun has(key: Any): Boolean {
-        return if (key is Space.Coordinate) {
-            grid.space.within(key.x, key.y)
-        } else throw java.lang.IllegalArgumentException("Supplied key is not a valid coordinate")
+    override fun has(uri: Uri): Boolean {
+        val x = uri.parent!!.value.toInt()
+        val y = uri.value.toInt()
+        return grid.space.within(x, y)
     }
 
-    override fun get(key: Any): T {
-        if (key is Space.Coordinate) {
-            return grid.get(key)!!
-        } else {
-            throw IllegalArgumentException("Supplied key is not a valid coordinate")
-        }
+    override fun get(uri: Uri): T {
+        val x = uri.parent!!.value.toInt()
+        val y = uri.value.toInt()
+        return grid[x, y]!!
     }
 
     override fun touch() {
@@ -73,10 +73,8 @@ abstract class GridMechanic<T : GridElement>(override val parent: Mechanics, ove
 
         defaultElement =
             if (info.has("default")) {
-                val rawKey = info["default"].asJsonPrimitive
-                if (rawKey.isString) get(rawKey.asString)
-                else if (rawKey.isNumber) get(rawKey.asInt)
-                else throw IllegalArgumentException("That type of JsonPrimitive cannot specify a default element")
+                val defaultUri = Uri.parse(info.get("default").asString)
+                get(defaultUri)
             } else {
                 null
             }

@@ -5,8 +5,10 @@ import com.drcorchit.justice.utils.json.TimestampedJson
 import com.drcorchit.justice.utils.json.info
 import com.drcorchit.justice.utils.json.lastModified
 import com.drcorchit.justice.utils.logging.Uri
+import com.google.gson.JsonObject
 
-abstract class AbstractMechanic<T : AbstractElement>(override val parent: Mechanics, override val name: String) : GameMechanic<T> {
+abstract class AbstractMechanic<T : AbstractElement>(override val parent: Mechanics, override val name: String) :
+    GameMechanic<T> {
 
     override val uri by lazy { parent.uri.extend(name) }
 
@@ -18,20 +20,12 @@ abstract class AbstractMechanic<T : AbstractElement>(override val parent: Mechan
         return elementsByUri.size
     }
 
-    override fun has(key: Any): Boolean {
-        return when (key) {
-            is String -> elementsByName.containsKey(key)
-            is Uri -> elementsByUri.containsKey(key)
-            else -> false
-        }
+    override fun has(uri: Uri): Boolean {
+        return elementsByUri.containsKey(uri)
     }
 
-    override fun get(key: Any): T {
-        return when (key) {
-            is String -> elementsByName[key]!!
-            is Uri -> elementsByUri[key]!!
-            else -> throw NoSuchElementException("No element in mechanic $name with key $key")
-        }
+    override fun get(uri: Uri): T {
+        return elementsByUri[uri] ?: throw NoSuchElementException("No such element in $name: $uri")
     }
 
     override fun touch() {
@@ -48,8 +42,6 @@ abstract class AbstractMechanic<T : AbstractElement>(override val parent: Mechan
             throw IllegalArgumentException(message)
         }
 
-        elementsByName.clear()
-
         //Mark all elements for deletion, then unmark them if they still exist
         val deleteThese: HashSet<T> = HashSet(elementsByUri.values)
         for (ele in info.getAsJsonArray("elements")) {
@@ -58,24 +50,16 @@ abstract class AbstractMechanic<T : AbstractElement>(override val parent: Mechan
             val eleInfo = ele.asJsonObject
 
             //Use "key" if present, otherwise default to name
-            val name = eleInfo["name"].asString
-            val id = eleInfo.getOrDefault("key", { nextId() }, { it.asInt })
-            val uri = this.uri.extend(id.toString())
-
-            val element: T = elementsByUri.computeIfAbsent(uri) { create(name, uri) }
+            val uri = eleInfo.getOrDefault("uri", { nextUri() }, { Uri.parse(it.asString) })
+            val element: T = elementsByUri.computeIfAbsent(uri) { create(uri, eleInfo) }
             element.sync(eleInfo)
-            elementsByName[element.name] = element
         }
 
         defaultElement =
             if (info.has("default")) {
-                val rawKey = info["default"].asJsonPrimitive
-                if (rawKey.isString) get(rawKey.asString)
-                else if (rawKey.isNumber) get(rawKey.asInt)
-                else throw IllegalArgumentException("That type of JsonPrimitive cannot specify a default element")
-            } else {
-                null
-            }
+                val defaultUri = Uri.parse(info.get("default").asString)
+                get(defaultUri)
+            } else null
 
         //Remove all elements still marked for deletion
         deleteThese.forEach { elementsByUri.remove(it.uri) }
@@ -87,16 +71,31 @@ abstract class AbstractMechanic<T : AbstractElement>(override val parent: Mechan
         return elementsByUri.values.iterator()
     }
 
-    //New (non-inherited) functionality
-    protected var elementID = 0
-
-    protected fun nextId(): Int {
-        return elementID++
+    override fun equals(other: Any?): Boolean {
+        return other is AbstractMechanic<*> && other.uri == uri
     }
 
-    abstract fun create(name: String, uri: Uri): T
+    override fun hashCode(): Int {
+        return uri.hashCode()
+    }
 
-    protected val elementsByName: LinkedHashMap<String, T> = LinkedHashMap()
+    override fun serialize(): JsonObject {
+        val output = JsonObject()
+
+
+        return output
+    }
+
+    //New (non-inherited) functionality
+    protected var nextID = 0
+
+    protected fun nextUri(): Uri {
+        return uri.extend(nextID++.toString())
+    }
+
+    abstract fun create(uri: Uri, info: JsonObject): T
 
     protected val elementsByUri: LinkedHashMap<Uri, T> = LinkedHashMap()
+
+
 }

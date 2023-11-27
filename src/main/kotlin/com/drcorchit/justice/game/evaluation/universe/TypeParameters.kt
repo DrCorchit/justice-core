@@ -1,4 +1,4 @@
-package com.drcorchit.justice.game.evaluation
+package com.drcorchit.justice.game.evaluation.universe
 
 import com.drcorchit.justice.lang.types.Type
 import com.google.common.collect.ImmutableList

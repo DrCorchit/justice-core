@@ -1,7 +1,7 @@
 package com.drcorchit.justice.lang.code.expression
 
-import com.drcorchit.justice.game.evaluation.DryRunContext
-import com.drcorchit.justice.game.evaluation.ExecutionContext
+import com.drcorchit.justice.game.evaluation.context.DryRunContext
+import com.drcorchit.justice.game.evaluation.context.ExecutionContext
 import com.drcorchit.justice.lang.members.StaticMember
 import com.drcorchit.justice.lang.types.MemberType
 import com.drcorchit.justice.lang.code.Thing

@@ -52,10 +52,10 @@ field : MEMBER_MODIFIER* 'field' ID ':' typeExpr ('=' expression)?;
 func : MEMBER_MODIFIER* 'func' ID '(' args ')' (':' typeExpr) '{' stmt* '}';
 
 event : eventMetadata eventParameters eventAuthorization? eventCode;
-eventMetadata : 'event' ID '@' VERSION (':' STR)? ';';
+eventMetadata : 'event' ID ('@' VERSION)? ('(' STR ')')? ';';
 eventParameters : 'parameters' '{' (eventParameter (',' eventParameter)*) '}';
 eventParameter : ID ':' typeExpr;
-eventAuthorization : 'authorized' expression ';'  #authExpr | 'authorized' '{' stmt* '}' #authStmt;
+eventAuthorization : 'authorized' expression ';';
 eventCode : 'code' '{' stmt* '}';
 
 //Statement

@@ -12,6 +12,7 @@ import kotlin.reflect.full.isSuperclassOf
 object LongType : Type<Long> {
     override val clazz = Long::class.java
     override val members: ImmutableMap<String, Member<Long>> = ImmutableMap.of()
+    override val parent = NumberType
 
     override fun accept(other: Type<*>): Boolean {
         return Number::class.isSuperclassOf(other.clazz.kotlin)

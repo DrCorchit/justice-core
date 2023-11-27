@@ -1,6 +1,6 @@
 package com.drcorchit.justice.lang.code.expression
 
-import com.drcorchit.justice.game.evaluation.TypeUniverse
+import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
 import com.drcorchit.justice.lang.JusticeLexer
 import com.drcorchit.justice.lang.JusticeParser
 import com.drcorchit.justice.lang.code.Code

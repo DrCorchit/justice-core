@@ -2,15 +2,18 @@ package com.drcorchit.justice.game
 
 import com.drcorchit.justice.game.evaluation.JusticeTypes
 import com.drcorchit.justice.game.events.EventsImpl
+import com.drcorchit.justice.game.io.IO
 import com.drcorchit.justice.game.mechanics.MechanicsImpl
 import com.drcorchit.justice.game.metadata.JsonMetadata
 import com.drcorchit.justice.game.monitoring.Monitoring
 import com.drcorchit.justice.game.notifications.Notifying
 import com.drcorchit.justice.game.players.PlayersImpl
-import com.drcorchit.justice.game.io.IO
 import com.drcorchit.justice.utils.json.Result
 import com.drcorchit.justice.utils.json.Result.Companion.failWithReason
 import com.drcorchit.justice.utils.json.Result.Companion.succeedWithInfo
+import com.drcorchit.justice.utils.json.TimestampedJson
+import com.drcorchit.justice.utils.json.info
+import com.drcorchit.justice.utils.json.lastModified
 import com.drcorchit.justice.utils.math.Rng
 import com.google.gson.JsonObject
 
@@ -73,10 +76,18 @@ class JusticeGame(
     }
 
     override fun serialize(): JsonObject {
-        TODO("Not yet implemented")
+        val output = JsonObject()
+        output.add("players", players.serialize())
+        output.add("mechanics", mechanics.serialize())
+        output.add("events", events.serialize())
+        output.add("metadata", metadata.serialize())
+        return output
     }
 
-    override fun deserialize(info: JsonObject) {
-        TODO("Not yet implemented")
+    override fun deserialize(info: TimestampedJson) {
+        players.deserialize(info.info.asJsonObject.getAsJsonObject("players"))
+        mechanics.deserialize(info.info.asJsonObject.getAsJsonObject("mechanics"), info.lastModified)
+        events.deserialize(info.info.asJsonObject.getAsJsonObject("events"))
+        metadata.deserialize(info.info.asJsonObject.getAsJsonObject("metadata"))
     }
 }

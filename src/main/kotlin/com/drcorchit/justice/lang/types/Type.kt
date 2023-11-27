@@ -30,6 +30,7 @@ interface Type<T : Any> {
     }
 
     val members: ImmutableMap<String, Member<T>>
+    //val inheritedMembers: ImmutableMap<String>
 
     fun getMember(name: String): Member<T>? {
         return members[name] ?: parent?.getMember(name)
@@ -48,10 +49,20 @@ interface Type<T : Any> {
     fun deserialize(game: Game, ele: JsonElement): T {
         //Game Mechanics/Elements are handled via an override
         val instance: T = clazz.getDeclaredConstructor().newInstance()
-        members.values.filterIsInstance<DataFieldMember<T>>().forEach {
-            val json = ele.asJsonObject[it.name]
-            it.deserialize(instance, game, json)
-        }
+        sync(instance, game, ele.asJsonObject)
         return instance
+    }
+
+    fun sync(instance: Any, game: Game, info: JsonObject) {
+        val thing = cast(instance)
+        members.values.filterIsInstance<DataFieldMember<T>>().forEach {
+            it.deserialize(thing, game, info[it.name])
+        }
+    }
+
+    companion object {
+        fun <T : Any> List<Member<T>>.toMemberMap(): ImmutableMap<String, Member<T>> {
+            return this.associateBy { it.name }.let { ImmutableMap.copyOf(it) }
+        }
     }
 }
