@@ -1,0 +1,13 @@
+{
+  "class": "com.drcorchit.justice.game.examples.chess.Colors",
+  "elements": [
+    {
+      "name": "White",
+      "pawnDirection": 1
+    },
+    {
+      "name": "Black",
+      "pawnDirection": -1
+    }
+  ]
+}

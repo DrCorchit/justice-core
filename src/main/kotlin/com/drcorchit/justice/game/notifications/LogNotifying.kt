@@ -1,12 +1,13 @@
 package com.drcorchit.justice.game.notifications
 
 import com.drcorchit.justice.game.players.Player
+import com.drcorchit.justice.utils.logging.Logger
 import com.google.gson.JsonObject
 
-private val logger = com.drcorchit.justice.utils.logging.Logger.getLogger(LogNotifying::class.java)
+private val logger = Logger.getLogger(LogNotifying::class.java)
 
 //Sends notifications without triggering network events
-class LogNotifying : Notifying {
+object LogNotifying : Notifying {
     private val history = ArrayList<Notification>()
 
     override fun notifyAll(players: Set<Player>, name: String, info: JsonObject) {

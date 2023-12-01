@@ -1,14 +1,14 @@
 package com.drcorchit.justice.lang.code
 
-import com.drcorchit.justice.lang.environment.ImmutableTypeEnv
-import com.drcorchit.justice.lang.members.LambdaMember
+import com.drcorchit.justice.lang.environment.Parameters
 import com.drcorchit.justice.lang.members.Member
+import com.drcorchit.justice.lang.members.lambda.LambdaMember
 import com.drcorchit.justice.lang.types.NonSerializableType
 import com.drcorchit.justice.lang.types.Type
 import com.google.common.collect.ImmutableMap
 
 class Lambda(
-    private val parameters: ImmutableTypeEnv,
+    private val parameters: Parameters,
     private val returnType: Type<*>,
     private val impl: (List<Any>) -> Any
 ) {
@@ -25,15 +25,13 @@ class Lambda(
     }
 
     companion object {
-        fun getLambdaEvaluator(parameters: ImmutableTypeEnv, returnType: Type<*>): Type<Lambda> {
-            return object : NonSerializableType<Lambda>() {
-                override val clazz = Lambda::class.java
+        fun getLambdaEvaluator(parameters: Parameters, returnType: Type<*>): Type<Lambda> {
+            return object : NonSerializableType<Lambda>(Lambda::class) {
                 override val members: ImmutableMap<String, Member<Lambda>> = ImmutableMap.copyOf(listOf(
                     LambdaMember(
-                        Lambda::class.java,
+                        this,
                         "invoke",
-                        "Invokes the lambda.",
-                        parameters.toArgs(),
+                        "Invokes the lambda.", parameters,
                         returnType,
                         true
                     ) { instance, args -> instance.impl.invoke(args) }

@@ -3,6 +3,7 @@ package com.drcorchit.justice.lang.environment
 import com.drcorchit.justice.exceptions.IllegalAssignmentException
 import com.drcorchit.justice.exceptions.TypeException
 import com.drcorchit.justice.lang.types.Type
+import com.google.common.collect.ImmutableList
 
 class MutableTypeEnv : TypeEnv {
     private val map = mutableMapOf<String, TypeEnvEntry>()
@@ -27,7 +28,7 @@ class MutableTypeEnv : TypeEnv {
         }
     }
 
-    fun immutableCopy(): ImmutableTypeEnv {
-        return ImmutableTypeEnv(map)
+    fun immutableCopy(): Parameters {
+        return Parameters(ImmutableList.copyOf(map.values))
     }
 }

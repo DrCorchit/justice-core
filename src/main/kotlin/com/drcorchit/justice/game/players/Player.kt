@@ -9,9 +9,9 @@ interface Player {
     @DataField("The screen name of the player. Subject to occasional change.", false)
     var name: String
 
-    @DataField("Indicated whether the player has moderator privileges.", true)
+    @DataField("Indicated whether the player has moderator privileges.", true, "false")
     var moderator: Boolean
 
-    @DataField("Indicates whether the player is a human being and not AI.", true)
+    @DataField("Indicates whether the player is a human being and not AI.", true, "true")
     var human: Boolean
 }

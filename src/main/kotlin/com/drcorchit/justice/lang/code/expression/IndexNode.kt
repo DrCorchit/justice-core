@@ -19,7 +19,7 @@ class IndexNode(private val arrayExpr: Expression, private val indexExpr: Expres
     override fun dryRun(context: DryRunContext): Type<*> {
         val arrayType = arrayExpr.dryRun(context)
         val member = arrayType.getMember("get") ?: throw MemberNotFoundException(arrayType.clazz, "get")
-        val expectedType = member.argTypes[1]
+        val expectedType = member.parameters.entries[1].type
         val actualType = indexExpr.dryRun(context)
         if (!expectedType.accept(actualType)) {
             throw TypeException("get", expectedType, actualType)

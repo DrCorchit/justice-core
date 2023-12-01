@@ -4,23 +4,26 @@ import com.drcorchit.justice.exceptions.ReturnException
 import com.drcorchit.justice.exceptions.ReturnTypeException
 import com.drcorchit.justice.game.Game
 import com.drcorchit.justice.game.evaluation.context.ExecutionContext
+import com.drcorchit.justice.game.players.PlayerType
 import com.drcorchit.justice.lang.JusticeLexer
 import com.drcorchit.justice.lang.JusticeParser
 import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.code.Visitor
 import com.drcorchit.justice.lang.code.expression.Expression
 import com.drcorchit.justice.lang.code.statement.Statement
-import com.drcorchit.justice.lang.environment.ImmutableTypeEnv
 import com.drcorchit.justice.lang.environment.MutableTypeEnv
+import com.drcorchit.justice.lang.environment.Parameters
 import com.drcorchit.justice.lang.environment.TypeEnvEntry
 import com.drcorchit.justice.lang.types.EventType
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.lang.types.UnitType
+import com.drcorchit.justice.lang.types.primitives.LongType
 import com.drcorchit.justice.lang.types.primitives.NumberType
 import com.drcorchit.justice.lang.types.primitives.StringType
 import com.drcorchit.justice.utils.Version
 import com.drcorchit.justice.utils.json.JsonUtils.getObject
 import com.drcorchit.justice.utils.json.JsonUtils.getString
+import com.google.common.collect.ImmutableList
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import org.antlr.v4.runtime.CharStreams
@@ -31,19 +34,19 @@ class InterpretedEvent(
     name: String,
     description: String,
     version: Version,
-    parameters: ImmutableTypeEnv,
+    parameters: Parameters,
     private val authorized: Expression?,
     private val code: Statement,
 ) : AbstractEvent(parent, name, description, version, parameters) {
     override val returnType: Type<*> by lazy { calculateReturnType() }
 
-    override fun isAuthorized(context: ExecutionContext): Boolean {
-        return authorized != null && authorized.run(context).value as Boolean
+    override fun isAuthorized(args: List<Any>): Boolean {
+        return authorized != null && authorized.run(buildContext(args)).value as Boolean
     }
 
-    override fun run(context: ExecutionContext): Thing<*> {
+    override fun trigger(args: List<Any>): Thing<*> {
         return try {
-            code.run(context)
+            code.run(buildContext(args))
         } catch (returned: ReturnException) {
             returned.value
         }
@@ -56,6 +59,14 @@ class InterpretedEvent(
         } catch (returned: ReturnTypeException) {
             returned.type
         }
+    }
+
+    private fun buildContext(args: List<Any>): ExecutionContext {
+        val context = parent.parent.types.getExecutionContext(true, null)
+        context.declare("author", PlayerType, args[0])
+        context.declare("timestamp", LongType, args[1])
+        context.push(parameters.bind(args.subList(2, args.size)))
+        return context
     }
 
     override fun serialize(): JsonElement {
@@ -106,9 +117,7 @@ class InterpretedEvent(
                         visitor.handleType(it.typeExpr()).resolveType(game.types.universe),
                         false
                     )
-                }
-                .associateBy { it.id }
-                .let { ImmutableTypeEnv(it) }
+                }.let { Parameters(ImmutableList.copyOf(it)) }
             val authorized = ctx.eventAuthorization()?.let { visitor.parse(it.expression()) }
             val eventCode = visitor.parse(ctx.eventCode().stmt())
 

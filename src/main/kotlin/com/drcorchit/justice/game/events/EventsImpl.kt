@@ -3,8 +3,8 @@ package com.drcorchit.justice.game.events
 import com.drcorchit.justice.game.Game
 import com.drcorchit.justice.game.players.Player
 import com.drcorchit.justice.lang.code.Thing
-import com.drcorchit.justice.lang.members.LambdaMember
 import com.drcorchit.justice.lang.members.Member
+import com.drcorchit.justice.lang.members.lambda.LambdaMember
 import com.drcorchit.justice.lang.types.NonSerializableType
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.Utils.binarySearch
@@ -12,8 +12,10 @@ import com.drcorchit.justice.utils.json.Http.Companion.badRequest
 import com.drcorchit.justice.utils.json.Http.Companion.internalError
 import com.drcorchit.justice.utils.json.Http.Companion.ok
 import com.drcorchit.justice.utils.json.HttpResult
+import com.drcorchit.justice.utils.json.JsonUtils.getArray
 import com.drcorchit.justice.utils.json.JsonUtils.toJsonArray
 import com.drcorchit.justice.utils.json.info
+import com.drcorchit.justice.utils.json.toJson
 import com.google.common.collect.ImmutableMap
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -39,7 +41,7 @@ class EventsImpl(override val parent: Game) : Events {
         }
 
         return try {
-            val value = event.run(player, info)
+            val value = event.trigger(player, info)
             val latency = System.currentTimeMillis() - now
             parent.monitoring.recordLatency(parent, eventID, latency)
             eventHistory.add(EventOutcome(eventID, player, now, latency, info))
@@ -64,18 +66,21 @@ class EventsImpl(override val parent: Game) : Events {
     }
 
     override fun serialize(): JsonObject {
+        val active = events.values.map { it.serialize() }.toJsonArray()
+        val scheduled = scheduled.serialize()
         val output = JsonObject()
-        events.values.forEach { output.add(it.name, it.serialize()) }
-        output.add("scheduled", scheduled.serialize())
+        output.add("active", active)
+        output.add("scheduled", scheduled)
         return output
     }
 
     override fun deserialize(info: JsonObject) {
-        events = ImmutableMap.copyOf(info.getAsJsonArray("events")
-            .map { parent.io.loadJson(it.asString) }
+        events = info.getAsJsonArray("active")
+            .map { parent.io.load(it.asString).toJson() }
             .map { InterpretedEvent.deserialize(parent, it.info.asJsonObject) }
-            .associateBy { it.name })
-        scheduled.deserialize(info.getAsJsonObject("scheduled"))
+            .associateBy { it.name }
+            .let { ImmutableMap.copyOf(it) }
+        scheduled.deserialize(info.getArray("scheduled"))
     }
 
     override fun getType(): Type<Events> {
@@ -83,22 +88,23 @@ class EventsImpl(override val parent: Game) : Events {
     }
 
     private fun createEvaluator(): Type<Events> {
-        val builder = ImmutableMap.builder<String, Member<Events>>()
-        events.values.forEach {
-            val member = LambdaMember(
-                Events::class.java,
-                it.name,
-                it.description,
-                it.parameters.toArgs(),
-                it.returnType,
-                true
-            ) { _: Events, args: List<Any?> -> it.run(args.map { arg -> arg!! }) }
-            builder.put(member.name, member)
-        }
-
-        return object : NonSerializableType<Events>() {
-            override val clazz = Events::class.java
-            override val members = builder.build()
+        return object : NonSerializableType<Events>(Events::class) {
+            override val members: ImmutableMap<String, Member<Events>>
+            init {
+                val builder = ImmutableMap.builder<String, Member<Events>>()
+                events.values.forEach {
+                    val member = LambdaMember(
+                        this,
+                        it.name,
+                        it.description,
+                        it.parameters,
+                        it.returnType,
+                        true
+                    ) { _: Events, args: List<Any> -> it.trigger(args) }
+                    builder.put(member.name, member)
+                }
+                members = builder.build()
+            }
         }
     }
 }

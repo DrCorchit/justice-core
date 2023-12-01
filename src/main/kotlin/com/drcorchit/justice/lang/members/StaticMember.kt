@@ -1,11 +1,12 @@
 package com.drcorchit.justice.lang.members
 
-import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.lang.code.Thing
-import com.google.common.collect.ImmutableList
+import com.drcorchit.justice.lang.environment.Parameters
+import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.UnitType
 
-abstract class StaticMember(name: String, description: String, argTypes: ImmutableList<Type<*>>, returnType: Type<*>) :
-    AbstractMember<Unit>(Unit::class.java, name, description, argTypes, returnType, false) {
+abstract class StaticMember(name: String, description: String, argTypes: Parameters, returnType: Type<*>) :
+    AbstractMember<Unit>(UnitType, name, description, argTypes, returnType, false) {
 
     fun apply(args: List<Any>): Any {
         return apply(Unit, args)

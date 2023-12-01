@@ -1,13 +1,17 @@
 package com.drcorchit.justice.lang.members
 
+import com.drcorchit.justice.lang.environment.Parameters
 import com.drcorchit.justice.lang.types.Type
-import com.google.common.collect.ImmutableList
 
 abstract class AbstractMember<T :  Any>(
-    override val clazz: Class<T>,
+    override val type: Type<in T>,
     override val name: String,
     override val description: String,
-    override val argTypes: ImmutableList<Type<*>>,
+    override val parameters: Parameters,
     override val returnType: Type<*>,
     override val hasSideEffects: Boolean
-) : Member<T>
+) : Member<T> {
+    override fun toString(): String {
+        return "$type.$name"
+    }
+}

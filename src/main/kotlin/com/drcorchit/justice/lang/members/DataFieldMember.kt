@@ -7,7 +7,9 @@ import com.google.gson.JsonElement
 //Relevant during serialization.
 interface DataFieldMember<T : Any>: FieldMember<T> {
     val mutable: Boolean
+    val defaultValue: Any?
+
     fun set(self: T, newValue: Any)
     //Sets the value of the field even if it is marked as mutable.
-    fun deserialize(self: T, game: Game, ele: JsonElement)
+    fun deserialize(self: T, game: Game, ele: JsonElement?)
 }

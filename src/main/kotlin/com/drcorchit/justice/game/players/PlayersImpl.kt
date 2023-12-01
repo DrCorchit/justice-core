@@ -1,7 +1,7 @@
 package com.drcorchit.justice.game.players
 
 import com.drcorchit.justice.game.Game
-import com.drcorchit.justice.utils.json.JsonUtils
+import com.drcorchit.justice.utils.json.JsonUtils.getBool
 import com.drcorchit.justice.utils.json.JsonUtils.toJsonArray
 import com.drcorchit.justice.utils.json.Result
 import com.google.gson.JsonObject
@@ -60,7 +60,14 @@ class PlayersImpl(override val parent: Game) : Players {
         val output = JsonObject()
         output.addProperty("minPlayerCount", minPlayerCount)
         output.addProperty("maxPlayerCount", maxPlayerCount)
-        output.add("players", playersByID.values.map { PlayerType.serialize(it) }.toJsonArray())
+        output.add("players", playersByID.values.map {
+            val temp = JsonObject()
+            temp.addProperty("id", it.id)
+            temp.addProperty("name", it.name)
+            temp.addProperty("moderator", it.moderator)
+            temp.addProperty("human", it.human)
+            temp
+        }.toJsonArray())
         return output
     }
 
@@ -68,7 +75,15 @@ class PlayersImpl(override val parent: Game) : Players {
         min = info["minPlayerCount"].asInt
         max = info["maxPlayerCount"].asInt
         info.getAsJsonArray("players")
-            .map { JsonUtils.GSON.fromJson(info, PlayerImpl::class.java) }
+            .map { it.asJsonObject }
+            .map {
+                PlayerImpl(
+                    it["id"].asString,
+                    it["name"].asString,
+                    it.getBool("moderator", false),
+                    it.getBool("human", true)
+                )
+            }
             .forEach { playersByID[it.id] = it; playersByName[it.name] = it }
     }
 

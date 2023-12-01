@@ -26,7 +26,7 @@ data class Thing<T : Any>(val value: T, val type: Type<T>) {
         return when (val member = type.getMember(name)) {
             null -> throw MemberNotFoundException(type.clazz, name)
             is FieldMember<T> -> member.getAndWrap(value)
-            else -> member.applyAndWrap(value, args)
+            else -> member.returnType.wrap(member.apply(value, args))
         }
     }
 
@@ -44,7 +44,7 @@ data class Thing<T : Any>(val value: T, val type: Type<T>) {
         if (member == null) {
             throw MemberNotFoundException(type.clazz, "set/put")
         } else {
-            return member.applyAndWrap(value, listOf(index, type.cast(newValue)))
+            return member.returnType.wrap(member.apply(value, listOf(index, type.cast(newValue))))
         }
     }
 

@@ -1,13 +1,14 @@
 package com.drcorchit.justice.game.mechanics
 
+import com.drcorchit.justice.game.mechanics.space.SpaceType
 import com.drcorchit.justice.utils.data.Grid
-import com.drcorchit.justice.utils.json.JsonUtils.getBool
-import com.drcorchit.justice.utils.json.JsonUtils.getOrDefault
 import com.drcorchit.justice.utils.json.TimestampedJson
 import com.drcorchit.justice.utils.json.info
-import com.drcorchit.justice.utils.logging.Uri
-import com.drcorchit.justice.utils.math.Layout
 import com.drcorchit.justice.utils.math.Space
+import com.google.common.collect.ImmutableList
+import com.google.gson.JsonArray
+import com.google.gson.JsonNull
+import com.google.gson.JsonObject
 
 abstract class GridMechanic<T : GridElement>(override val parent: Mechanics, override val name: String) :
     GameMechanic<T> {
@@ -20,16 +21,18 @@ abstract class GridMechanic<T : GridElement>(override val parent: Mechanics, ove
         return grid.space.size
     }
 
-    override fun has(uri: Uri): Boolean {
-        val x = uri.parent!!.value.toInt()
-        val y = uri.value.toInt()
-        return grid.space.within(x, y)
+    override fun has(id: String): Boolean {
+        return try {
+            val c = grid.space.parse(id)
+            grid.space.within(c.x, c.y)
+        } catch (e: Exception) {
+            false
+        }
     }
 
-    override fun get(uri: Uri): T {
-        val x = uri.parent!!.value.toInt()
-        val y = uri.value.toInt()
-        return grid[x, y]!!
+    override fun get(id: String): T {
+        val c = grid.space.parse(id)
+        return grid.get(c)!!
     }
 
     override fun touch() {
@@ -43,12 +46,7 @@ abstract class GridMechanic<T : GridElement>(override val parent: Mechanics, ove
             throw IllegalArgumentException(message)
         }
 
-        val w = info["width"].asInt
-        val h = info["height"].asInt
-        val wrapH = info.getBool("wrapHoriz", false)
-        val wrapV = info.getBool("wrapVert", false)
-        val layout = info.getOrDefault("layout", { Layout.CARTESIAN }, { Layout.valueOf(it.asString) })
-        val space = Space(w, h, wrapH, wrapV, layout)
+        val space = Space.deserialize(info.getAsJsonObject("space"))
         if (space != grid.space) {
             logger.info("sync", "Updating grid mechanic grid due to underlying space change.")
             grid = Grid(space)
@@ -73,11 +71,8 @@ abstract class GridMechanic<T : GridElement>(override val parent: Mechanics, ove
 
         defaultElement =
             if (info.has("default")) {
-                val defaultUri = Uri.parse(info.get("default").asString)
-                get(defaultUri)
-            } else {
-                null
-            }
+                get(info.get("default").asString)
+            } else null
 
         val message = String.format("Synced GridMechanic $name", name)
         logger.info("sync", message)
@@ -86,6 +81,25 @@ abstract class GridMechanic<T : GridElement>(override val parent: Mechanics, ove
 
     override fun iterator(): Iterator<T> {
         return grid.iterator()
+    }
+
+    override fun serialize(): JsonObject {
+        val universe = parent.parent.types.universe
+        val type = universe.getType(this::class to ImmutableList.of())
+        val output = type.serializeByReflection(this).asJsonObject
+        val rows = JsonArray()
+        for (j in 0 until grid.height) {
+            val row = JsonArray()
+            for (i in 0 until grid.width) {
+                row.add(grid[i, j]?.serialize() ?: JsonNull.INSTANCE)
+            }
+            rows.add(row)
+        }
+        output.add("space", SpaceType.serialize(grid.space))
+        output.add("elements", rows)
+        defaultElement?.let { output.addProperty("default", it.uri.toString()) }
+
+        return output
     }
 
     //New (non-inherited) functionality

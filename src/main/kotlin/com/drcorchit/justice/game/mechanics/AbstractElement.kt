@@ -1,11 +1,10 @@
 package com.drcorchit.justice.game.mechanics
 
-import com.drcorchit.justice.utils.logging.Uri
-
-abstract class AbstractElement(override val uri: Uri) : GameElement {
+abstract class AbstractElement(override val id: String) : GameElement {
+    override val uri by lazy { parent.uri.extend(id) }
 
     override fun toString(): String {
-        return uri.toString()
+        return "${parent.name}.${id}"
     }
 
     override fun equals(other: Any?): Boolean {

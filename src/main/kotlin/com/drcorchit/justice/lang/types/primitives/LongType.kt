@@ -9,20 +9,18 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import kotlin.reflect.full.isSuperclassOf
 
-object LongType : Type<Long> {
-    override val clazz = Long::class.java
+object LongType : Type<Long>(Long::class, NumberType) {
     override val members: ImmutableMap<String, Member<Long>> = ImmutableMap.of()
-    override val parent = NumberType
 
     override fun accept(other: Type<*>): Boolean {
-        return Number::class.isSuperclassOf(other.clazz.kotlin)
+        return Number::class.isSuperclassOf(other.clazz)
     }
 
     override fun cast(instance: Any): Long {
         return if (instance is Number) {
             instance.toLong()
         } else {
-            throw TypeException("cast", clazz.name, instance::class.java.name)
+            throw TypeException("cast", clazz, instance::class)
         }
     }
 

@@ -1,12 +1,15 @@
 package com.drcorchit.justice.game.mechanics
 
 import com.drcorchit.justice.game.Game
+import com.drcorchit.justice.game.mechanics.Mechanics.Companion.makeEvaluator
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.json.info
+import com.drcorchit.justice.utils.json.toJson
 import com.google.gson.JsonObject
+import kotlin.reflect.full.primaryConstructor
 
 class MechanicsImpl(override val parent: Game): Mechanics {
-    private val mechType: Type<Mechanics> by lazy { makeEvaluator() }
+    private val mechType: Type<Mechanics> by lazy { this.makeEvaluator() }
     private val mechanics = LinkedHashMap<String, GameMechanic<*>>()
 
     override fun has(mechanic: String): Boolean {
@@ -30,11 +33,11 @@ class MechanicsImpl(override val parent: Game): Mechanics {
                 it.value to timestamp
             } else {
                 val path = it.value.asString
-                parent.io.loadJson(path)
+                parent.io.load(path).toJson()
             }
             val className = json.info.asJsonObject["class"].asString
-            val clazz = Class.forName(className) as Class<out GameMechanic<*>>
-            val mech = clazz.getConstructor(Game::class.java).newInstance(parent)
+            val clazz = (Class.forName(className) as Class<out GameMechanic<*>>).kotlin
+            val mech = clazz.primaryConstructor!!.call(this, it.key)
             mechanics[it.key] = mech
             mech.sync(json)
         }

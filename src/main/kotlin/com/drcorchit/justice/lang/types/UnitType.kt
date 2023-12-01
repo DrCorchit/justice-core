@@ -6,9 +6,7 @@ import com.google.common.collect.ImmutableMap
 import com.google.gson.JsonElement
 import com.google.gson.JsonNull
 
-object UnitType : Type<Unit> {
-    override val parent = null
-    override val clazz = Unit::class.java
+object UnitType : Type<Unit>(Unit::class, null) {
     override val members: ImmutableMap<String, Member<Unit>> = ImmutableMap.of()
 
     override fun serialize(instance: Unit): JsonElement {

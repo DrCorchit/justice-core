@@ -1,11 +1,13 @@
 package com.drcorchit.justice.lang.members
 
 import com.drcorchit.justice.lang.annotations.*
+import com.drcorchit.justice.lang.members.reflection.CachedReflectionMember
+import com.drcorchit.justice.lang.members.reflection.DerivedReflectionMember
+import com.drcorchit.justice.lang.members.reflection.ReflectionDataMember
 import com.drcorchit.justice.lang.types.ReflectionType
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-@Mutable
 class AnnotationsTest {
 
     class Test1 {
@@ -54,12 +56,12 @@ class AnnotationsTest {
         @get:DerivedField("Test Derived Field")
         var x = 3
 
-        @JFunction("Foo")
+        @Evaluable("Foo")
         fun foo(y: Int, z: Int): Int {
             return x + y + z
         }
 
-        @JFunction("Bar", true)
+        @Evaluable("Bar", true)
         fun bar(): Int {
             return x++
         }

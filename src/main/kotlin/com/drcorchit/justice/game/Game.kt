@@ -22,7 +22,7 @@ import java.util.*
 interface Game: HasUri {
     val id: String get() = metadata.id
     override val uri get() = Uri(null, id)
-    override val parent get() = null
+    override val parent: Nothing get() = throw UnsupportedOperationException("Game instances have no parents.")
 
     fun setState(newState: GameState): Result
     fun getState(): GameState
@@ -32,8 +32,8 @@ interface Game: HasUri {
         //ID and State should be saved within metadata.
         output.add("metadata", metadata.serialize())
         output.add("players", players.serialize())
-        output.add("mechanics", mechanics.serialize())
         output.add("events", events.serialize())
+        output.add("mechanics", mechanics.serialize())
         return output
     }
 

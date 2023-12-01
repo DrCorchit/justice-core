@@ -1,0 +1,12 @@
+{
+  "class": "com.drcorchit.justice.game.mechanics.space.NamedSpaces",
+  "default": "0",
+  "elements": [
+    {
+      "space": {
+        "width": 8,
+        "height": 8
+      }
+    }
+  ]
+}

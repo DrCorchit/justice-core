@@ -9,20 +9,18 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import kotlin.reflect.full.isSuperclassOf
 
-object RealType : Type<Double> {
-    override val clazz = Double::class.java
+object RealType : Type<Double>(Double::class, NumberType) {
     override val members: ImmutableMap<String, Member<Double>> = ImmutableMap.of()
-    override val parent = NumberType
 
     override fun accept(other: Type<*>): Boolean {
-        return Number::class.isSuperclassOf(other.clazz.kotlin)
+        return Number::class.isSuperclassOf(other.clazz)
     }
 
     override fun cast(instance: Any): Double {
         return if (instance is Number) {
             instance.toDouble()
         } else {
-            throw TypeException("cast", clazz.name, instance::class.java.name)
+            throw TypeException("cast", clazz, instance::class)
         }
     }
 

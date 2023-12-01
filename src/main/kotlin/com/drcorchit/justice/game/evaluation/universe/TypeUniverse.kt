@@ -1,7 +1,10 @@
 package com.drcorchit.justice.game.evaluation.universe
 
-import com.drcorchit.justice.game.evaluation.instantiators.ArrayTypeInstantiator
-import com.drcorchit.justice.game.evaluation.instantiators.EnumTypeInstantiator
+import com.drcorchit.justice.game.evaluation.instantiators.ArrayTypeFactory
+import com.drcorchit.justice.game.evaluation.instantiators.EnumTypeFactory
+import com.drcorchit.justice.game.evaluation.instantiators.MapTypeFactory
+import com.drcorchit.justice.game.mechanics.space.CoordinateType
+import com.drcorchit.justice.game.mechanics.space.SpaceType
 import com.drcorchit.justice.game.players.Player
 import com.drcorchit.justice.game.players.PlayerType
 import com.drcorchit.justice.lang.JusticeLexer
@@ -43,8 +46,12 @@ interface TypeUniverse {
             universe.registerType(RealType)
             universe.registerType(NumberType)
             universe.registerType(StringType)
-            universe.registerType(EnumTypeInstantiator)
-            universe.registerType(ArrayTypeInstantiator)
+            universe.registerType(SpaceType)
+            universe.registerType(CoordinateType)
+
+            universe.registerType(EnumTypeFactory)
+            universe.registerType(ArrayTypeFactory)
+            universe.registerType(MapTypeFactory)
 
             //ReflectionType singletons
             universe.registerType(PlayerType)
@@ -59,6 +66,7 @@ interface TypeUniverse {
             universe.registerName("String", String::class)
             universe.registerName("Type", Type::class)
             universe.registerName("Player", Player::class)
+            universe.sort()
             return universe
         }
     }

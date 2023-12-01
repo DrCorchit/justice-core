@@ -21,7 +21,9 @@ class ScheduledEventImpl(
             val game = parent.parent.parent
             val result = game.types.execute(code)
             val latency = System.currentTimeMillis() - timestamp
-            //val result: JsonResult = events.execute(getContext().with(Players::class.java, Players::getSystemPlayer), statement)
+
+            //TODO rollback
+            //val result: JsonResult = events.execute(getContext().with(Players::class, Players::getSystemPlayer), statement)
             logger.info("run", "Finished scheduled event result=$result")
             history.add(ScheduledEventOutcome(this, timestamp, latency, null))
         } catch (e: Exception) {

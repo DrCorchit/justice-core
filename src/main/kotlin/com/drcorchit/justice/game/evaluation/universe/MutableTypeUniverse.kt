@@ -1,8 +1,8 @@
 package com.drcorchit.justice.game.evaluation.universe
 
-import com.drcorchit.justice.game.evaluation.instantiators.JusticeTypeInstantiator
-import com.drcorchit.justice.game.evaluation.instantiators.SimpleTypeInstantiator
-import com.drcorchit.justice.game.evaluation.instantiators.TypeInstantiator
+import com.drcorchit.justice.game.evaluation.instantiators.JusticeTypeFactory
+import com.drcorchit.justice.game.evaluation.instantiators.SimpleTypeFactory
+import com.drcorchit.justice.game.evaluation.instantiators.TypeFactory
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.Utils
 import com.google.common.cache.LoadingCache
@@ -10,10 +10,10 @@ import kotlin.reflect.KClass
 
 class MutableTypeUniverse : TypeUniverse {
     private val typesBySimpleName: MutableMap<String, KClass<*>> = mutableMapOf()
-    private val typeInstantiators: MutableList<TypeInstantiator> = mutableListOf()
-    private val defaultInstantiator = JusticeTypeInstantiator(this)
+    private val typeFactories: MutableList<TypeFactory> = mutableListOf()
+    private val defaultInstantiator = JusticeTypeFactory(this)
     private val cache: LoadingCache<TypeParameters, Type<*>> = Utils.createCache(1000) { candidateSubclass ->
-        (typeInstantiators.firstOrNull { it.matches(candidateSubclass) } ?: defaultInstantiator)
+        (typeFactories.firstOrNull { it.matches(candidateSubclass) } ?: defaultInstantiator)
             .instantiate(candidateSubclass)
     }
 
@@ -30,10 +30,18 @@ class MutableTypeUniverse : TypeUniverse {
     }
 
     fun registerType(type: Type<*>) {
-        registerType(SimpleTypeInstantiator(type))
+        registerType(SimpleTypeFactory(type))
     }
 
-    fun registerType(instantiator: TypeInstantiator) {
-        typeInstantiators.add(instantiator)
+    fun registerType(instantiator: TypeFactory) {
+        typeFactories.add(instantiator)
+    }
+
+    fun sort() {
+        typeFactories.sort()
+    }
+
+    override fun toString(): String {
+        return typeFactories.toString()
     }
 }

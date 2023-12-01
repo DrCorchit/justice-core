@@ -6,11 +6,10 @@ import com.drcorchit.justice.lang.JusticeBaseVisitor
 import com.drcorchit.justice.lang.JusticeParser
 import com.drcorchit.justice.lang.code.expression.*
 import com.drcorchit.justice.lang.code.statement.*
-import com.drcorchit.justice.lang.environment.ImmutableTypeEnv
-import com.drcorchit.justice.lang.environment.TypeEnvEntry
+import com.drcorchit.justice.lang.environment.Parameters
+import com.drcorchit.justice.lang.environment.Parameters.Companion.toEnv
 import com.drcorchit.justice.lang.types.Type
 import com.google.common.collect.ImmutableList
-import com.google.common.collect.ImmutableMap
 
 class Visitor(val universe: TypeUniverse) : JusticeBaseVisitor<Code>() {
 
@@ -55,7 +54,7 @@ class Visitor(val universe: TypeUniverse) : JusticeBaseVisitor<Code>() {
             is JusticeParser.ArrayExprContext -> visitArrayExpr(ctx)
             is JusticeParser.LambdaExprContext -> visitLambdaExpr(ctx)
             is JusticeParser.ParenExprContext -> visitParenExpr(ctx)
-            else -> throw UnsupportedOperationException("Unsupported expression type: ${ctx.javaClass.simpleName} (${ctx.text})")
+            else -> throw UnsupportedOperationException("Unsupported expression type: ${ctx::class} (${ctx.text})")
         }
     }
 
@@ -226,11 +225,11 @@ class Visitor(val universe: TypeUniverse) : JusticeBaseVisitor<Code>() {
         return parse(ctx.expression())
     }
 
-    fun handleLambda(args: ImmutableTypeEnv, returnType: Type<*>?, ctx: JusticeParser.LambdaBodyContext): LambdaNode {
+    fun handleLambda(args: Parameters, returnType: Type<*>?, ctx: JusticeParser.LambdaBodyContext): LambdaNode {
         return when (ctx) {
             is JusticeParser.ExpressionLambdaBodyContext -> LambdaNode(args, returnType, parse(ctx.expression()))
             is JusticeParser.StatementLambdaBodyContext -> LambdaNode(args, returnType, parse(ctx.stmt()))
-            else -> throw UnsupportedOperationException("Unsupported lambda type: ${ctx.javaClass.simpleName}")
+            else -> throw UnsupportedOperationException("Unsupported lambda type: ${ctx::class}")
         }
     }
 
@@ -239,13 +238,10 @@ class Visitor(val universe: TypeUniverse) : JusticeBaseVisitor<Code>() {
         else ImmutableList.copyOf(ctx.expression().map { parse(it) })
     }
 
-    fun handleArgs(ctx: JusticeParser.ArgsContext?): ImmutableTypeEnv {
-        return if (ctx == null) ImmutableTypeEnv(ImmutableMap.of())
-        else {
-            val map = ctx.arg().associate { it.ID().text to handleType(it.typeExpr()) }
-                .mapValues { TypeEnvEntry(it.key, it.value.resolveType(universe), false) }
-            return ImmutableTypeEnv(map)
-        }
+    fun handleArgs(ctx: JusticeParser.ArgsContext): Parameters {
+        return ctx.arg().associate { it.ID().text to handleType(it.typeExpr()) }
+            .mapValues { it.value.resolveType(universe) }
+            .toEnv()
     }
 
 

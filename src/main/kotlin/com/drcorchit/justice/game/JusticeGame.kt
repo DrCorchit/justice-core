@@ -19,7 +19,7 @@ import com.google.gson.JsonObject
 
 //Justice game is able to fulfill all the responsibilities of a game on its own, except
 //Notifying players and saving, which may require network calls.
-class JusticeGame(
+open class JusticeGame(
     override val notifying: Notifying,
     override val io: IO,
     override val monitoring: Monitoring
@@ -75,19 +75,10 @@ class JusticeGame(
         return state
     }
 
-    override fun serialize(): JsonObject {
-        val output = JsonObject()
-        output.add("players", players.serialize())
-        output.add("mechanics", mechanics.serialize())
-        output.add("events", events.serialize())
-        output.add("metadata", metadata.serialize())
-        return output
-    }
-
     override fun deserialize(info: TimestampedJson) {
+        metadata.deserialize(info.info.asJsonObject.getAsJsonObject("metadata"))
         players.deserialize(info.info.asJsonObject.getAsJsonObject("players"))
         mechanics.deserialize(info.info.asJsonObject.getAsJsonObject("mechanics"), info.lastModified)
         events.deserialize(info.info.asJsonObject.getAsJsonObject("events"))
-        metadata.deserialize(info.info.asJsonObject.getAsJsonObject("metadata"))
     }
 }

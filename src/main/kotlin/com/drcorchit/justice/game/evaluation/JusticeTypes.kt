@@ -5,9 +5,9 @@ import com.drcorchit.justice.game.evaluation.context.DryRunContext
 import com.drcorchit.justice.game.evaluation.context.ExecutionContext
 import com.drcorchit.justice.game.evaluation.context.StackDryRunContext
 import com.drcorchit.justice.game.evaluation.context.StackExecutionContext
-import com.drcorchit.justice.game.evaluation.instantiators.ElementTypeInstantiator
-import com.drcorchit.justice.game.evaluation.instantiators.MechanicTypeInstantiator
-import com.drcorchit.justice.game.evaluation.instantiators.SimpleTypeInstantiator
+import com.drcorchit.justice.game.evaluation.instantiators.ElementTypeFactory
+import com.drcorchit.justice.game.evaluation.instantiators.MechanicTypeFactory
+import com.drcorchit.justice.game.evaluation.instantiators.SimpleTypeFactory
 import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
 import com.drcorchit.justice.game.metadata.MetadataType
 import com.drcorchit.justice.game.players.PlayersType
@@ -24,11 +24,12 @@ class JusticeTypes(override val parent: Game) : Types {
     init {
         val builder = TypeUniverse.getDefault()
         builder.registerType(PlayersType)
-        builder.registerType(SimpleTypeInstantiator(parent.mechanics.getType()))
-        builder.registerType(SimpleTypeInstantiator(parent.events.getType()))
+        builder.registerType(SimpleTypeFactory(parent.mechanics.getType()))
+        builder.registerType(SimpleTypeFactory(parent.events.getType()))
         builder.registerType(MetadataType)
-        builder.registerType(MechanicTypeInstantiator(builder))
-        builder.registerType(ElementTypeInstantiator(builder))
+        builder.registerType(MechanicTypeFactory(builder))
+        builder.registerType(ElementTypeFactory(builder))
+        builder.sort()
         universe = builder
     }
 
@@ -61,10 +62,10 @@ class JusticeTypes(override val parent: Game) : Types {
     override fun getExecutionContext(allowSideEffects: Boolean, self: Thing<*>?): ExecutionContext {
         val output = StackExecutionContext(universe, allowSideEffects, self)
         //Adding entries equates to adding global variables visible in all contexts!
-        output.declareGlobal("players", parent.players.asThing)
-        output.declareGlobal("mechanics", parent.mechanics.asThing)
-        output.declareGlobal("events", parent.events.asThing)
-        output.declareGlobal("metadata", parent.metadata.asThing)
+        output.declareGlobal("players", parent.players.let { PlayersType.wrap(it) })
+        output.declareGlobal("mechanics", parent.mechanics.let { it.getType().wrap(it) })
+        output.declareGlobal("events", parent.events.let { it.getType().wrap(it) })
+        output.declareGlobal("metadata", parent.metadata.let { MetadataType.wrap(it) })
         return output
     }
 

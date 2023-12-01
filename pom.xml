@@ -107,7 +107,7 @@
         <dependency>
             <groupId>com.github.DrCorchit</groupId>
             <artifactId>justice-utils</artifactId>
-            <version>1.4.7</version>
+            <version>1.4.11</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
         <dependency>

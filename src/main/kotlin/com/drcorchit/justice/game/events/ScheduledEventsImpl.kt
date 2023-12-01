@@ -2,7 +2,7 @@ package com.drcorchit.justice.game.events
 
 import com.drcorchit.justice.utils.json.JsonUtils.stream
 import com.drcorchit.justice.utils.json.Result
-import com.google.gson.JsonObject
+import com.google.gson.JsonArray
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 
@@ -56,10 +56,10 @@ class ScheduledEventsImpl(override val parent: Events) : ScheduledEvents {
         return map.values.flatMap { it.getHistory() }.sorted()
     }
 
-    fun deserialize(info: JsonObject): Result {
+    fun deserialize(info: JsonArray): Result {
         stop()
         map.clear()
-        info.getAsJsonArray("events").stream()
+        info.stream()
             .map { it.asJsonObject }
             .map { ScheduledEventImpl.deserialize(this, it) }
             .forEach { map[it.name] = it }

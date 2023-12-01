@@ -1,10 +1,7 @@
 package com.drcorchit.justice.game.io
 
 import com.drcorchit.justice.game.Game
-import com.drcorchit.justice.utils.json.Result
-import com.drcorchit.justice.utils.json.TimestampedJson
-import com.drcorchit.justice.utils.json.info
-import com.drcorchit.justice.utils.json.lastModified
+import com.drcorchit.justice.utils.json.*
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 
@@ -20,11 +17,11 @@ interface IO {
         output.add("events", game.events.serialize())
         output.add("mechanics", game.mechanics.serialize())
 
-        var result: Result = saveJson("$basePath/game.json", output)
+        var result: Result = save("$basePath/game.json", output)
         game.mechanics.forEach {
             val path = "$basePath/${it.name}"
             val json = it.serialize()
-            result = result.and(saveJson(path, json))
+            result = result.and(save(path, json))
         }
 
         return Result.succeed()
@@ -32,7 +29,7 @@ interface IO {
 
     //Loads the game state from Json
     fun load(game: Game): Result {
-        val json = loadJson("$basePath/game.json")
+        val json = load("$basePath/game.json").toJson()
         val info = json.info.asJsonObject
         val metadataInfo = info.getAsJsonObject("metadata").deepCopy()
         val playersInfo = info.getAsJsonObject("players").deepCopy()
@@ -49,15 +46,15 @@ interface IO {
 
     //Irreversibly deletes files or database entries associated with the game.
     fun delete(game: Game): Result {
-        var result: Result = deleteJson("$basePath/game.json")
+        var result: Result = delete("$basePath/game.json")
         game.mechanics.forEach {
-            result = result.and(deleteJson("$basePath/${it.name}"))
+            result = result.and(delete("$basePath/${it.name}"))
         }
 
         return result
     }
 
-    fun saveJson(path: String, ele: JsonElement): Result
-    fun loadJson(path: String): TimestampedJson
-    fun deleteJson(path: String): Result
+    fun save(path: String, ele: JsonElement): Result
+    fun load(path: String): TimestampedBytes
+    fun delete(path: String): Result
 }

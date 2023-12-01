@@ -4,6 +4,7 @@ import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.members.Member
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.logging.Uri
+import kotlin.reflect.KClass
 
 //Compile exceptions
 open class CompileException(message: String = "") : Exception(message)
@@ -15,11 +16,12 @@ open class JusticeRuntimeException(message: String = "") : Exception(message)
 
 //A member was declared with an illegal name, or fails to extend an inherited member correctly
 class MemberDefinitionException(reason: String) : CompileException(reason)
-class MemberNotFoundException(clazz: Class<*>, name: String) :
-    CompileException("No such member: ${clazz.name}\$$name")
+class MemberNotFoundException(clazz: KClass<*>, name: String) :
+    CompileException("No such member: $clazz\$$name")
 
 //Nothing is wrong; this is normal program flow.
 class ReturnException(val value: Thing<*>) : Exception()
+
 //TODO remove return type exception.
 class ReturnTypeException(val type: Type<*>) : Exception()
 
@@ -30,11 +32,13 @@ class DeserializationException(message: String = "") : Exception(message)
 class TypeException(message: String) : CompileException(message) {
     constructor(field: String, expected: String, actual: String) : this("$field expected $expected; got $actual")
 
-    constructor(field: String, expected: Type<*>, actual: Type<*>) : this(
+    constructor(field: String, expected: KClass<*>, actual: KClass<*>) : this(
         field,
-        expected.clazz.name ?: "<anonymous>",
-        actual.clazz.name ?: "<anonymous>"
+        expected.simpleName ?: "<anonymous>",
+        actual.simpleName ?: "<anonymous>"
     )
+
+    constructor(field: String, expected: Type<*>, actual: Type<*>) : this(field, expected.clazz, actual.clazz)
 }
 
 class UnimplementedMemberException(uri: Uri, member: Member<*>) :
