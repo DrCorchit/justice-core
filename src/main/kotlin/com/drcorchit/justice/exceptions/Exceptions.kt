@@ -25,7 +25,6 @@ class ReturnException(val value: Thing<*>) : Exception()
 //TODO remove return type exception.
 class ReturnTypeException(val type: Type<*>) : Exception()
 
-//TODO use these or remove.
 class SerializationException(message: String = "") : Exception(message)
 class DeserializationException(message: String = "") : Exception(message)
 

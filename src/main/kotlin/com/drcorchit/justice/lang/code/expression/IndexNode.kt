@@ -29,4 +29,8 @@ class IndexNode(private val arrayExpr: Expression, private val indexExpr: Expres
         }
         return member.returnType
     }
+
+    override fun toString(): String {
+        return "$arrayExpr[$indexExpr]"
+    }
 }

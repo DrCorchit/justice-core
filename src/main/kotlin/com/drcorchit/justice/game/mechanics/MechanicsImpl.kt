@@ -8,7 +8,7 @@ import com.drcorchit.justice.utils.json.toJson
 import com.google.gson.JsonObject
 import kotlin.reflect.full.primaryConstructor
 
-class MechanicsImpl(override val parent: Game): Mechanics {
+class MechanicsImpl(override val parent: Game) : Mechanics {
     private val mechType: Type<Mechanics> by lazy { this.makeEvaluator() }
     private val mechanics = LinkedHashMap<String, GameMechanic<*>>()
 
@@ -17,7 +17,8 @@ class MechanicsImpl(override val parent: Game): Mechanics {
     }
 
     override fun <T : GameMechanic<*>> get(mechanic: String): T {
-        return mechanics[mechanic] as T
+        return mechanics[mechanic] as? T ?:
+        throw NoSuchElementException("No mechanic named $mechanic in ${parent.id}")
     }
 
     override fun serialize(): JsonObject {
@@ -26,20 +27,22 @@ class MechanicsImpl(override val parent: Game): Mechanics {
         return output
     }
 
-    override fun deserialize(info: JsonObject, timestamp: Long) {
-        mechanics.clear()
+    override fun sync(info: JsonObject, timestamp: Long) {
         info.asJsonObject.entrySet().forEach {
+            val name = it.key
             val json = if (it.value.isJsonObject) {
                 it.value to timestamp
             } else {
                 val path = it.value.asString
-                parent.io.load(path).toJson()
+                parent.io.loadResource(path).toJson()
             }
-            val className = json.info.asJsonObject["class"].asString
-            val clazz = (Class.forName(className) as Class<out GameMechanic<*>>).kotlin
-            val mech = clazz.primaryConstructor!!.call(this, it.key)
-            mechanics[it.key] = mech
-            mech.sync(json)
+
+            //Create the mechanic if it is missing.
+            mechanics.computeIfAbsent(name) {
+                val className = json.info.asJsonObject["class"].asString
+                val clazz = (Class.forName(className) as Class<out GameMechanic<*>>).kotlin
+                clazz.primaryConstructor!!.call(this, name)
+            }.sync(json)
         }
     }
 

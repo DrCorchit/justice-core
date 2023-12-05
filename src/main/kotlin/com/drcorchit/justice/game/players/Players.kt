@@ -28,7 +28,7 @@ interface Players : Set<Player>, HasUri {
     fun removePlayer(player: Player): Result
 
     fun serialize(): JsonObject
-    fun deserialize(info: JsonObject)
+    fun sync(info: JsonObject)
 
     @get:DerivedField("Returns the number of players currently in the game.")
     override val size: Int

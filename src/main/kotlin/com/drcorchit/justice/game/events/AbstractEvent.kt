@@ -1,6 +1,6 @@
 package com.drcorchit.justice.game.events
 
-import com.drcorchit.justice.lang.environment.Parameters
+import com.drcorchit.justice.game.evaluation.environment.Parameters
 import com.drcorchit.justice.utils.Version
 
 abstract class AbstractEvent(

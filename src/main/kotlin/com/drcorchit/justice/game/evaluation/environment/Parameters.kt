@@ -1,5 +1,6 @@
-package com.drcorchit.justice.lang.environment
+package com.drcorchit.justice.game.evaluation.environment
 
+import com.drcorchit.justice.exceptions.DeserializationException
 import com.drcorchit.justice.game.Game
 import com.drcorchit.justice.lang.types.Type
 import com.google.common.collect.ImmutableList
@@ -11,7 +12,7 @@ class Parameters(
 
     fun deserialize(info: JsonObject, game: Game): List<Any> {
         return entries.map {
-            val json = info[it.id]
+            val json = info[it.id] ?: throw DeserializationException("No entry for event parameter: ${it.id}")
             it.type.deserialize(game, json)
         }
     }

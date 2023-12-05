@@ -5,9 +5,9 @@ import com.drcorchit.justice.game.evaluation.context.DryRunContext
 import com.drcorchit.justice.game.evaluation.context.ExecutionContext
 import com.drcorchit.justice.game.evaluation.context.StackDryRunContext
 import com.drcorchit.justice.game.evaluation.context.StackExecutionContext
-import com.drcorchit.justice.game.evaluation.instantiators.ElementTypeFactory
-import com.drcorchit.justice.game.evaluation.instantiators.MechanicTypeFactory
-import com.drcorchit.justice.game.evaluation.instantiators.SimpleTypeFactory
+import com.drcorchit.justice.game.evaluation.typeFactories.ElementTypeFactory
+import com.drcorchit.justice.game.evaluation.typeFactories.MechanicTypeFactory
+import com.drcorchit.justice.game.evaluation.typeFactories.SimpleTypeFactory
 import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
 import com.drcorchit.justice.game.metadata.MetadataType
 import com.drcorchit.justice.game.players.PlayersType

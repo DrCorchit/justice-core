@@ -1,4 +1,4 @@
-package com.drcorchit.justice.game.evaluation.instantiators
+package com.drcorchit.justice.game.evaluation.typeFactories
 
 import com.drcorchit.justice.game.evaluation.universe.TypeParameters
 import com.drcorchit.justice.game.evaluation.universe.kClass
@@ -9,7 +9,7 @@ import kotlin.reflect.full.isSuperclassOf
 
 abstract class TypeFactory(val kClass: KClass<*>) : Comparable<TypeFactory> {
 
-    fun matches(typeParameters: TypeParameters): Boolean {
+    open fun matches(typeParameters: TypeParameters): Boolean {
         return kClass.isSuperclassOf(typeParameters.kClass)
     }
 

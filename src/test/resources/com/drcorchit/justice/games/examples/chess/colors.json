@@ -2,12 +2,14 @@
   "class": "com.drcorchit.justice.game.examples.chess.Colors",
   "elements": [
     {
-      "name": "White",
-      "pawnDirection": 1
+      "id": "White",
+      "pawnDirection": 1,
+      "player": "user1"
     },
     {
-      "name": "Black",
-      "pawnDirection": -1
+      "id": "Black",
+      "pawnDirection": -1,
+      "player": "user2"
     }
   ]
 }

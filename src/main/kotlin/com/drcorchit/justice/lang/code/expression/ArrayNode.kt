@@ -24,4 +24,9 @@ class ArrayNode(val type: Type<*>, val exprs: ImmutableList<Expression>) : Expre
         }
         return ArrayType(type)
     }
+
+    override fun toString(): String {
+        val values = exprs.joinToString(", ")
+        return "$type[$values]"
+    }
 }

@@ -1,8 +1,9 @@
 {
   "class": "com.drcorchit.justice.game.mechanics.space.NamedSpaces",
-  "default": "0",
+  "default": "default",
   "elements": [
     {
+      "id": "default",
       "space": {
         "width": 8,
         "height": 8

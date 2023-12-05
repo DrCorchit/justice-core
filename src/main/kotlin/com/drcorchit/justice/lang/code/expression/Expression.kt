@@ -9,11 +9,6 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 
 interface Expression: Code {
-
-    //override fun run(context: EvaluationContext): TypedThing<*>
-
-    //override fun dryRun(context: DryRunContext): Type<*>
-
     companion object {
         @JvmStatic
         fun parse(types: TypeUniverse, code: String): Expression {

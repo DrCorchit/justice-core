@@ -47,16 +47,14 @@ abstract class AbstractMechanic<T : AbstractElement>(override val parent: Mechan
         val type = universe.getType(this::class to ImmutableList.of())
         type.sync(this, parent.parent, info)
 
-        //Mark all elements for deletion, then unmark them if they still exist
-        val deleteThese: HashSet<T> = HashSet(elementsByID.values)
         for (ele in info.getAsJsonArray("elements")) {
             //If it's a JsonNull, it's considered a "hidden" game element. (obscured by i.e. fog of war)
             if (ele.isJsonNull) continue
             val eleInfo = ele.asJsonObject
 
             //Use "key" if present, otherwise default to name
-            val uri = eleInfo.getOrDefault("uri", { getNextID() }, { it.asString })
-            val element: T = elementsByID.computeIfAbsent(uri) { create(uri, eleInfo) }
+            val id = eleInfo.getOrDefault("id", { getNextID() }, { it.asString })
+            val element: T = elementsByID.computeIfAbsent(id) { create(id, eleInfo) }
             element.sync(eleInfo)
         }
 
@@ -67,8 +65,7 @@ abstract class AbstractMechanic<T : AbstractElement>(override val parent: Mechan
                 else get(default)
             } else null
 
-        //Remove all elements still marked for deletion
-        deleteThese.forEach { elementsByID.remove(it.id) }
+        lastModified = json.lastModified
         val message = String.format("Synced AbstractMechanic $name", name)
         logger.info("sync", message)
     }
@@ -88,23 +85,19 @@ abstract class AbstractMechanic<T : AbstractElement>(override val parent: Mechan
     override fun serialize(): JsonObject {
         val universe = parent.parent.types.universe
         val type = universe.getType(this::class to ImmutableList.of())
-        val output =  type.serializeByReflection(this).asJsonObject
+        val output = type.serializeByReflection(this).asJsonObject
         defaultElement?.let { output.addProperty("default", it.id) }
         val elementsInfo = elementsByID.values.map { it.serialize() }.toJsonArray()
         output.add("elements", elementsInfo)
         return output
     }
 
-    //New (non-inherited) functionality
-    protected var nextID = 0
-
-    protected fun getNextID(): String {
-        return nextID++.toString()
-    }
-
+    //New functionality (not override)
     abstract fun create(id: String, info: JsonObject): T
 
+    open fun getNextID(): String {
+        throw UnsupportedOperationException("Element ID creation not supported by GameMechanic $name")
+    }
+
     protected val elementsByID: LinkedHashMap<String, T> = LinkedHashMap()
-
-
 }

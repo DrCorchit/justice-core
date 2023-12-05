@@ -9,18 +9,23 @@ import com.drcorchit.justice.lang.code.expression.TypeExpression
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.lang.types.UnitType
 
-class DeclareStatement(private val id: String, private val newValue: Expression, private val typeExpr: TypeExpression?, val mutable: Boolean) :
+class DeclareStatement(
+    private val id: String,
+    private val newValue: Expression,
+    private val typeExpr: TypeExpression?,
+    val mutable: Boolean
+) :
     Statement {
     private lateinit var type: Type<*>
 
     override fun run(context: ExecutionContext): Thing<*> {
-        check(this::type.isInitialized) { "Cannot assign variable before type checking has been performed" }
-        context.declare(id, type, newValue.run(context), mutable)
+        check(this::type.isInitialized) { "Cannot perform variable declaration without type checking." }
+        context.declare(id, type, newValue.run(context).value, mutable)
         return Thing.UNIT
     }
 
     override fun dryRun(context: DryRunContext): Type<*> {
-        type = if (typeExpr ==null) {
+        type = if (typeExpr == null) {
             newValue.dryRun(context)
         } else {
             val expectedType = typeExpr.resolveType(context.universe)
@@ -30,12 +35,13 @@ class DeclareStatement(private val id: String, private val newValue: Expression,
             }
             expectedType
         }
+        context.declare(id, type, mutable)
         return UnitType
     }
 
     override fun toString(): String {
         val declarator = if (mutable) "var" else "val"
-        val type = if (typeExpr == null) "" else ": $typeExpr "
-        return "$declarator $id $type = $newValue;"
+        val type = if (typeExpr == null) "" else ": $typeExpr"
+        return "$declarator $id$type = $newValue;"
     }
 }

@@ -76,7 +76,8 @@ lhv : ID #LocalAssign | expression '.' ID #InstanceAssign | expression '[' expre
 
 //Expression
 expression :
-      expression '^' expression #powerExpr
+      expression '...' expression #rangeExpr
+    | expression '^' expression #powerExpr
     | op = ('-' | '!') expression #unaryExpr
     | expression op = ('*' | '/' | '%') expression #multExpr
     | expression op = ('+' | '-') expression #addExpr

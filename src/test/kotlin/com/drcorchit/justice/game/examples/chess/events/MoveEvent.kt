@@ -7,13 +7,13 @@ import com.drcorchit.justice.game.mechanics.space.Coordinate
 import com.drcorchit.justice.game.players.Player
 import com.drcorchit.justice.lang.annotations.HardcodedEvent
 
-@HardcodedEvent("movePiece", "Moves a piece from one square to another.")
+@HardcodedEvent("move", "Moves a piece from one square to another.")
 class MoveEvent(val events: Events) {
-    fun isAuthorized(author: Player, timestamp: Long, piece: Pieces.Piece, destination: Coordinate): Boolean {
+    fun isAuthorized(author: Player, piece: Pieces.Piece, destination: Coordinate): Boolean {
         return piece.color.player == author
     }
 
-    fun trigger(author: Player, timestamp: Long, piece: Pieces.Piece, destination: Coordinate) {
+    fun trigger(author: Player, piece: Pieces.Piece, destination: Coordinate) {
         if (piece.isMoveValid(destination)) {
             piece.position = destination
         } else {

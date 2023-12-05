@@ -4,11 +4,11 @@ import com.drcorchit.justice.exceptions.TypeException
 import com.drcorchit.justice.exceptions.UnrecognizedBinaryOpException
 import com.drcorchit.justice.game.evaluation.context.DryRunContext
 import com.drcorchit.justice.game.evaluation.context.ExecutionContext
-import com.drcorchit.justice.lang.types.AnyType
-import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.lang.code.Thing
-import com.drcorchit.justice.lang.types.primitives.BooleanType
-import com.drcorchit.justice.lang.types.primitives.NumberType
+import com.drcorchit.justice.lang.types.AnyType
+import com.drcorchit.justice.lang.types.IterableType
+import com.drcorchit.justice.lang.types.Type
+import com.drcorchit.justice.lang.types.primitives.*
 import com.drcorchit.justice.utils.math.MathUtils
 import kotlin.math.pow
 
@@ -20,28 +20,54 @@ data class BinaryNode(val left: Expression, val right: Expression, val op: Binar
     }
 
     override fun dryRun(context: DryRunContext): Type<*> {
-        val leftType = left.dryRun(context)
-        if (!op.expectedType.accept(leftType)) {
-            throw TypeException(op.symbol, op.expectedType, leftType)
-        }
+        val left = left.dryRun(context)
+        val right = right.dryRun(context)
+        return op.dryRun(left, right)
+    }
 
-        val rightType = right.dryRun(context)
-        if (!op.expectedType.accept(rightType)) {
-            throw TypeException(op.symbol, op.expectedType, leftType)
-        }
-
-        return op.returnType
+    override fun toString(): String {
+        return "$left ${op.symbol} $right"
     }
 
     sealed class BinaryOp(val symbol: String, val returnType: Type<*>, val expectedType: Type<*>) {
         abstract fun apply(left: () -> Any, right: () -> Any): Any
+
+        open fun dryRun(left: Type<*>, right: Type<*>): Type<*> {
+            if (!expectedType.accept(left)) {
+                throw TypeException(symbol, expectedType, left)
+            }
+
+            if (!expectedType.accept(right)) {
+                throw TypeException(symbol, expectedType, left)
+            }
+
+            return returnType
+        }
 
         fun illegalOperands(x: Any, y: Any): Nothing {
             throw IllegalArgumentException("Illegal arguments to '$symbol' operator: ${x::class} and ${y::class}")
         }
     }
 
-    sealed class ArithmeticOp(symbol: String) : BinaryOp(symbol, NumberType, NumberType)
+    sealed class ArithmeticOp(symbol: String) : BinaryOp(symbol, NumberType, NumberType) {
+        override fun dryRun(left: Type<*>, right: Type<*>): Type<*> {
+            if (!expectedType.accept(left)) {
+                throw TypeException(symbol, expectedType, left)
+            }
+
+            if (!expectedType.accept(right)) {
+                throw TypeException(symbol, expectedType, left)
+            }
+
+            return if (left == RealType || right == RealType) {
+                RealType
+            } else if (left == LongType || right == LongType) {
+                LongType
+            } else {
+                IntType
+            }
+        }
+    }
 
     data object Or : BinaryOp("||", BooleanType, BooleanType) {
         override fun apply(left: () -> Any, right: () -> Any): Any {
@@ -91,15 +117,25 @@ data class BinaryNode(val left: Expression, val right: Expression, val op: Binar
         }
     }
 
-    data object Add : BinaryOp("+", AnyType, AnyType) {
+    data object Add : ArithmeticOp("+") {
         override fun apply(left: () -> Any, right: () -> Any): Any {
             val x = left.invoke()
             val y = right.invoke()
             return if (x is Int && y is Int) x + y
+            else if (x is Long && y is Int) x + y
+            else if (x is Int && y is Long) x + y
             else if (x is Long && y is Long) x + y
             else if (x is Number && y is Number) x.toDouble() + y.toDouble()
             else if (x is String || y is String) x.toString() + y.toString()
             else illegalOperands(x, y)
+        }
+
+        override fun dryRun(left: Type<*>, right: Type<*>): Type<*> {
+            return if (left == StringType || right == StringType) {
+                StringType
+            } else {
+                super.dryRun(left, right)
+            }
         }
     }
 
@@ -157,6 +193,14 @@ data class BinaryNode(val left: Expression, val right: Expression, val op: Binar
                 else if (x is Long && y is Long) temp.toLong()
                 else temp
             } else illegalOperands(x, y)
+        }
+    }
+
+    data object Range : BinaryOp("...", IterableType(IntType), IntType) {
+        override fun apply(left: () -> Any, right: () -> Any): Any {
+            val x = left.invoke() as Int
+            val y = right.invoke() as Int
+            return x..y
         }
     }
 

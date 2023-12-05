@@ -1,6 +1,6 @@
 package com.drcorchit.justice.lang.members.lambda
 
-import com.drcorchit.justice.lang.environment.Parameters
+import com.drcorchit.justice.game.evaluation.environment.Parameters
 import com.drcorchit.justice.lang.members.FieldMember
 import com.drcorchit.justice.lang.types.Type
 

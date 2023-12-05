@@ -1,4 +1,4 @@
-package com.drcorchit.justice.lang.environment
+package com.drcorchit.justice.game.evaluation.environment
 
 import com.drcorchit.justice.exceptions.IllegalAssignmentException
 import com.drcorchit.justice.exceptions.TypeException
@@ -30,5 +30,13 @@ class MutableTypeEnv : TypeEnv {
 
     fun immutableCopy(): Parameters {
         return Parameters(ImmutableList.copyOf(map.values))
+    }
+
+    override fun toString(): String {
+        val values = map.values.joinToString(", ") {
+            val declarator = if (it.mutable) "var" else "val"
+            "$declarator ${it.id}: ${it.type}"
+        }
+        return "($values)"
     }
 }

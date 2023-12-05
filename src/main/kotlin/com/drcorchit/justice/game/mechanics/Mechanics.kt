@@ -3,7 +3,7 @@ package com.drcorchit.justice.game.mechanics
 import com.drcorchit.justice.game.Game
 import com.drcorchit.justice.lang.members.Member
 import com.drcorchit.justice.lang.members.lambda.LambdaFieldMember
-import com.drcorchit.justice.lang.types.MechanicType
+import com.drcorchit.justice.lang.types.GameMechanicType
 import com.drcorchit.justice.lang.types.NonSerializableType
 import com.drcorchit.justice.lang.types.ReflectionType
 import com.drcorchit.justice.lang.types.Type
@@ -24,7 +24,7 @@ interface Mechanics : Iterable<GameMechanic<*>>, HasUri {
 
     fun getType(): Type<Mechanics>
     fun serialize(): JsonObject
-    fun deserialize(info: JsonObject, timestamp: Long)
+    fun sync(info: JsonObject, timestamp: Long)
 
     companion object {
         //Convenience method
@@ -48,7 +48,7 @@ interface Mechanics : Iterable<GameMechanic<*>>, HasUri {
                 init {
                     val mechs = this@makeEvaluator
                     members = mechs.map {
-                        val type = ReflectionType(it::class, mechs.parent.types.universe, MechanicType)
+                        val type = ReflectionType(it::class, mechs.parent.types.universe, GameMechanicType)
                         LambdaFieldMember(this, it.name, "Allows access to the ${it.name} mechanic.", type) { _ -> it }
                     }.associateBy { it.name }.let { ImmutableMap.copyOf<String, Member<Mechanics>>(it) }
                 }

@@ -1,7 +1,7 @@
 package com.drcorchit.justice.lang.members
 
 import com.drcorchit.justice.lang.annotations.DerivedField
-import com.drcorchit.justice.lang.environment.Parameters
+import com.drcorchit.justice.game.evaluation.environment.Parameters
 import com.drcorchit.justice.lang.types.Type
 
 interface Member<in T : Any> {

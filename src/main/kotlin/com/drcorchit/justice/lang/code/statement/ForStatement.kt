@@ -11,11 +11,12 @@ import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.lang.types.UnitType
 
 class ForStatement(val id: String, val iter: Expression, val loop: Statement): Statement {
-    var type: IterableType? = null
+    lateinit var type: IterableType
 
     override fun run(context: ExecutionContext): Thing<*> {
+
         context.push()
-        context.declare(id, type!!.itemType, null, true)
+        context.declare(id, type.itemType, null, true)
 
         val iterable = iter.run(context).value as Iterable<*>
         iterable.forEach {
@@ -34,7 +35,7 @@ class ForStatement(val id: String, val iter: Expression, val loop: Statement): S
             throw TypeException("for", IterableType(AnyType), actualType)
         }
         context.push()
-        context.assign(id, type!!.itemType)
+        context.declare(id, type.itemType, true)
         loop.dryRun(context)
         context.pop()
         return UnitType

@@ -4,8 +4,8 @@ import com.drcorchit.justice.exceptions.TypeException
 import com.drcorchit.justice.exceptions.UnrecognizedUnaryOpException
 import com.drcorchit.justice.game.evaluation.context.DryRunContext
 import com.drcorchit.justice.game.evaluation.context.ExecutionContext
-import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.lang.code.Thing
+import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.lang.types.primitives.BooleanType
 import com.drcorchit.justice.lang.types.primitives.NumberType
 
@@ -22,6 +22,10 @@ data class UnaryNode(val expr: Expression, val op: UnaryOp) : Expression {
             throw TypeException(op.symbol, op.type, type)
         }
         return op.type
+    }
+
+    override fun toString(): String {
+        return "${op.symbol}$expr"
     }
 
     sealed class UnaryOp(val symbol: String, val type: Type<*>) {

@@ -2,7 +2,6 @@ package com.drcorchit.justice.game.events
 
 import com.drcorchit.justice.exceptions.ReturnException
 import com.drcorchit.justice.exceptions.ReturnTypeException
-import com.drcorchit.justice.game.Game
 import com.drcorchit.justice.game.evaluation.context.ExecutionContext
 import com.drcorchit.justice.game.players.PlayerType
 import com.drcorchit.justice.lang.JusticeLexer
@@ -11,9 +10,9 @@ import com.drcorchit.justice.lang.code.Thing
 import com.drcorchit.justice.lang.code.Visitor
 import com.drcorchit.justice.lang.code.expression.Expression
 import com.drcorchit.justice.lang.code.statement.Statement
-import com.drcorchit.justice.lang.environment.MutableTypeEnv
-import com.drcorchit.justice.lang.environment.Parameters
-import com.drcorchit.justice.lang.environment.TypeEnvEntry
+import com.drcorchit.justice.game.evaluation.environment.MutableTypeEnv
+import com.drcorchit.justice.game.evaluation.environment.Parameters
+import com.drcorchit.justice.game.evaluation.environment.TypeEnvEntry
 import com.drcorchit.justice.lang.types.EventType
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.lang.types.UnitType
@@ -76,23 +75,24 @@ class InterpretedEvent(
     }
 
     companion object {
-        fun deserialize(game: Game, info: JsonObject): Event {
+        fun deserialize(events: Events, info: JsonObject): Event {
+            val universe = events.parent.types.universe
             val authorized = if (info.has("authorized")) {
-                Expression.parse(game.types.universe, info["authorized"].asString)
+                Expression.parse(universe, info["authorized"].asString)
             } else null
 
             val parameters = MutableTypeEnv()
             parameters.declare("author", StringType, false)
             parameters.declare("timestamp", NumberType, false)
             info.getObject("arguments").entrySet().forEach {
-                val type = game.types.universe.parseType(it.value.asString)
+                val type = universe.parseType(it.value.asString)
                 parameters.declare(it.key, type, false)
             }
 
-            val code = Statement.parse(game.types.universe, info["code"].asString)
+            val code = Statement.parse(universe, info["code"].asString)
 
             return InterpretedEvent(
-                game.events,
+                events,
                 info["name"].asString,
                 info.getString("description", "No description available."),
                 Version(info["version"].asString),
@@ -102,19 +102,20 @@ class InterpretedEvent(
             )
         }
 
-        fun parse(game: Game, code: String): InterpretedEvent {
+        fun parse(events: Events, code: String): InterpretedEvent {
+            val universe = events.parent.types.universe
             val lexer = JusticeLexer(CharStreams.fromString(code))
             val tokens = CommonTokenStream(lexer)
             val tree = JusticeParser(tokens)
             val ctx = tree.event()
             val metadata = ctx.eventMetadata()
             val parameters = ctx.eventParameters()
-            val visitor = Visitor(game.types.universe)
+            val visitor = Visitor(universe)
             val parsedParams = parameters.eventParameter()
                 .map {
                     TypeEnvEntry(
                         it.ID().text,
-                        visitor.handleType(it.typeExpr()).resolveType(game.types.universe),
+                        visitor.handleType(it.typeExpr()).resolveType(universe),
                         false
                     )
                 }.let { Parameters(ImmutableList.copyOf(it)) }
@@ -122,7 +123,7 @@ class InterpretedEvent(
             val eventCode = visitor.parse(ctx.eventCode().stmt())
 
             return InterpretedEvent(
-                game.events,
+                events,
                 metadata.ID().text,
                 metadata.STR().text ?: "No description available.",
                 Version(metadata.VERSION().text),

@@ -1,8 +1,8 @@
 package com.drcorchit.justice.game.evaluation.context
 
+import com.drcorchit.justice.game.evaluation.environment.MutableTypeEnv
+import com.drcorchit.justice.game.evaluation.environment.TypeEnv
 import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
-import com.drcorchit.justice.lang.environment.MutableTypeEnv
-import com.drcorchit.justice.lang.environment.TypeEnv
 import com.drcorchit.justice.lang.types.MemberType
 import com.drcorchit.justice.lang.types.Type
 import java.util.*
@@ -52,5 +52,9 @@ class StackDryRunContext(
 
     override fun assign(id: String, value: Type<*>) {
         stack.first().assign(id, value)
+    }
+
+    override fun toString(): String {
+        return "{self: $self sideEffectsDisabled: $sideEffectsDisabled global: $global stack: $stack}"
     }
 }

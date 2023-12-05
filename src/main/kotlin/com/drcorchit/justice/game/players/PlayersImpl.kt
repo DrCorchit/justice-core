@@ -60,7 +60,7 @@ class PlayersImpl(override val parent: Game) : Players {
         val output = JsonObject()
         output.addProperty("minPlayerCount", minPlayerCount)
         output.addProperty("maxPlayerCount", maxPlayerCount)
-        output.add("players", playersByID.values.map {
+        output.add("roster", playersByID.values.map {
             val temp = JsonObject()
             temp.addProperty("id", it.id)
             temp.addProperty("name", it.name)
@@ -71,10 +71,10 @@ class PlayersImpl(override val parent: Game) : Players {
         return output
     }
 
-    override fun deserialize(info: JsonObject) {
+    override fun sync(info: JsonObject) {
         min = info["minPlayerCount"].asInt
         max = info["maxPlayerCount"].asInt
-        info.getAsJsonArray("players")
+        info.getAsJsonArray("roster")
             .map { it.asJsonObject }
             .map {
                 PlayerImpl(

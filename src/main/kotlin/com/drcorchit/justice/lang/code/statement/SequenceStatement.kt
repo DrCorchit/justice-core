@@ -13,7 +13,7 @@ class SequenceStatement(val statements: ImmutableList<Statement>) : Statement {
     }
 
     override fun dryRun(context: DryRunContext): Type<*> {
-        statements.dropLast(1).forEach { _ -> dryRun(context) }
+        statements.dropLast(1).forEach { it.dryRun(context) }
         return statements.last().dryRun(context)
     }
 

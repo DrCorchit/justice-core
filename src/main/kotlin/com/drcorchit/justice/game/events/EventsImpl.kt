@@ -14,8 +14,6 @@ import com.drcorchit.justice.utils.json.Http.Companion.ok
 import com.drcorchit.justice.utils.json.HttpResult
 import com.drcorchit.justice.utils.json.JsonUtils.getArray
 import com.drcorchit.justice.utils.json.JsonUtils.toJsonArray
-import com.drcorchit.justice.utils.json.info
-import com.drcorchit.justice.utils.json.toJson
 import com.google.common.collect.ImmutableMap
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -34,14 +32,12 @@ class EventsImpl(override val parent: Game) : Events {
     override fun post(player: Player, info: JsonObject): HttpResult {
         val now = System.currentTimeMillis()
         val eventID = info["event"].asString
-        val event = try {
-            events[eventID]!!
-        } catch (e: NullPointerException) {
-            return badRequest("Event $eventID not found in game ${parent.id}")
-        }
+        val event = events[eventID] ?: return badRequest("Event $eventID not found in game ${parent.id}")
 
         return try {
-            val value = event.trigger(player, info)
+            info.addProperty("author", player.id)
+            info.addProperty("timestamp", now)
+            val value = event.trigger(info)
             val latency = System.currentTimeMillis() - now
             parent.monitoring.recordLatency(parent, eventID, latency)
             eventHistory.add(EventOutcome(eventID, player, now, latency, info))
@@ -49,10 +45,9 @@ class EventsImpl(override val parent: Game) : Events {
                 val resultJson = JsonObject()
                 resultJson.add("result", value.serialize())
                 ok(resultJson)
-            } else {
-                ok()
-            }
+            } else ok()
         } catch (e: Exception) {
+            //TODO rollback.
             eventHistory.add(EventOutcome(eventID, player, now, 0, info, e))
             internalError(e)
         }
@@ -74,10 +69,11 @@ class EventsImpl(override val parent: Game) : Events {
         return output
     }
 
-    override fun deserialize(info: JsonObject) {
+    override fun sync(info: JsonObject) {
         events = info.getAsJsonArray("active")
-            .map { parent.io.load(it.asString).toJson() }
-            .map { InterpretedEvent.deserialize(parent, it.info.asJsonObject) }
+            .map { Event.urlToEvent(this, it.asString) }
+            //.map { parent.io.load(it.asString).toJson() }
+            //.map { InterpretedEvent.deserialize(this, it.info.asJsonObject) }
             .associateBy { it.name }
             .let { ImmutableMap.copyOf(it) }
         scheduled.deserialize(info.getArray("scheduled"))
@@ -90,6 +86,7 @@ class EventsImpl(override val parent: Game) : Events {
     private fun createEvaluator(): Type<Events> {
         return object : NonSerializableType<Events>(Events::class) {
             override val members: ImmutableMap<String, Member<Events>>
+
             init {
                 val builder = ImmutableMap.builder<String, Member<Events>>()
                 events.values.forEach {

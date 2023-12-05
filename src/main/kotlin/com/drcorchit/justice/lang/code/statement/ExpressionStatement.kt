@@ -16,6 +16,6 @@ class ExpressionStatement(val expr: Expression) : Statement {
     }
 
     override fun toString(): String {
-        return expr.toString()
+        return "$expr;"
     }
 }

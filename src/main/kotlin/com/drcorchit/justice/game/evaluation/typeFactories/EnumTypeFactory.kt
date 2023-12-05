@@ -1,4 +1,4 @@
-package com.drcorchit.justice.game.evaluation.instantiators
+package com.drcorchit.justice.game.evaluation.typeFactories
 
 import com.drcorchit.justice.game.evaluation.universe.TypeParameters
 import com.drcorchit.justice.game.evaluation.universe.kClass

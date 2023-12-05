@@ -1,10 +1,13 @@
 package com.drcorchit.justice.game.metadata
 
 import com.drcorchit.justice.game.Game
+import com.drcorchit.justice.game.GameState
 import com.drcorchit.justice.lang.annotations.DerivedField
 import com.drcorchit.justice.utils.Version
+import com.drcorchit.justice.utils.json.Result
 import com.drcorchit.justice.utils.logging.HasUri
 import com.drcorchit.justice.utils.logging.Uri
+import com.drcorchit.justice.utils.math.Rng
 import com.google.gson.JsonObject
 
 interface Metadata: HasUri {
@@ -17,10 +20,6 @@ interface Metadata: HasUri {
     val age: Long
     @get:DerivedField("The timestamp of the last modification to the gamestate.")
     val lastModified: Long get() = parent.mechanics.maxOf { it.lastModified }
-
-    //Location from which the game is saved and loaded.
-    //May be an S3 or http url, or a file path.
-    val path: String
 
     //Unique identifier for the game.
     @get:DerivedField("The unique identifier of the game.")
@@ -44,11 +43,19 @@ interface Metadata: HasUri {
     @get:DerivedField("Indicates whether the game is configured to send network notifications to players.")
     val isNotificationsEnabled: Boolean
     @get:DerivedField("Indicates whether additional players may join the game.")
-    val isJoinable: Boolean get() = parent.getState().isJoiningEnabled && parent.players.size < parent.players.maxPlayerCount
+    val isJoinable: Boolean get() = getState().isJoiningEnabled && parent.players.size < parent.players.maxPlayerCount
+
+    val random: Rng
+    var seed: Long
+        get() = random.getSeed()
+        set(seed) = random.setSeed(seed)
+
+    fun setState(newState: GameState): Result
+    fun getState(): GameState
 
     fun getProperty(property: String): Any?
     fun setProperty(property: String, value: Any)
 
     fun serialize(): JsonObject
-    fun deserialize(info: JsonObject)
+    fun sync(info: JsonObject)
 }

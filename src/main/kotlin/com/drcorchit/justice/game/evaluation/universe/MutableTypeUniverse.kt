@@ -1,8 +1,8 @@
 package com.drcorchit.justice.game.evaluation.universe
 
-import com.drcorchit.justice.game.evaluation.instantiators.JusticeTypeFactory
-import com.drcorchit.justice.game.evaluation.instantiators.SimpleTypeFactory
-import com.drcorchit.justice.game.evaluation.instantiators.TypeFactory
+import com.drcorchit.justice.game.evaluation.typeFactories.JusticeTypeFactory
+import com.drcorchit.justice.game.evaluation.typeFactories.SimpleTypeFactory
+import com.drcorchit.justice.game.evaluation.typeFactories.TypeFactory
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.utils.Utils
 import com.google.common.cache.LoadingCache

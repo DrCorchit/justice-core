@@ -1,4 +1,4 @@
-package com.drcorchit.justice.lang.expression
+package com.drcorchit.justice.lang.code
 
 import com.drcorchit.justice.game.evaluation.context.StackDryRunContext
 import com.drcorchit.justice.game.evaluation.context.StackExecutionContext

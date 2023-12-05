@@ -1,20 +1,16 @@
 {
   "class": "com.drcorchit.justice.game.examples.chess.Pieces",
-  "currentTurn": "WHITE",
-  "playersToColors": {
-    "user1": "WHITE",
-    "user2": "BLACK"
-  },
+  "currentTurn": "colors.White",
 
   "elements": [
     {
       "type": "king",
-      "color": "white",
+      "color": "colors.White",
       "position": "1,1"
     },
     {
       "type": "king",
-      "color": "black",
+      "color": "colors.Black",
       "position": "6,6"
     }
   ]

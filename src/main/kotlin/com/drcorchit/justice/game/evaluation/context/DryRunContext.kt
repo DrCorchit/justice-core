@@ -1,7 +1,7 @@
 package com.drcorchit.justice.game.evaluation.context
 
 import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
-import com.drcorchit.justice.lang.environment.TypeEnv
+import com.drcorchit.justice.game.evaluation.environment.TypeEnv
 
 interface DryRunContext: TypeEnv {
     val universe: TypeUniverse

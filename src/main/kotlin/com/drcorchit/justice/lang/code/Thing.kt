@@ -5,6 +5,7 @@ import com.drcorchit.justice.exceptions.MemberNotFoundException
 import com.drcorchit.justice.lang.members.DataFieldMember
 import com.drcorchit.justice.lang.members.FieldMember
 import com.drcorchit.justice.lang.members.Member
+import com.drcorchit.justice.lang.types.IterableType
 import com.drcorchit.justice.lang.types.MemberType
 import com.drcorchit.justice.lang.types.Type
 import com.drcorchit.justice.lang.types.UnitType
@@ -62,6 +63,7 @@ data class Thing<T : Any>(val value: T, val type: Type<T>) {
                 is Long -> Thing(value, LongType)
                 is Number -> Thing(value.toDouble(), RealType)
                 is String -> Thing(value, StringType)
+                is IntRange -> Thing(value, IterableType(IntType))
                 else -> throw JusticeException("$value is not a primitive type (Bool, Number, String)")
             }
         }

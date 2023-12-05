@@ -2,7 +2,7 @@ package com.drcorchit.justice.game.examples.chess
 
 import com.drcorchit.justice.game.examples.chess.Pieces.Type.*
 import com.drcorchit.justice.game.mechanics.AbstractElement
-import com.drcorchit.justice.game.mechanics.AbstractMechanic
+import com.drcorchit.justice.game.mechanics.IndexedMechanic
 import com.drcorchit.justice.game.mechanics.Mechanics
 import com.drcorchit.justice.game.mechanics.space.Coordinate
 import com.drcorchit.justice.game.mechanics.space.NamedSpaces
@@ -10,7 +10,7 @@ import com.drcorchit.justice.lang.annotations.DataField
 import com.google.gson.JsonObject
 import kotlin.math.abs
 
-class Pieces(parent: Mechanics, name: String) : AbstractMechanic<Pieces.Piece>(parent, name) {
+class Pieces(parent: Mechanics, name: String) : IndexedMechanic<Pieces.Piece>(parent, name) {
     val spaces get() = parent.get<NamedSpaces>("spaces")
     val space = spaces.defaultElement!!
     fun getPieceAt(coordinate: Coordinate): Piece? {

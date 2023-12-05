@@ -3,11 +3,11 @@ package com.drcorchit.justice.lang.types
 import com.drcorchit.justice.exceptions.JusticeException
 import com.drcorchit.justice.exceptions.SerializationException
 import com.drcorchit.justice.game.Game
+import com.drcorchit.justice.game.evaluation.environment.Parameters.Companion.toEnv
 import com.drcorchit.justice.game.mechanics.GameElement
 import com.drcorchit.justice.game.mechanics.GameMechanic
 import com.drcorchit.justice.game.players.Player
 import com.drcorchit.justice.game.players.PlayerType
-import com.drcorchit.justice.lang.environment.Parameters.Companion.toEnv
 import com.drcorchit.justice.lang.members.lambda.LambdaMember
 import com.drcorchit.justice.lang.types.primitives.*
 import com.google.gson.JsonElement
@@ -21,7 +21,7 @@ class MapType(val keyType: Type<*>, val valueType: Type<*>) : Type<Map<*, *>>(Ma
         val isNumber = Number::class.isSuperclassOf(keyType.clazz)
         val isString = keyType is StringType
         val isEnum = keyType is EnumType
-        val isMech = keyType is MechanicType
+        val isMech = keyType is GameMechanicType
         val isElement = keyType is ElementType
         val isPlayer = keyType is PlayerType
         if (!(isNumber || isString || isEnum || isMech || isElement || isPlayer)) {

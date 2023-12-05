@@ -12,4 +12,9 @@ class GenericsTypeNode(private val primaryType: String, private val paramExprs: 
         val params = paramExprs.map { it.resolveType(types) }.let { ImmutableList.copyOf(it) }
         return types.getType(base to params)
     }
+
+    override fun toString(): String {
+        val exprs = paramExprs.joinToString(", ")
+        return "$primaryType<$exprs>"
+    }
 }

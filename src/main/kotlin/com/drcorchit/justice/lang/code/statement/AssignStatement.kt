@@ -13,7 +13,7 @@ import com.drcorchit.justice.lang.types.Type
 sealed class AssignStatement(protected val rhv: Expression) : Statement {
     override fun run(context: ExecutionContext): Thing<*> {
         val newValue = rhv.run(context)
-        assign(newValue, context)
+        assign(newValue.value, context)
         return newValue
     }
 

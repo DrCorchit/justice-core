@@ -1,15 +1,16 @@
 package com.drcorchit.justice.lang.code
 
 import com.drcorchit.justice.exceptions.CompileException
+import com.drcorchit.justice.game.evaluation.environment.Parameters
+import com.drcorchit.justice.game.evaluation.environment.Parameters.Companion.toEnv
 import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
 import com.drcorchit.justice.lang.JusticeBaseVisitor
 import com.drcorchit.justice.lang.JusticeParser
 import com.drcorchit.justice.lang.code.expression.*
 import com.drcorchit.justice.lang.code.statement.*
-import com.drcorchit.justice.lang.environment.Parameters
-import com.drcorchit.justice.lang.environment.Parameters.Companion.toEnv
 import com.drcorchit.justice.lang.types.Type
 import com.google.common.collect.ImmutableList
+import org.apache.commons.text.StringEscapeUtils
 
 class Visitor(val universe: TypeUniverse) : JusticeBaseVisitor<Code>() {
 
@@ -33,12 +34,13 @@ class Visitor(val universe: TypeUniverse) : JusticeBaseVisitor<Code>() {
             is JusticeParser.ErrorStmt2Context -> visitErrorStmt2(stmt)
             is JusticeParser.ReturnStmtContext -> visitReturnStmt(stmt)
             is JusticeParser.ExpressionStmtContext -> visitExpressionStmt(stmt)
-            else -> throw CompileException("Unsupported statement type: ${stmt.text}")
+            else -> throw CompileException("Unsupported statement type: <${stmt.text}>")
         }
     }
 
     fun parse(ctx: JusticeParser.ExpressionContext): Expression {
         return when (ctx) {
+            is JusticeParser.RangeExprContext -> visitRangeExpr(ctx)
             is JusticeParser.PowerExprContext -> visitPowerExpr(ctx)
             is JusticeParser.UnaryExprContext -> visitUnaryExpr(ctx)
             is JusticeParser.MultExprContext -> visitMultExpr(ctx)
@@ -126,6 +128,12 @@ class Visitor(val universe: TypeUniverse) : JusticeBaseVisitor<Code>() {
         return ExpressionStatement(parse(ctx.expression()))
     }
 
+    override fun visitRangeExpr(ctx: JusticeParser.RangeExprContext): Expression {
+        val left = parse(ctx.expression(0))
+        val right = parse(ctx.expression(1))
+        return BinaryNode(left, right, BinaryNode.Range)
+    }
+
     override fun visitPowerExpr(ctx: JusticeParser.PowerExprContext): Expression {
         val left = parse(ctx.expression(0))
         val right = parse(ctx.expression(1))
@@ -185,8 +193,11 @@ class Visitor(val universe: TypeUniverse) : JusticeBaseVisitor<Code>() {
                 "e" -> ConstantNode.E
                 else -> ConstantNode(const.REAL().text.toDouble())
             }
-
-            is JusticeParser.StrConstContext -> ConstantNode(const.text)
+            is JusticeParser.StrConstContext -> {
+                val withoutQuotes = const.text.removePrefix("\"").removeSuffix("\"")
+                val escaped = StringEscapeUtils.unescapeJava(withoutQuotes)
+                ConstantNode(escaped)
+            }
             else -> throw IllegalArgumentException("Unknown constant: ${ctx.text}")
         }
     }
@@ -233,8 +244,8 @@ class Visitor(val universe: TypeUniverse) : JusticeBaseVisitor<Code>() {
         }
     }
 
-    fun handleTuple(ctx: JusticeParser.TupleContext?): ImmutableList<Expression> {
-        return if (ctx == null) ImmutableList.of()
+    fun handleTuple(ctx: JusticeParser.TupleContext?): ImmutableList<Expression>? {
+        return if (ctx == null) null
         else ImmutableList.copyOf(ctx.expression().map { parse(it) })
     }
 

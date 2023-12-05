@@ -1,8 +1,8 @@
 package com.drcorchit.justice.lang.members.reflection
 
 import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
-import com.drcorchit.justice.lang.environment.Parameters
-import com.drcorchit.justice.lang.environment.Parameters.Companion.toEnv
+import com.drcorchit.justice.game.evaluation.environment.Parameters
+import com.drcorchit.justice.game.evaluation.environment.Parameters.Companion.toEnv
 import com.drcorchit.justice.lang.members.AbstractMember
 import com.drcorchit.justice.lang.types.Type
 import com.google.common.collect.ImmutableList

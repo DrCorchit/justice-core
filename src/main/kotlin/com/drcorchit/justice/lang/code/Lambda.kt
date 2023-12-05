@@ -1,6 +1,6 @@
 package com.drcorchit.justice.lang.code
 
-import com.drcorchit.justice.lang.environment.Parameters
+import com.drcorchit.justice.game.evaluation.environment.Parameters
 import com.drcorchit.justice.lang.members.Member
 import com.drcorchit.justice.lang.members.lambda.LambdaMember
 import com.drcorchit.justice.lang.types.NonSerializableType

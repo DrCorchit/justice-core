@@ -15,9 +15,6 @@ class Colors(parent: Mechanics, name: String) : AbstractMechanic<Colors.ChessCol
         @DataField("The player which controls pieces of this color.", false)
         lateinit var player: Player
 
-        @DataField("The name of the color.", false)
-        lateinit var name: String
-
         @DataField("Indicates whether the player has retained the ability to castle kingside.", true, "true")
         var canCastleKingside: Boolean = true
 

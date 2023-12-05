@@ -12,7 +12,7 @@ class GameTest {
 
     @Test
     fun createTest() {
-        val game = JusticeGame(LogNotifying, LocalIO(PATH), LatencyMonitoring())
+        val game = JusticeGame(LogNotifying, LatencyMonitoring()) { LocalIO(PATH, it) }
     }
 
     companion object {

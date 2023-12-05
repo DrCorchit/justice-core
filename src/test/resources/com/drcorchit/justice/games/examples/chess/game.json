@@ -1,18 +1,17 @@
 {
   "metadata": {
     "start": 1701156197000,
-    "id": "test_game_0",
     "name": "chess",
     "description": "The game of kings. Checkmate your opponent to win.",
     "image": "none",
     "author": "drcorchit",
     "version": "1.0.0",
-    "path": ""
+    "path": "src/test/resources/com/drcorchit/justice/games/examples/chess"
   },
   "players": {
     "minPlayerCount": 2,
     "maxPlayerCount": 2,
-    "players": [
+    "roster": [
       {
         "id": "user1",
         "name": "Bobby Fisher"
@@ -25,10 +24,11 @@
   },
   "mechanics": {
     "spaces": "spaces.json",
+    "colors": "colors.json",
     "pieces": "pieces.json"
   },
   "events": {
-    "active": [],
+    "active": ["com.drcorchit.justice.game.examples.chess.events.MoveEvent"],
     "scheduled": []
   }
 }

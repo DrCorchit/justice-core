@@ -1,7 +1,6 @@
 package com.drcorchit.justice.lang.code.statement
 
 import com.drcorchit.justice.exceptions.ReturnException
-import com.drcorchit.justice.exceptions.ReturnTypeException
 import com.drcorchit.justice.game.evaluation.context.DryRunContext
 import com.drcorchit.justice.game.evaluation.context.ExecutionContext
 import com.drcorchit.justice.lang.code.Thing
@@ -15,7 +14,7 @@ class ReturnStatement(val expr: Expression?) : Statement {
     }
 
     override fun dryRun(context: DryRunContext): Type<*> {
-        throw ReturnTypeException(expr?.dryRun(context) ?: UnitType)
+        return expr?.dryRun(context) ?: UnitType
     }
 
     override fun toString(): String {

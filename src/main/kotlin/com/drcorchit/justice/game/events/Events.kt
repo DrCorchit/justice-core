@@ -18,5 +18,5 @@ interface Events: HasUri {
     fun getEventHistory(since: Long): JsonArray
     fun getType(): Type<Events>
     fun serialize(): JsonObject
-    fun deserialize(info: JsonObject)
+    fun sync(info: JsonObject)
 }

@@ -32,9 +32,9 @@ object CoordinateType : Type<Coordinate>(Coordinate::class) {
         val spaces = game.mechanics.get<NamedSpaces>("spaces")
         return if (str.matches(regex1)) {
             val parts = regex1.matchEntire(str)!!.groupValues
-            val space = spaces[parts[0]]
-            val x = parts[1].toInt()
-            val y = parts[2].toInt()
+            val space = spaces[parts[1]]
+            val x = parts[2].toInt()
+            val y = parts[3].toInt()
             space.getCoordinate(x, y)
         } else if (str.matches(regex2)) {
             val parts = Space.parseString(str)

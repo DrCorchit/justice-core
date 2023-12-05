@@ -1,8 +1,8 @@
 package com.drcorchit.justice.game.evaluation.universe
 
-import com.drcorchit.justice.game.evaluation.instantiators.ArrayTypeFactory
-import com.drcorchit.justice.game.evaluation.instantiators.EnumTypeFactory
-import com.drcorchit.justice.game.evaluation.instantiators.MapTypeFactory
+import com.drcorchit.justice.game.evaluation.typeFactories.ArrayTypeFactory
+import com.drcorchit.justice.game.evaluation.typeFactories.EnumTypeFactory
+import com.drcorchit.justice.game.evaluation.typeFactories.MapTypeFactory
 import com.drcorchit.justice.game.mechanics.space.CoordinateType
 import com.drcorchit.justice.game.mechanics.space.SpaceType
 import com.drcorchit.justice.game.players.Player

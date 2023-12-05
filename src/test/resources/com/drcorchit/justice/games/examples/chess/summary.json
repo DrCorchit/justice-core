@@ -1,0 +1,17 @@
+{
+  "id": "test_game_0",
+  "name": "chess",
+  "description": "The game of kings. Checkmate your opponent to win.",
+  "author": "drcorchit",
+  "version": "1.0.0",
+  "image": "none",
+  "start": 1701156197000,
+  "state": "PAUSED",
+  "isJoinable": false,
+  "minPlayers": 2,
+  "maxPlayers": 2,
+  "players": [
+    "Bobby Fisher",
+    "Gary Kasparov"
+  ]
+}

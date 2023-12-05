@@ -1,21 +1,20 @@
 package com.drcorchit.justice.game.metadata
 
 import com.drcorchit.justice.game.Game
+import com.drcorchit.justice.game.GameState
 import com.drcorchit.justice.utils.Version
 import com.drcorchit.justice.utils.json.JsonUtils
 import com.drcorchit.justice.utils.json.JsonUtils.getBool
+import com.drcorchit.justice.utils.json.JsonUtils.getLong
+import com.drcorchit.justice.utils.math.Rng
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 
-class JsonMetadata(override val parent: Game) : Metadata {
+class JsonMetadata(parent: Game) : AbstractMetadata(parent) {
     private var json = JsonObject()
 
     override val start: Long get() = json["start"].asLong
     override val age: Long get() = System.currentTimeMillis() - start
-
-    //Location from which the game is saved and loaded.
-    //May be an S3 or http url, or a file path.
-    override val path: String get() = json["path"].asString
 
     //Unique identifier for the game.
     override val id: String get() = json["id"].asString
@@ -48,12 +47,31 @@ class JsonMetadata(override val parent: Game) : Metadata {
 
     override fun serialize(): JsonObject {
         json.addProperty("lastModified", lastModified)
-        json.addProperty("seed", parent.seed)
-        json.addProperty("state", parent.getState().name)
+        json.addProperty("seed", seed)
+        json.addProperty("state", gameState.name)
         return json.deepCopy()
     }
 
-    override fun deserialize(info: JsonObject) {
-        json = info
+    override fun sync(info: JsonObject) {
+        json = info.deepCopy()
+
+        //Init RNG
+        random.setSeed(info.getLong("seed", Rng().getSeed()))
+
+        //Init ID, if absent
+        if (!json.has("id")) {
+            json.addProperty("id", Game.generateId())
+        }
+
+        //Init Gamestate, if absent
+        gameState = if (json.has("state")) {
+            GameState.valueOf(json.get("state").asString)
+        } else {
+            GameState.PAUSED
+        }
+
+        if (!json.has("start")) {
+            json.addProperty("start", System.currentTimeMillis())
+        }
     }
 }

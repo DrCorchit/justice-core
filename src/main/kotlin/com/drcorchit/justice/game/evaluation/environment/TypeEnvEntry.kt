@@ -1,4 +1,4 @@
-package com.drcorchit.justice.lang.environment
+package com.drcorchit.justice.game.evaluation.environment
 
 import com.drcorchit.justice.lang.types.Type
 

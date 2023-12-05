@@ -1,10 +1,16 @@
 package com.drcorchit.justice.lang.members
 
-import com.drcorchit.justice.lang.annotations.*
+import com.drcorchit.justice.game.evaluation.universe.TypeUniverse
+import com.drcorchit.justice.lang.annotations.CachedField
+import com.drcorchit.justice.lang.annotations.DataField
+import com.drcorchit.justice.lang.annotations.DerivedField
+import com.drcorchit.justice.lang.annotations.Evaluable
 import com.drcorchit.justice.lang.members.reflection.CachedReflectionMember
 import com.drcorchit.justice.lang.members.reflection.DerivedReflectionMember
 import com.drcorchit.justice.lang.members.reflection.ReflectionDataMember
 import com.drcorchit.justice.lang.types.ReflectionType
+import com.drcorchit.justice.utils.json.JsonUtils
+import com.google.gson.JsonParser
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -76,5 +82,28 @@ class AnnotationsTest {
         Assertions.assertEquals(10, foo.apply(test, listOf(3, 4)))
         Assertions.assertEquals(3, bar.apply(test, listOf()))
         Assertions.assertEquals(6, foo.apply(test, listOf(1, 1)))
+    }
+
+    class Test3 {
+        @DataField
+        var array = arrayOf(1, 2, 3, 4)
+
+        @DataField
+        var list = listOf("a", "b", "c")
+
+        @DataField
+        var map = mapOf<String, Int>("a" to 1, "b" to 2)
+    }
+
+    @Test
+    fun genericsTest() {
+        val universe = TypeUniverse.getDefault()
+        val type = ReflectionType(Test3::class, universe)
+
+        val actual = type.serialize(Test3())
+        val expected = JsonUtils::class.java.getResourceAsStream("expected3.json")!!
+            .readAllBytes().let { JsonParser.parseString(String(it)) }.asJsonObject
+
+        Assertions.assertEquals(actual, expected)
     }
 }
